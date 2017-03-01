@@ -95,3 +95,6 @@ venv/
 db*
 
 *~
+
+# Dependency directories
+node_modules/

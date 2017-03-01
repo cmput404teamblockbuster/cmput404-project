@@ -1,0 +1,34 @@
+{
+  "name": "blockbuster",
+  "version": "1.0.0",
+  "description": "404 project",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmput404teamblockbuster/cmput404-project.git"
+  },
+  "keywords": [
+    "404",
+    "project"
+  ],
+  "author": "teamblockbuster",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/cmput404teamblockbuster/cmput404-project/issues"
+  },
+  "homepage": "https://github.com/cmput404teamblockbuster/cmput404-project#readme",
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.23.0",
+    "jquery": "^3.1.1",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "webpack": "^2.2.1",
+    "webpack-bundle-tracker": "^0.2.0"
+  }
+}
