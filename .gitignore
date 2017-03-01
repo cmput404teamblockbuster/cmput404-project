@@ -93,3 +93,5 @@ venv/
 
 # local db
 db*
+
+*~
