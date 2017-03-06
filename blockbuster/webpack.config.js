@@ -19,9 +19,10 @@ module.exports = {
         //where you want your compiled bundle to be stored
         path: path.resolve('./static/bundles'),
         //naming convention webpack should use for your files
-        filename: "[name]-[hash].js"
+        filename: "[name].js",
     },
-    
+    watch: true,
+
     plugins: [
          //tells webpack where to store data about your bundle
          new BundleTracker({filename: './webpack.stats.json'})
@@ -38,7 +39,7 @@ module.exports = {
                 //probably won't need query here?
                 query: {
                     //specify that we will be dealing with React code
-                    presets: ['react'] 
+                    presets: ['react']
                 }
             },
         ]

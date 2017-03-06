@@ -21696,7 +21696,7 @@ var Hello = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'h1',
             null,
-            'Hello World!'
+            'Hello!'
         );
     }
 });

@@ -7,3 +7,7 @@ six==1.10.0
 whitenoise==3.3.0
 django-webpack-loader==0.4.1
 Django==1.8
+factory-boy==2.8.1
+Faker==0.7.9
+ipaddress==1.0.18
+python-dateutil==2.6.0

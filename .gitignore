@@ -98,3 +98,6 @@ db*
 
 # Dependency directories
 node_modules/
+
+# Aaron's pip freeze
+my.txt
