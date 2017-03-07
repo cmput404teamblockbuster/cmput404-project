@@ -8,7 +8,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
 const muiTheme = getMuiTheme(darkBaseTheme);
-
+// const muiTheme = getMuiTheme();
 
 export default class AppWrapper extends React.Component{
 
