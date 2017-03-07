@@ -1,11 +1,15 @@
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from core.utils import django_choice_options
 from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDING, \
     RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from posts.models import Post
+from django.contrib.auth.models import User
 
 
-class User(models.Model):
+class UserProfile(models.Model):
+    # TODO add fields from example-article.json
+    user = models.OneToOneField(User)# http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
     username = models.CharField(max_length=50, null=False, unique=True)
     github = models.URLField(null=True, blank=True)  # github url can be null
 
@@ -31,15 +35,18 @@ class User(models.Model):
                     stream.append(post)
 
     def __str__(self):
-        return self.username
+        return self.username # TODO this should be the url of their profile
 
 
 class UserRelationship(models.Model):
     RELATIONSHIP_STATUS_OPTIONS = django_choice_options(
         RELATIONSHIP_STATUS_TYPES, 'name')
-    initiator = models.ForeignKey('users.User', null=False, related_name='initiated_relationships')  # person initiating a friendship
-    receiver = models.ForeignKey('users.User', null=False, related_name='received_relationships')  # person receiving friend request
+    initiator = models.ForeignKey('users.UserProfile', null=False, related_name='initiated_relationships')  # person initiating a friendship
+    receiver = models.ForeignKey('users.UserProfile', null=False, related_name='received_relationships')  # person receiving friend request
     status = models.CharField(RELATIONSHIP_STATUS_OPTIONS, max_length='100', default=RELATIONSHIP_STATUS_PENDING)
+
+    class Meta:
+        unique_together = (('initiator', 'receiver'),)
 
     def delete(self):
         """

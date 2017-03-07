@@ -1,19 +1,19 @@
 import factory
-from users.models import User
+from users.models import UserProfile
 from users.constants import RELATIONSHIP_STATUS_FRIENDS
 from users.constants import RELATIONSHIP_STATUS_FOLLOWING
 
 
-class UserModelFactory(factory.DjangoModelFactory):
+class UserProfileModelFactory(factory.DjangoModelFactory):
     username = factory.Sequence(lambda n: u'User%s' % n)
 
     class Meta:
-        model = User
+        model = UserProfile
 
 
 class BaseUserRelationshipModelFactory(factory.DjangoModelFactory):
-    initiator = factory.SubFactory(UserModelFactory)
-    receiver = factory.SubFactory(UserModelFactory)
+    initiator = factory.SubFactory(UserProfileModelFactory)
+    receiver = factory.SubFactory(UserProfileModelFactory)
 
 
 class FriendsUserRelationshipModelFactory(BaseUserRelationshipModelFactory):

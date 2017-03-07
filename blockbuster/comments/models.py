@@ -4,9 +4,9 @@ from django.utils import timezone
 
 class Comment(models.Model):
     created = models.DateTimeField(null=True, editable=False)
-    author = models.ForeignKey('users.User', null=False)
+    author = models.ForeignKey('users.UserProfile', null=False)
     body = models.CharField(max_length=500)
-    post = models.ForeignKey('posts.Post', null=False)
+    post = models.ForeignKey('posts.Post', null=False, related_name='comments')
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''

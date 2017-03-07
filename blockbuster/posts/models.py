@@ -8,8 +8,8 @@ class Post(models.Model):
     PRIVACY_TYPE_OPTIONS = django_choice_options(
         PRIVACY_TYPES, 'name')
 
-    author = models.ForeignKey('users.User', related_name='posts_created')
-    private_to = models.ForeignKey('users.User', null=True, related_name='received_private_posts')  # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
+    author = models.ForeignKey('users.UserProfile', related_name='posts_created')
+    private_to = models.ForeignKey('users.UserProfile', null=True, related_name='received_private_posts')  # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
     is_public = models.BooleanField(default=True)  # posts are public by default
     privacy = models.CharField(choices=PRIVACY_TYPE_OPTIONS, max_length='256', default=PRIVACY_PUBLIC)
 

@@ -8,4 +8,6 @@ urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'blockbuster.views.home', name='home'),
+    url(r'^login/', 'users.accounts.views.login', name='login'),
+    url(r'^api/author', include('users.api.urls')),
 ]
