@@ -5,7 +5,7 @@ from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDI
 from posts.models import Post
 
 
-class User(models.model):
+class User(models.Model):
     username = models.CharField(max_length=50, null=False, unique=True)
     github = models.URLField(null=True, blank=True)  # github url can be null
 
@@ -34,11 +34,11 @@ class User(models.model):
         return self.username
 
 
-class UserRelationship(models.model):
+class UserRelationship(models.Model):
     RELATIONSHIP_STATUS_OPTIONS = django_choice_options(
         RELATIONSHIP_STATUS_TYPES, 'name')
-    initiator = models.ForeignKey(User, null=False)  # person initiating a friendship
-    receiver = models.ForeignKey(User, null=False)  # person receiving friend request
+    initiator = models.ForeignKey('users.User', null=False, related_name='initiated_relationships')  # person initiating a friendship
+    receiver = models.ForeignKey('users.User', null=False, related_name='received_relationships')  # person receiving friend request
     status = models.CharField(RELATIONSHIP_STATUS_OPTIONS, max_length='100', default=RELATIONSHIP_STATUS_PENDING)
 
     def delete(self):

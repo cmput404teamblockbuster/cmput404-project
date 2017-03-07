@@ -98,6 +98,7 @@ db*
 
 # Dependency directories
 node_modules/
+webpack.stats.json
 
 # Aaron's personal file
 # pip freeze

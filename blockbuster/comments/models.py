@@ -1,14 +1,12 @@
 from django.db import models
 from django.utils import timezone
-from users.models import User
-from posts.models import Post
 
 
-class Comment(models.model):
+class Comment(models.Model):
     created = models.DateTimeField(null=True, editable=False)
-    author = models.ForeignKey(User, null=False)
+    author = models.ForeignKey('users.User', null=False)
     body = models.CharField(max_length=500)
-    post = models.ForeignKey(Post, null=False)
+    post = models.ForeignKey('posts.Post', null=False)
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
