@@ -1,8 +1,8 @@
 from django.db import models
-from blockbuster.core.utils import django_choice_options
-from blockbuster.users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDING, \
-    RELATIONSHIP_STATUS_FRIENDS
-from blockbuster.posts.models import Post
+from core.utils import django_choice_options
+from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDING, \
+    RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
+from posts.models import Post
 
 
 class User(models.model):
@@ -45,10 +45,10 @@ class UserRelationship(models.model):
         """
         overwrite delete method so unfriending keeps the other friend following as the initiator
         """
-        if self.status == self.RELATIONSHIP_STATUS_FRIENDS:
+        if self.status == RELATIONSHIP_STATUS_FRIENDS:
             if self.initiator == 'logged in user':  # TODO implement global to keep track of which user is logged in
                 new_friendship = UserRelationship(initiator=self.receiver, receiver=self.initiator,
-                                                  status=self.RELATIONSHIP_STATUS_FOLLOWING)
+                                                  status=RELATIONSHIP_STATUS_FOLLOWING)
                 new_friendship.save()
 
         super(UserRelationship, self).delete()

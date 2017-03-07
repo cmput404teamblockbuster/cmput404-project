@@ -1,29 +1,12 @@
 from django.db import models
 from core.utils import django_choice_options
-from blockbuster.users.models import User
-from blockbuster.comments.models import Comment
+from users.models import User
+
+from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVATE_TO_ME
 
 
 class Post(models.model):
-    (PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PUBLIC, PRIVATE_TO_FOF, PRIVATE_TO_ME) = (
-        'private_to_all_friends', 'private_to_one_friend', 'public', 'private_to_fof', 'private_to_me')
-    PRIVACY_TYPES = {
-        PRIVATE_TO_ALL_FRIENDS: {
-            'name': 'Friends',
-        },
-        PRIVATE_TO_ONE_FRIEND: {
-            'name': 'One Friend'
-        },
-        PUBLIC: {
-            'name': 'Public'
-        },
-        PRIVATE_TO_FOF: {
-            'name': 'Friends-of-Friends'
-        },
-        PRIVATE_TO_ME: {
-            'name': 'Me'
-        },
-    }
+
     PRIVACY_TYPE_OPTIONS = django_choice_options(
         PRIVACY_TYPES, 'name')
 
@@ -31,8 +14,7 @@ class Post(models.model):
     private_to = models.ForeignKey(User,
                                    null=True)  # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
     is_public = models.BooleanField(default=True)  # posts are public by default
-    privacy = models.CharField(choices=PRIVACY_TYPE_OPTIONS, max_length='256')
-    comments = models.ManyToManyField(Comment)
+    privacy = models.CharField(choices=PRIVACY_TYPE_OPTIONS, max_length='256', default=PRIVACY_PUBLIC)
 
     @property
     def viewable_to(self):
@@ -42,16 +24,16 @@ class Post(models.model):
         if self.is_public:
             return
 
-        elif self.privacy == self.PRIVATE_TO_ALL_FRIENDS:
+        elif self.privacy == PRIVATE_TO_ALL_FRIENDS:
             return self.author.friends
 
-        elif self.privacy == self.PRIVATE_TO_ONE_FRIEND:
+        elif self.privacy == PRIVATE_TO_ONE_FRIEND:
             return [self.private_to]
 
         # elif self.privacy == self.PRIVATE_TO_FOF:
         #     return # TODO implement this
 
-        elif self.privacy == self.PRIVATE_TO_ME:
+        elif self.privacy == PRIVATE_TO_ME:
             return self.author
 
         return []
