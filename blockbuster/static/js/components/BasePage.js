@@ -7,7 +7,7 @@ export default class BasePage extends React.Component{
         return (
             <div>
                 <AppBar title="BlockBuster"/>
-                
+
             </div>
         );
     }

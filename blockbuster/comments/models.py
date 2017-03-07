@@ -1,13 +1,12 @@
 from django.db import models
 from django.utils import timezone
 
-from blockbuster.users.models import User
 
-
-class Comment(models.model):
+class Comment(models.Model):
     created = models.DateTimeField(null=True, editable=False)
-    author = models.ForeignKey(User, null=False)
-    message = models.CharField(max_length=500)
+    author = models.ForeignKey('users.User', null=False)
+    body = models.CharField(max_length=500)
+    post = models.ForeignKey('posts.Post', null=False)
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
@@ -15,3 +14,6 @@ class Comment(models.model):
         if not self.id:
             self.created = timezone.now()
         return super(Comment, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.body

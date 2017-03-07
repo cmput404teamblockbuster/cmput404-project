@@ -1,11 +1,22 @@
 # cmput404-project
 
-## before start server, remember to:
+## Create environment ##
+Run these commands in the root folder
+```
+virtualenv venv
+source venv/bin/activate
+```
 
-- go to our root directory
+## Install dependencies ##
+```
+pip install -r requirements.txt
+npm install
+./node_modules/.bin/webpack --config webpack.config.js
+```
 
-- run 'pip install -r requirements'
 
-- run 'npm install'
-
-- run 'node_modules\.bin\webpack --config webpack.config.jss'
+## Running
+```
+python manage.py runserver
+```
+open browser to http://127.0.0.1:8000/
