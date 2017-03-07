@@ -8,4 +8,4 @@
 
 - run 'npm install'
 
-- run 'node_modules\.bin\webpack --config webpack.config.jss'
+- run 'node_modules\.bin\webpack --config webpack.config.js'
