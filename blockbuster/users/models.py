@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from core.utils import django_choice_options
 from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDING, \
@@ -9,9 +9,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-class UserProfile(models.Model):
+class Profile(models.Model):
     # TODO add fields from example-article.json
-    user = models.OneToOneField(User)# http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
+    user = models.OneToOneField(User, on_delete=models.CASCADE)# http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
     github = models.URLField(null=True)  # github url can be null
 
     @property
@@ -44,20 +44,20 @@ class UserProfile(models.Model):
             from https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#onetoone
         '''
         if created:
-            u_p = UserProfile.objects.create(user=instance)
+            u_p = Profile.objects.create(user=instance)
 
 
     @receiver(post_save, sender=User)
     def save_user_profile(sender, instance, **kwargs):
         # instance.user_profile.save() TODO figure out profile save http://factoryboy.readthedocs.io/en/latest/recipes.html?highlight=UserModelFactory
-        UserProfile.objects.get(user=instance).save()
+        Profile.objects.get(user=instance).save()
 
 
 class UserRelationship(models.Model):
     RELATIONSHIP_STATUS_OPTIONS = django_choice_options(
         RELATIONSHIP_STATUS_TYPES, 'name')
-    initiator = models.ForeignKey('users.UserProfile', null=False, related_name='initiated_relationships')  # person initiating a friendship
-    receiver = models.ForeignKey('users.UserProfile', null=False, related_name='received_relationships')  # person receiving friend request
+    initiator = models.ForeignKey(AUTH_USER_MODEL, null=False, related_name='initiated_relationships')  # person initiating a friendship
+    receiver = models.ForeignKey(AUTH_USER_MODEL, null=False, related_name='received_relationships')  # person receiving friend request
     status = models.CharField(RELATIONSHIP_STATUS_OPTIONS, max_length='100', default=RELATIONSHIP_STATUS_PENDING)
 
     class Meta:

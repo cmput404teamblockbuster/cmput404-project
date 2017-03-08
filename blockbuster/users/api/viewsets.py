@@ -1,18 +1,20 @@
 from rest_framework import viewsets
-from users.api.serializers import AuthorSerializer
 from rest_framework.response import Response
-from users.models import UserProfile
+from users.models import Profile
 from rest_framework.decorators import list_route, detail_route
 from posts.models import Post
 from posts.api.serializers import PostSerializer
+from django.contrib.auth.models import User
+
+from users.api.serializers import UserSerializer
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
     """
     refer to http://www.django-rest-framework.org/api-guide/viewsets/#modelviewset
     """
-    serializer_class = AuthorSerializer
-    queryset = UserProfile.objects.all()
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
 
     # http://www.django-rest-framework.org/api-guide/viewsets/#marking-extra-actions-for-routing

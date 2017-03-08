@@ -1,10 +1,11 @@
+from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from django.utils import timezone
 
 
 class Comment(models.Model):
     created = models.DateTimeField(null=True, editable=False)
-    author = models.ForeignKey('users.UserProfile', null=False)
+    author = models.ForeignKey(AUTH_USER_MODEL, null=False)
     body = models.CharField(max_length=500)
     post = models.ForeignKey('posts.Post', null=False, related_name='comments')
 
