@@ -11,7 +11,7 @@ class UserProfile(models.Model):
     # TODO add fields from example-article.json
     user = models.OneToOneField(User)# http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
     username = models.CharField(max_length=50, null=False, unique=True)
-    github = models.URLField(null=True, blank=True)  # github url can be null
+    github = models.URLField(null=True)  # github url can be null
 
     @property
     def friends(self):

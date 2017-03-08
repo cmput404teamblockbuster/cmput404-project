@@ -1,5 +1,6 @@
 from django.db import models
 from core.utils import django_choice_options
+from django.utils import timezone
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVATE_TO_ME, PRIVACY_PUBLIC
 
 
@@ -8,10 +9,13 @@ class Post(models.Model):
     PRIVACY_TYPE_OPTIONS = django_choice_options(
         PRIVACY_TYPES, 'name')
 
-    author = models.ForeignKey('users.UserProfile', related_name='posts_created')
-    private_to = models.ForeignKey('users.UserProfile', null=True, related_name='received_private_posts')  # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
+    created = models.DateTimeField(null=True, editable=False)
+    author = models.ForeignKey('users.UserProfile', related_name='posts')
+    private_to = models.ForeignKey('users.UserProfile', blank=True, null=True, related_name='received_private_posts')  # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
     is_public = models.BooleanField(default=True)  # posts are public by default
     privacy = models.CharField(choices=PRIVACY_TYPE_OPTIONS, max_length='256', default=PRIVACY_PUBLIC)
+    content = models.CharField(max_length=500, null=True, blank=True)
+
 
     @property
     def viewable_to(self):
@@ -34,3 +38,12 @@ class Post(models.Model):
             return self.author
 
         return []
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created = timezone.now()
+        return super(Post, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.id

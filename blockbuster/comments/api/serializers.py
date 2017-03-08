@@ -8,4 +8,4 @@ class CommentSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
     class Meta:
         model = Comment
-        fields = ('created', 'body',) # These fields will be available to the front end
+        fields = ('created', 'body', 'author') # These fields will be available to the front end
