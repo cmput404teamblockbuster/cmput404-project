@@ -13,3 +13,4 @@ api_router.register(r'author', AuthorViewSet, base_name='authors')
 
 # posts module
 api_router.register(r'posts', PostViewSet, base_name='posts')
+

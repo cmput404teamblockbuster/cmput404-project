@@ -19,9 +19,11 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         return Post.objects.filter(is_public=True)
 
-    @detail_route() # TODO add post functionality here based off http://www.django-rest-framework.org/api-guide/viewsets/#marking-extra-actions-for-routing
+    @detail_route() # TODO add POST functionality here based off http://www.django-rest-framework.org/api-guide/viewsets/#marking-extra-actions-for-routing
     def comments(self, request, pk=None):
         post_comments = Comment.objects.filter(post=pk).order_by('-created')  # get all comments for a specific post
+
+        # TODO implement pagination something like below
         # page = self.paginate_queryset(posts)
         # if page is not None:
         # serializer = PostSerializer(users_posts, many=True)
@@ -30,13 +32,3 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = CommentSerializer(post_comments, many=True)
         return Response(serializer.data)
 
-
-
-class AuthenticatedAuthorPostViewSet(viewsets.ModelViewSet):
-    """
-    viewset for the currently logged in users posts. Accessed via api/author/posts
-    """
-    serializer_class = PostSerializer
-
-    def get_queryset(self):
-        return Post.objects.filter(author=self.request.user)

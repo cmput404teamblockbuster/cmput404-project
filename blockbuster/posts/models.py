@@ -26,16 +26,16 @@ class Post(models.Model):
             return
 
         elif self.privacy == PRIVATE_TO_ALL_FRIENDS:
-            return self.author.friends
+            return [friend for friend in self.author.friends]
 
         elif self.privacy == PRIVATE_TO_ONE_FRIEND:
-            return [self.private_to]
+            return [self.private_to.id]
 
         # elif self.privacy == self.PRIVATE_TO_FOF:
         #     return # TODO implement this
 
         elif self.privacy == PRIVATE_TO_ME:
-            return self.author
+            return [self.author.id]
 
         return []
 
@@ -46,4 +46,4 @@ class Post(models.Model):
         return super(Post, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
