@@ -5,12 +5,13 @@ from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDI
     RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from posts.models import Post
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class UserProfile(models.Model):
     # TODO add fields from example-article.json
     user = models.OneToOneField(User)# http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
-    username = models.CharField(max_length=50, null=False, unique=True)
     github = models.URLField(null=True)  # github url can be null
 
     @property
@@ -35,7 +36,21 @@ class UserProfile(models.Model):
                     stream.append(post)
 
     def __str__(self):
-        return self.username # TODO this should be the url of their profile
+        return self.user.username # TODO this should be the url of their profile
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
+        '''
+            from https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#onetoone
+        '''
+        if created:
+            u_p = UserProfile.objects.create(user=instance)
+
+
+    @receiver(post_save, sender=User)
+    def save_user_profile(sender, instance, **kwargs):
+        # instance.user_profile.save() TODO figure out profile save http://factoryboy.readthedocs.io/en/latest/recipes.html?highlight=UserModelFactory
+        UserProfile.objects.get(user=instance).save()
 
 
 class UserRelationship(models.Model):

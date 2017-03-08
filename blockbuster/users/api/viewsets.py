@@ -35,6 +35,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
         """
         result = []
+        from pprint import pprint
+        pprint(vars(request))
         users_posts = Post.objects.filter(author=pk).order_by('-created')  # get all posts by the specified user
         for post in users_posts:
             if post.is_public or request.user.id in post.viewable_to: # check if the post is visible to logged in user
