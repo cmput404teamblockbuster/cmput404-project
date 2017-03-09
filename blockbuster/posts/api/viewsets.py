@@ -5,6 +5,7 @@ from comments.models import Comment
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route
 from comments.api.serializers import CommentSerializer
+from rest_framework.exceptions import MethodNotAllowed
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -12,6 +13,12 @@ class PostViewSet(viewsets.ModelViewSet):
     refer to http://www.django-rest-framework.org/api-guide/viewsets/#modelviewset
     """
     serializer_class = PostSerializer
+    model = Post
+
+    def create(self, *args, **kwargs):
+        # Use 'invite' instead
+        print self.request.data
+        # raise MethodNotAllowed('POST')
 
     def get_queryset(self):
         """

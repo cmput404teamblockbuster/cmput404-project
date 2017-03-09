@@ -24,17 +24,17 @@ class UserModelFactory(factory.django.DjangoModelFactory):
     # This will call ProfileModelFactory(user=our_new_user), thus skipping the SubFactory.
     # user_profile = factory.RelatedFactory(UserProfileModelFactory, 'user')
 
-    profile = factory.RelatedFactory(ProfileModelFactory, 'user')
+    # profile = factory.RelatedFactory(ProfileModelFactory, 'user')
 
-    @classmethod
-    def _generate(cls, create, attrs):
-        """Override the default _generate() to disable the post-save signal."""
-
-        # Note: If the signal was defined with a dispatch_uid, include that in both calls.
-        post_save.disconnect(User)
-        user = super(UserModelFactory, cls)._generate(create, attrs)
-        post_save.connect(User)
-        return user
+    # @classmethod
+    # def _generate(cls, create, attrs):
+    #     """Override the default _generate() to disable the post-save signal."""
+    #
+    #     # Note: If the signal was defined with a dispatch_uid, include that in both calls.
+    #     post_save.disconnect(User)
+    #     user = super(UserModelFactory, cls)._generate(create, attrs)
+    #     post_save.connect(User)
+    #     return user
 
 
 class BaseUserRelationshipModelFactory(factory.DjangoModelFactory):
