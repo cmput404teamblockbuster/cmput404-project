@@ -18,10 +18,10 @@ class Main extends React.Component{
         //todo check log in function
 
         // if success:
-        this.setState({loggedIn:true, page:<BasePage/>});
+        // this.setState({loggedIn:true, page:<BasePage/>});
 
         // if faile:
-        // this.setState({loggedIn:false,page:<LoginPage/>});
+        this.setState({loggedIn:false,page:<LoginPage/>});
     }
 
     componentWillMount(){
