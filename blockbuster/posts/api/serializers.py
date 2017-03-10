@@ -14,16 +14,6 @@ class PostSerializer(serializers.ModelSerializer):
         attrs = super(PostSerializer, self).validate(attrs)
         if not self._errors:
             print attrs
-            # if not attrs['venue'].public_twilio_phone_number:
-            #     self._errors['venue'] = 'You must purchase a twilio phone number to use this feature.'
-            #     return
-            #
-            # attrs['recipient_list'] = Campaign.generate_campaign_recipients(self.venue_users.all())
-            #
-            # attrs['sms_recipient_count'] = len(attrs['recipient_list'])
-            # if attrs['sms_recipient_count'] <= 0:
-            #     self._errors['sms_recipient_count'] = 'There are no valid phone numbers in the selected list.'
-            #     return
 
         return attrs
 

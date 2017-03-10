@@ -28,8 +28,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('status', models.CharField(default=b'status_friendship_pending', max_length=b'100', verbose_name=[(b'status_following', b'Following'), (b'status_friendship_pending', b'Pending'), (b'status_friends', b'Friends')])),
-                ('initiator', models.ForeignKey(related_name='initiated_relationships', to=settings.AUTH_USER_MODEL)),
-                ('receiver', models.ForeignKey(related_name='received_relationships', to=settings.AUTH_USER_MODEL)),
+                ('initiator', models.ForeignKey(related_name='initiated_relationships', to='users.Profile')),
+                ('receiver', models.ForeignKey(related_name='received_relationships', to='users.Profile')),
             ],
         ),
         migrations.AlterUniqueTogether(

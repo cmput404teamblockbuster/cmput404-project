@@ -6,7 +6,7 @@ from django.utils import timezone
 
 class Comment(models.Model):
     created = models.DateTimeField(null=True, editable=False)
-    author = models.ForeignKey(AUTH_USER_MODEL, null=False)
+    author = models.ForeignKey('users.Profile', null=False)
     body = models.CharField(max_length=500)
     post = models.ForeignKey('posts.Post', null=False, related_name='comments')
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)

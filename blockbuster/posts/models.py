@@ -12,8 +12,8 @@ class Post(models.Model):
         PRIVACY_TYPES, 'name')
 
     created = models.DateTimeField(null=True, editable=False)
-    author = models.ForeignKey(AUTH_USER_MODEL, related_name='posts')
-    private_to = models.ForeignKey(AUTH_USER_MODEL, blank=True, null=True, related_name='received_private_posts')  # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
+    author = models.ForeignKey('users.Profile', related_name='posts')
+    private_to = models.ForeignKey('users.Profile', blank=True, null=True, related_name='received_private_posts')  # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
     is_public = models.BooleanField(default=True)  # posts are public by default
     privacy = models.CharField(choices=PRIVACY_TYPE_OPTIONS, max_length='256', default=PRIVACY_PUBLIC)
     content = models.CharField(max_length=500, null=True, blank=True)
