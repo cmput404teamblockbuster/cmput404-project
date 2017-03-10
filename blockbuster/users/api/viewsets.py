@@ -8,13 +8,17 @@ from django.contrib.auth.models import User
 
 from users.api.serializers import UserSerializer
 
+from users.api.serializers import ProfileSerializer
 
-class AuthorViewSet(viewsets.ModelViewSet):
+
+class ProfileViewSet(viewsets.ModelViewSet):
     """
     refer to http://www.django-rest-framework.org/api-guide/viewsets/#modelviewset
     """
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
+    lookup_field = 'uuid'
+    lookup_value_regex = '[^/]+'
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
 
 
     # http://www.django-rest-framework.org/api-guide/viewsets/#marking-extra-actions-for-routing
@@ -30,21 +34,22 @@ class AuthorViewSet(viewsets.ModelViewSet):
     #     serializer = PostSerializer(users_posts, many=True)
     #     return Response(serializer.data)
 
-    @detail_route()
-    def posts(self, request, pk=None):
-        """
-        display posts by the specified author that are visible to the logged in user
-
-        """
-        result = []
-        from pprint import pprint
-        pprint(vars(request))
-        users_posts = Post.objects.filter(author=pk).order_by('-created')  # get all posts by the specified user
-        for post in users_posts:
-            if post.is_public or request.user.id in post.viewable_to: # check if the post is visible to logged in user
-                result.append(post)
-
-        #  TODO implement pagination here
-
-        serializer = PostSerializer(result, many=True) # TODO maybe a different serilizer for validating that permissions are met
-        return Response(serializer.data)
+    # @detail_route()
+    # def posts(self, request, pk=None):
+    #     """
+    #     display posts by the specified author that are visible to the logged in user
+    #
+    #     """
+    #     result = []
+    #     from pprint import pprint
+    #     pprint(vars(request))
+    #     author = Profile.objects.get(uuid=pk).user.id
+    #     users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
+    #     for post in users_posts:
+    #         if post.is_public or request.user.id in post.viewable_to: # check if the post is visible to logged in user
+    #             result.append(post)
+    #
+    #     #  TODO implement pagination here
+    #
+    #     serializer = PostSerializer(result, many=True) # TODO maybe a different serilizer for validating that permissions are met
+    #     return Response(serializer.data)

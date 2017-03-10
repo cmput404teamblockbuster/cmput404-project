@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 from django.conf import settings
+import uuid
 
 
 class Migration(migrations.Migration):
@@ -16,7 +17,9 @@ class Migration(migrations.Migration):
             name='Profile',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('username', models.CharField(default=None, max_length=30)),
                 ('github', models.URLField(null=True)),
+                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False)),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
         ),

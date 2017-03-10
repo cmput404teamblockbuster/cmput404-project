@@ -1,3 +1,4 @@
+import uuid
 from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from core.utils import django_choice_options
@@ -16,6 +17,7 @@ class Post(models.Model):
     is_public = models.BooleanField(default=True)  # posts are public by default
     privacy = models.CharField(choices=PRIVACY_TYPE_OPTIONS, max_length='256', default=PRIVACY_PUBLIC)
     content = models.CharField(max_length=500, null=True, blank=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
 
     @property
@@ -48,3 +50,6 @@ class Post(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    class Meta:
+        ordering = ('created',)

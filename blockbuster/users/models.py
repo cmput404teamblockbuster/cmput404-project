@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from core.utils import django_choice_options
@@ -12,7 +14,9 @@ from django.dispatch import receiver
 class Profile(models.Model):
     # TODO add fields from example-article.json
     user = models.OneToOneField(User, on_delete=models.CASCADE)# http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
+    username = models.CharField(max_length=30, blank=False, null=False, default=None) # This will be copied from user.username
     github = models.URLField(null=True)  # github url can be null
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     @property
     def friends(self):
@@ -44,7 +48,7 @@ class Profile(models.Model):
             from https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#onetoone
         '''
         if created:
-            u_p = Profile.objects.create(user=instance)
+            u_p = Profile.objects.create(user=instance, username=instance.username)
 
 
     @receiver(post_save, sender=User)

@@ -5,20 +5,24 @@ from comments.models import Comment
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route
 from comments.api.serializers import CommentSerializer
-from rest_framework.exceptions import MethodNotAllowed
 
 
 class PostViewSet(viewsets.ModelViewSet):
     """
-    refer to http://www.django-rest-framework.org/api-guide/viewsets/#modelviewset
+    refer to:
+    http://www.django-rest-framework.org/api-guide/viewsets/#modelviewset
+    http://www.django-rest-framework.org/api-guide/routers/#simplerouter
     """
+    lookup_field = 'uuid'
+    lookup_value_regex = '[^/]+'
+    # lookup_value_regex = '[0-9a-f]{32}'
     serializer_class = PostSerializer
     model = Post
 
-    def create(self, *args, **kwargs):
-        # Use 'invite' instead
-        print self.request.data
-        # raise MethodNotAllowed('POST')
+    # def create(self, *args, **kwargs):
+    #     # Use 'invite' instead
+    #     print self.request.data
+    #     # raise MethodNotAllowed('POST')
 
     def get_queryset(self):
         """
@@ -28,7 +32,8 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @detail_route() # TODO add POST functionality here based off http://www.django-rest-framework.org/api-guide/viewsets/#marking-extra-actions-for-routing
     def comments(self, request, pk=None):
-        post_comments = Comment.objects.filter(post=pk).order_by('-created')  # get all comments for a specific post
+        post = Post.object.get(uuid=pk)
+        post_comments = Comment.objects.filter(post=post.id).order_by('-created')  # get all comments for a specific post
 
         # TODO implement pagination something like below
         # page = self.paginate_queryset(posts)

@@ -8,7 +8,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('github',)
+        fields = ('username', 'github', 'uuid')
+
 
 class UserSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
@@ -16,5 +17,4 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'profile' )
-
+        fields = ('username', 'profile')
