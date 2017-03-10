@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 
 
 class ProfileModelFactory(factory.DjangoModelFactory):
-    user = factory.SubFactory('users.factories.UserModelFactory', profile=None) # from http://factoryboy.readthedocs.io/en/latest/recipes.html?highlight=UserModelFactory
-
+    user = factory.SubFactory('users.factories.UserModelFactory') # from http://factoryboy.readthedocs.io/en/latest/recipes.html?highlight=UserModelFactory
+    username = factory.LazyAttribute(lambda x: x.user.username)
     class Meta:
         model = Profile
 

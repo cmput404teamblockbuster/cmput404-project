@@ -8,7 +8,6 @@ from users.factories import UserModelFactory
 
 class BasePostModelFactory(factory.DjangoModelFactory):
     author = factory.SubFactory(UserModelFactory)
-    is_public = True
     privacy = PRIVACY_PUBLIC
 
     class Meta:
