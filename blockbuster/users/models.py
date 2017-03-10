@@ -15,7 +15,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)# http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
     username = models.CharField(max_length=30, blank=False, null=False, default=None, editable=False) # This will be copied from user.username
     github = models.URLField(null=True)  # github url can be null
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     @property
     def friends(self):

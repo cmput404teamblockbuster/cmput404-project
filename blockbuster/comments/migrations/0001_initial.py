@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(null=True, editable=False)),
                 ('body', models.CharField(max_length=500)),
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False)),
+                ('uuid', models.UUIDField(default=uuid.uuid4, unique=True, editable=False)),
                 ('author', models.ForeignKey(to='users.Profile')),
                 ('post', models.ForeignKey(related_name='comments', to='posts.Post')),
             ],

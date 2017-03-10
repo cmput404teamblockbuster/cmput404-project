@@ -17,7 +17,7 @@ class Post(models.Model):
     is_public = models.BooleanField(default=True)  # posts are public by default
     privacy = models.CharField(choices=PRIVACY_TYPE_OPTIONS, max_length='256', default=PRIVACY_PUBLIC)
     content = models.CharField(max_length=500, null=True, blank=True)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
 
     @property
