@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import uuid
 
 
 class Migration(migrations.Migration):
@@ -18,8 +19,12 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(null=True, editable=False)),
                 ('body', models.CharField(max_length=500)),
-                ('author', models.ForeignKey(to='users.User')),
-                ('post', models.ForeignKey(to='posts.Post')),
+                ('uuid', models.UUIDField(default=uuid.uuid4, unique=True, editable=False)),
+                ('author', models.ForeignKey(to='users.Profile')),
+                ('post', models.ForeignKey(related_name='comments', to='posts.Post')),
             ],
+            options={
+                'ordering': ('created',),
+            },
         ),
     ]

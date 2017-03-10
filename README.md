@@ -15,8 +15,16 @@ npm install
 ```
 
 
+## After pulling from master
+There may be migrations that you need to apply. To do by:
+```
+python manage.py migrate
+```
+
 ## Running
 ```
 python manage.py runserver
 ```
 open browser to http://127.0.0.1:8000/
+
+

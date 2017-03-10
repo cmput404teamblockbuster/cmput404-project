@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'users',
     'posts',
     'comments',
+    'rest_framework',
 
 )
 

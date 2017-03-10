@@ -1,12 +1,15 @@
+import uuid
+from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from django.utils import timezone
 
 
 class Comment(models.Model):
     created = models.DateTimeField(null=True, editable=False)
-    author = models.ForeignKey('users.User', null=False)
+    author = models.ForeignKey('users.Profile', null=False)
     body = models.CharField(max_length=500)
-    post = models.ForeignKey('posts.Post', null=False)
+    post = models.ForeignKey('posts.Post', null=False, related_name='comments')
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
@@ -17,3 +20,6 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.body
+
+    class Meta:
+        ordering = ('created',)
