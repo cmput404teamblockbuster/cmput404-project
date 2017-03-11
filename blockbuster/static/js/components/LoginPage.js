@@ -3,8 +3,25 @@ import LoginTopBar from './SubComponents/LoginTopBar'
 import Paper from 'material-ui/Paper'
 import LoginForm from './SubComponents/LoginForm'
 import FlatButton from 'material-ui/FlatButton'
+import RegistrationDialog from './SubComponents/RegistrationDialog'
 export default class LoginPage extends React.Component{
     // props: finishLogIn: call back function to finish login
+    constructor(props){
+        super(props);
+        this.state = {dialogOpen:false};
+
+        this.closeDialog = this.closeDialog.bind(this);
+        this.openDialog = this.openDialog.bind(this);
+    }
+
+    closeDialog(){
+        this.setState({dialogOpen:false})
+    }
+
+    openDialog(){
+        this.setState({dialogOpen:true})
+    }
+
     render(){
         const styles={
             bodyWrapper:{
@@ -36,7 +53,8 @@ export default class LoginPage extends React.Component{
                     <p style={styles.p2}>
                         Don't have an account yet?
                     </p>
-                    <FlatButton label="Register Here" primary={true}/>
+                    <FlatButton label="Register Here" primary={true} onTouchTap={this.openDialog}/>
+                    <RegistrationDialog open={this.state.dialogOpen} closeAction={this.closeDialog}/>
                 </Paper>
             </div>
         );
