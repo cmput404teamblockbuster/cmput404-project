@@ -40,8 +40,19 @@ INSTALLED_APPS = (
     'posts',
     'comments',
     'rest_framework',
+    'rest_framework.authtoken'
 
 )
+
+
+
+#from http://geezhawk.github.io/user-authentication-with-react-and-django-rest-framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    )
+}
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

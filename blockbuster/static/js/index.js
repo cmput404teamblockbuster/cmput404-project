@@ -3,7 +3,7 @@ import ReactDom from 'react-dom'
 import AppWrapper from './components/AppWrapper'
 import BasePage from './components/BasePage'
 import LoginPage from './components/LoginPage'
-
+import auth from './components/SubComponents/auth'
 
 class Main extends React.Component{
     constructor(props){
@@ -11,17 +11,24 @@ class Main extends React.Component{
         this.state = {loggedIn:false, page:<LoginPage/>};
 
         this.checkLogIn = this.checkLogIn.bind(this);
+        this.finishLogin = this.finishLogin.bind(this);
         this.componentWillMount = this.componentWillMount.bind(this);
     }
 
+    finishLogin(){
+        this.checkLogIn()
+    }
+
     checkLogIn(){
-        //todo check log in function
+        if(auth.loggedIn()){
+            // if success:
+            this.setState({loggedIn:true, page:<BasePage/>});
+        } else {
+            // if faile:
+            this.setState({loggedIn:false,page:<LoginPage finishLogin={this.finishLogin} />});
+        }
 
-        // if success:
-        // this.setState({loggedIn:true, page:<BasePage/>});
 
-        // if faile:
-        this.setState({loggedIn:false,page:<LoginPage/>});
     }
 
     componentWillMount(){

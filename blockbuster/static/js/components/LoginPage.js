@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper'
 import LoginForm from './SubComponents/LoginForm'
 import FlatButton from 'material-ui/FlatButton'
 export default class LoginPage extends React.Component{
+    // props: finishLogin: call back function to finish login
     render(){
         const styles={
             bodyWrapper:{
@@ -31,7 +32,7 @@ export default class LoginPage extends React.Component{
                     <p style={styles.p1}>
                         Log in to BlockBuster
                     </p>
-                    <LoginForm/>
+                    <LoginForm finishLogin={this.props.finishLogin}/>
                     <p style={styles.p2}>
                         Don't have an account yet?
                     </p>
