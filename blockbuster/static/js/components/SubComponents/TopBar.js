@@ -3,14 +3,16 @@ import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import RaisedButton from 'material-ui/RaisedButton';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import TextField from 'material-ui/TextField'
-
+import auth from './auth'
 export default class TopBar extends React.Component{
-    constructor(change){
+    constructor(change, checkLogin){
         // change is a function that will change the page
-        super(change);
+        // checkLogin: call back function to finish login
+        super(change, checkLogin);
         this.Stream = this.Stream.bind(this);
         this.Friends = this.Friends.bind(this);
         this.Profile = this.Profile.bind(this);
+        this.Logout = this.Logout.bind(this);
     }
 
     Stream(){
@@ -24,6 +26,10 @@ export default class TopBar extends React.Component{
         this.props.change(2)
     }
 
+    Logout(){
+        auth.logout()
+        this.props.checkLogin()
+    }
 
     render(){
         const styles = {
@@ -48,7 +54,7 @@ export default class TopBar extends React.Component{
                     <RaisedButton label="My Stream" style={styles.button} onTouchTap={this.Stream}/>
                     <RaisedButton label="My Friends" style={styles.button} onTouchTap={this.Friends}/>
                     <RaisedButton label="My Profile" style={styles.button} onTouchTap={this.Profile}/>
-                    <RaisedButton label="Logout" style={styles.button}/>
+                    <RaisedButton label="Logout" style={styles.button} onTouchTap={this.Logout}/>
                 </ToolbarGroup>
             </Toolbar>
 

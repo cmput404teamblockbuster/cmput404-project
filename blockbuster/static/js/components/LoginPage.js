@@ -4,7 +4,7 @@ import Paper from 'material-ui/Paper'
 import LoginForm from './SubComponents/LoginForm'
 import FlatButton from 'material-ui/FlatButton'
 export default class LoginPage extends React.Component{
-    // props: finishLogin: call back function to finish login
+    // props: finishLogIn: call back function to finish login
     render(){
         const styles={
             bodyWrapper:{

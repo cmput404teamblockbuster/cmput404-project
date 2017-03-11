@@ -22,7 +22,7 @@ class Main extends React.Component{
     checkLogIn(){
         if(auth.loggedIn()){
             // if success:
-            this.setState({loggedIn:true, page:<BasePage/>});
+            this.setState({loggedIn:true, page:<BasePage checkLogIn={this.checkLogIn}/>});
         } else {
             // if faile:
             this.setState({loggedIn:false,page:<LoginPage finishLogin={this.finishLogin} />});

@@ -13991,6 +13991,7 @@ class AppWrapper extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component
 
 class BasePage extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
     constructor(props) {
+        // props: checkLogIn: call back function to finish login
         super(props);
         this.state = { currentPage: __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__SubComponents_MyStream__["a" /* default */], null) };
         this.changePage = this.changePage.bind(this);
@@ -14015,7 +14016,7 @@ class BasePage extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
             null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__SubComponents_TopBar__["a" /* default */], { change: this.changePage }),
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__SubComponents_TopBar__["a" /* default */], { change: this.changePage, checkLogin: this.props.checkLogIn }),
             this.state.currentPage
         );
     }
@@ -14042,7 +14043,7 @@ class BasePage extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
 
 class LoginPage extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
-    // props: finishLogin: call back function to finish login
+    // props: finishLogIn: call back function to finish login
     render() {
         const styles = {
             bodyWrapper: {
@@ -15147,6 +15148,8 @@ class MyStream extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_material_ui_svg_icons_action_search___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_material_ui_svg_icons_action_search__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_material_ui_TextField__ = __webpack_require__(145);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_material_ui_TextField___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_material_ui_TextField__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__auth__ = __webpack_require__(455);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__auth___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__auth__);
 
 
 
@@ -15154,12 +15157,14 @@ class MyStream extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
 
 class TopBar extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
-    constructor(change) {
+    constructor(change, checkLogin) {
         // change is a function that will change the page
-        super(change);
+        // checkLogin: call back function to finish login
+        super(change, checkLogin);
         this.Stream = this.Stream.bind(this);
         this.Friends = this.Friends.bind(this);
         this.Profile = this.Profile.bind(this);
+        this.Logout = this.Logout.bind(this);
     }
 
     Stream() {
@@ -15171,6 +15176,11 @@ class TopBar extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
     }
     Profile() {
         this.props.change(2);
+    }
+
+    Logout() {
+        __WEBPACK_IMPORTED_MODULE_5__auth___default.a.logout();
+        this.props.checkLogin();
     }
 
     render() {
@@ -15201,7 +15211,7 @@ class TopBar extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_material_ui_RaisedButton___default.a, { label: 'My Stream', style: styles.button, onTouchTap: this.Stream }),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_material_ui_RaisedButton___default.a, { label: 'My Friends', style: styles.button, onTouchTap: this.Friends }),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_material_ui_RaisedButton___default.a, { label: 'My Profile', style: styles.button, onTouchTap: this.Profile }),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_material_ui_RaisedButton___default.a, { label: 'Logout', style: styles.button })
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_material_ui_RaisedButton___default.a, { label: 'Logout', style: styles.button, onTouchTap: this.Logout })
             )
         );
     }
@@ -41016,7 +41026,7 @@ class Main extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
     checkLogIn() {
         if (__WEBPACK_IMPORTED_MODULE_5__components_SubComponents_auth___default.a.loggedIn()) {
             // if success:
-            this.setState({ loggedIn: true, page: __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__components_BasePage__["a" /* default */], null) });
+            this.setState({ loggedIn: true, page: __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__components_BasePage__["a" /* default */], { checkLogIn: this.checkLogIn }) });
         } else {
             // if faile:
             this.setState({ loggedIn: false, page: __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__components_LoginPage__["a" /* default */], { finishLogin: this.finishLogin }) });

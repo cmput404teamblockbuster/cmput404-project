@@ -7,6 +7,7 @@ import MyProfile from './SubComponents/MyProfile'
 
 export default class BasePage extends React.Component{
     constructor(props){
+        // props: checkLogIn: call back function to finish login
         super(props);
         this.state = {currentPage:<MyStream/>};
         this.changePage = this.changePage.bind(this);
@@ -31,7 +32,7 @@ export default class BasePage extends React.Component{
     render(){
         return (
             <div>
-                <TopBar change={this.changePage}/>
+                <TopBar change={this.changePage} checkLogin={this.props.checkLogIn}/>
                 {this.state.currentPage}
             </div>
         );
