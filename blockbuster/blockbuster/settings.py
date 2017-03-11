@@ -40,7 +40,8 @@ INSTALLED_APPS = (
     'posts',
     'comments',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'rest_framework_docs',
 
 )
 
