@@ -9,13 +9,29 @@ from posts.constants import PRIVACY_PUBLIC
 
 class PostViewSet(viewsets.ModelViewSet):
     """
-    refer to:
-    http://www.django-rest-framework.org/api-guide/viewsets/#modelviewset
-    http://www.django-rest-framework.org/api-guide/routers/#simplerouter
+    list:
+    Lists all public posts
 
-    Permissions:
-    http://www.django-rest-framework.org/api-guide/permissions/#api-reference
+    create:
+    Create a post
+
+    retrieve:
+    Display a specific post in the system. It must be visible to the authenticated user.
+
+    update:
+    Update a specific post that you have created.
+
+    destroy:
+    Delete a specific post that you have created.
     """
+    #
+    # refer to:
+    # http://www.django-rest-framework.org/api-guide/viewsets/#modelviewset
+    # http://www.django-rest-framework.org/api-guide/routers/#simplerouter
+    #
+    # Permissions:
+    # http://www.django-rest-framework.org/api-guide/permissions/#api-reference
+
     permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'uuid'
     lookup_value_regex = '[^/]+'
