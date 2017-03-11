@@ -1,4 +1,4 @@
-html,body{ margin:0; padding:0; height:100%; width:100%; }
+html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #424242}
 
 .noMargin{
     margin: 0;
@@ -8,4 +8,12 @@ html,body{ margin:0; padding:0; height:100%; width:100%; }
     width: 20%;
     text-align: center;
     max-width: none;
+}
+
+.streamContainer{
+    margin-left: 25%;
+    text-align: center;
+    height: 100%;
+    width: 50%;
+    position: fixed;
 }

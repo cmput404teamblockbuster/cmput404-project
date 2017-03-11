@@ -3,7 +3,7 @@ import Paper from 'material-ui/Paper'
 export default class MyStream extends React.Component{
     render(){
         return(
-            <Paper>
+            <Paper className="streamContainer">
                 <p>My Stream</p>
             </Paper>
         );

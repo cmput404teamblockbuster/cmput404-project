@@ -14,13 +14,14 @@ export default class RegistrationDialog extends React.Component{
         this.cancel = this.cancel.bind(this);
         this.submit = this.submit.bind(this);
         this.nameChange = this.nameChange.bind(this);
+        this.emailChange = this.emailChange.bind(this);
         this.passChange = this.passChange.bind(this);
         this.matchChange = this.matchChange.bind(this);
 
         this.requiredText = "This Field is required";
         this.notMatchText = "Password does not match";
 
-        this.state = {username:"", pass:"", nameError:this.requiredText, passError:this.requiredText, matchError:this.requiredText};
+        this.state = {username:"", pass:"", email:"", nameError:this.requiredText, emailError:this.requiredText, passError:this.requiredText, matchError:this.requiredText};
         this.actions = [
             <FlatButton label="Cancel" primary={true} onTouchTap={this.cancel}/>,
             <FlatButton label="Submit" primary={true} onTouchTap={this.submit}/>]
@@ -32,6 +33,14 @@ export default class RegistrationDialog extends React.Component{
             this.setState({username:event.target.value, nameError:""})
         } else {
             this.setState({username:event.target.value, nameError:this.requiredText})
+        }
+    }
+
+    emailChange(){
+        if (event.target.value !== ""){
+            this.setState({email:event.target.value, emailError:""})
+        } else {
+            this.setState({email:event.target.value, emailError:this.requiredText})
         }
     }
 
@@ -62,6 +71,7 @@ export default class RegistrationDialog extends React.Component{
     submit(){
         if (this.state.username!=="" &&
             this.state.pass!=="" &&
+            this.state.email!=="" &&
             this.state.matchError==""){
 
         }
@@ -78,6 +88,7 @@ export default class RegistrationDialog extends React.Component{
                 contentStyle={{width:'30%'}}
             >
                 <TextField floatingLabelText="Username" fullWidth={true} onChange={this.nameChange} errorText={this.state.nameError}/> <br/>
+                <TextField floatingLabelText="Email" fullWidth={true} onChange={this.emailChange} errorText={this.state.emailError}/> <br/>
                 <TextField floatingLabelText="Password" fullWidth={true} onChange={this.passChange} errorText={this.state.passError} type='password'/> <br/>
                 <TextField floatingLabelText="Confirm Password" fullWidth={true} onChange={this.matchChange} errorText={this.state.matchError} type='password'/>
             </Dialog>
