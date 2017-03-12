@@ -7,6 +7,11 @@ from django.contrib.auth.models import User
 
 
 class ProfileModelFactory(factory.DjangoModelFactory):
+    """
+    WARNING: DOESN'T WORK AT THE MOMENT, IF YOU NEED TO ACCESS PROFILE THROUGH A FACTORY JUST DO THE FOLLOWING
+    user = UserModelFactory()
+    profile = user.profile
+    """
     user = factory.SubFactory('users.factories.UserModelFactory') # from http://factoryboy.readthedocs.io/en/latest/recipes.html?highlight=UserModelFactory
     username = factory.LazyAttribute(lambda x: x.user.username)
     class Meta:
