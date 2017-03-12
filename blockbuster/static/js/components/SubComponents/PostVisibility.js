@@ -20,11 +20,11 @@ export default class PostVisibility extends React.Component{
     render(){
         return(
             <DropDownMenu value={this.state.visibility} onChange={this.handleChange} >
-                <MenuItem value="private_to_one_friend" primaryText="One Friend"/>
-                <MenuItem value="private_to_me" primaryText="Me"/>
+                <MenuItem value="private_to_one_friend" primaryText="Share To A Friend"/>
+                <MenuItem value="private_to_me" primaryText="Only Share To Me"/>
                 <MenuItem value="private_to_fof" primaryText="Friends-of-Friends"/>
                 <MenuItem value="privacy_public" primaryText="Public"/>
-                <MenuItem value="private_to_all_friends" primaryText="Friends"/>
+                <MenuItem value="private_to_all_friends" primaryText="Share To Friends"/>
             </DropDownMenu>
         );
     }
