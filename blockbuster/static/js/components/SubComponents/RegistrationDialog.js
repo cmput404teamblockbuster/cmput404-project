@@ -2,7 +2,7 @@ import React from 'react'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
-
+import CreateUserReuqest from './CreateUserReuqest'
 
 
 export default class RegistrationDialog extends React.Component{
@@ -36,7 +36,7 @@ export default class RegistrationDialog extends React.Component{
         }
     }
 
-    emailChange(){
+    emailChange(event){
         if (event.target.value !== ""){
             this.setState({email:event.target.value, emailError:""})
         } else {
@@ -73,7 +73,7 @@ export default class RegistrationDialog extends React.Component{
             this.state.pass!=="" &&
             this.state.email!=="" &&
             this.state.matchError==""){
-
+            CreateUserReuqest.send(this.state.username, this.state.pass, this.state.email, this.cancel)
         }
     }
 

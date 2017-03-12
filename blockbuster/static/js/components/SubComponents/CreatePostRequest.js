@@ -9,12 +9,8 @@ module.exports = {
         var axios = require('axios');
         const csrfToken = cookie.load('csrftoken');
 
-        var qs = require('qs');
-        var urlencode = require('urlencode')
-        const data = {"author":p3,content:p1,privacy:p2};
-        console.log(data)
         axios.post('/api/posts/',
-            data,
+            {"author":p3,content:p1,privacy:p2},
             {headers:{'X-CSRFToken':csrfToken,'Content-Type':'application/json'}})
             .then((res)=>{
                 console.log(res);
