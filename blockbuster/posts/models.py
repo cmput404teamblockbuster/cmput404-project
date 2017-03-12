@@ -33,8 +33,15 @@ class Post(models.Model):
         elif self.privacy == PRIVATE_TO_ONE_FRIEND:
             return [self.private_to.id]
 
-        # elif self.privacy == self.PRIVATE_TO_FOF:
-        #     return # TODO implement this
+        elif self.privacy == self.PRIVATE_TO_FOF:
+            canView = []
+            for friend in self.author.friends:
+                if !(friend.id in canView):
+                    canView.append(friend.id)
+                for fof in friend.friends:
+                    if !(fof.id in canView):
+                    canView.append(fof.id)  
+            return canView
 
         elif self.privacy == PRIVATE_TO_ME:
             return [self.author.id]

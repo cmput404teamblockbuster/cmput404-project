@@ -1,7 +1,9 @@
 from django.test import TestCase
 from users.factories import UserModelFactory
-from posts.constants import PRIVATE_TO_ONE_FRIEND
+#from posts.constants import PRIVATE_TO_ONE_FRIEND
+from posts.constants import *
 from posts.factories import BasePostModelFactory
+from posts.models import *
 
 
 class PostModelTestCase(TestCase):
@@ -21,3 +23,66 @@ class PostModelTestCase(TestCase):
         # THEN the post's viewable_to property should return the ID of the viewable user
         self.assertEqual(len(post.viewable_to), 1) # it should only be viewable to one person
         self.assertEqual(post.viewable_to[0], receiver.id) # self.assert statements are what will pass or fail
+
+    def test__viewable_to_all(self):
+        user1 = UserModelFactory()
+        user2 = UserModelFactory()
+        author = UserModelFactory()
+        post = BasePostModelFactory(author = author.profile, privacy = PRIVACY_PUBLIC)
+		
+		#Public post returns empty list for viewable to
+        self.assertEqual(len(post.viewable_to), 0)
+
+    def test__viewable_to_self(self):
+        author = UserModelFactory()
+        post = BasePostModelFactory(author = author.profile, privacy = PRIVATE_TO_ME)
+
+        self.assertEqual(len(post.viewable_to), 1)
+        self.assertEqual(post.viewable_to[0], author.id)
+
+    def test__viewable_to_friends(self):
+        friend1 = UserModelFactory()
+        friend2 = UserModelFactory()
+        notFriend = UserModeFactory()
+        author = UserModelFactory()
+        post = BasePostModelFactory(author = author.profile, privacy = PRIVATE_TO_ALL_FRIENDS)
+		
+        author.friends.append(friend1.id)
+        author.friends.append(friend2.id)
+
+        self.assertEqual(len(post.viewable_to), 2)
+        self.assertTrue(friend1.id in post.viewable_to)
+        self.assertTrue(friend2.id in post.viewable_to)
+        self.assertFalse(notFriend.id in post.viewable_to)
+
+    def test__viewable_to_fof(self):
+        friend1 = UserModelFactory()
+        friend2 = UserModelFactory()
+        fof1 = UserModelFactory()
+        fof2 = UserModelFactory()
+        notFriend = UserModelFactory()
+        author = UserModelFactory()
+
+        post = BasePostModelFactory(author = author.profile, privacy = PRIVATE_TO_FOF)
+		
+        author.friends.append(friend1.id)
+        author.friends.append(friend2.id)
+
+        friend1.friends.append(fof1.id)
+        friend2.friends.append(fof2.id)
+
+        self.assertEqual(len(post.viewable_to), 4)
+        self.assertTrue(friend1.id in post.viewable_to)
+        self.assertTrue(friend2.id in post.viewable_to)
+        self.assertTrue(fof1.id in post.viewable_to)
+        self.assertTrue(fof2.id in post.viewable_to)
+        self.assertFalse(notFriend.id in post.viewable_to)
+		
+    def test__create(self):	
+        author = UserModelFactory()
+        post = BasePostModelFactory(author = author.profile, privacy = PRIVACY_PUBLIC)
+		#Make sure post is created
+        self.assertTrue(isinstance(post, Post))
+		#Make sure uuid is generated
+        self.assertTrue(post.uuid)
+
