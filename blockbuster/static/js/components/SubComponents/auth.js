@@ -40,7 +40,7 @@ module.exports = {
                     authenticated: true,
                     token: res.data.token
                 })
-            })
+            });
     //     $.ajax({
     //         type: 'POST',
     //         url: '/api/obtain-auth-token/',

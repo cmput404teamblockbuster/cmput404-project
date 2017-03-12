@@ -6,21 +6,19 @@ import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar'
 import Checkbox from 'material-ui/Checkbox'
 import FlatButton from 'material-ui/FlatButton'
 import PostVisibility from './PostVisibility'
+import CreatePostRequest from './CreatePostRequest'
 
 export default class MakePost extends React.Component {
     constructor(props) {
         super(props);
 
-        this.data = {content:"", visibility:"public"};
-        // this.data = {title:"", content:"", visibility:"public"};
-        // this.changeTitle = this.changeTitle.bind(this);
+        this.data = {content:"", visibility:"privacy_public"};
+
         this.changeContent = this.changeContent.bind(this);
         this.changeVisibility = this.changeVisibility.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    // changeTitle(event){
-    //     this.data.title = event.target.value;
-    // }
 
     changeContent(data){
         this.data.content = data;
@@ -31,22 +29,26 @@ export default class MakePost extends React.Component {
         console.log(data)
     }
 
+    handleSubmit(){
+        if (this.data.content !== ""){
+            CreatePostRequest.send(this.data.content,this.data.visibility)
+        }
+    }
+
     render() {
         return (
             <Card className="textField">
                 <CardHeader title="Make a new post"/>
 
                 <CardMedia>
-                    {/*<TextField hintStyle={{paddingLeft: '20px'}} textareaStyle={{padding: '0px 20px 0px 20px'}}*/}
-                               {/*fullWidth={true} multiLine={true} onChange={this.changeTitle} hintText="Title"/>*/}
                     <MakePostContent change={this.changeContent}/>
 
                     <Toolbar style={{backgroundColor: '#424242'}}>
                         <ToolbarGroup/>
                         <ToolbarGroup >
                             <PostVisibility change={this.changeVisibility}/>
-                            <FlatButton style={{margin: '0'}} label="Cancel"  />
-                            <FlatButton style={{margin: '0'}} label="Submit" />
+                            {/*<FlatButton style={{margin: '0'}} label="Cancel"  />*/}
+                            <FlatButton style={{margin: '0'}} label="Submit" onTouchTap={this.handleSubmit}/>
                         </ToolbarGroup>
                     </Toolbar>
 
