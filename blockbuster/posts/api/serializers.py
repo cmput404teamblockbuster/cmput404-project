@@ -1,9 +1,7 @@
 from rest_framework import serializers
 from posts.models import Post
 from comments.api.serializers import CommentSerializer
-
 from users.api.serializers import ProfileSerializer
-
 from users.models import Profile
 
 
@@ -26,7 +24,8 @@ class PostSerializer(serializers.ModelSerializer):
         """
         Create and return a Post instance
         """
-        author_data = validated_data.pop('author', None) # from http://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
+        # from http://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
+        author_data = validated_data.pop('author', None)
         if author_data:
             author = Profile.objects.get(uuid=author_data.get('uuid'))
             validated_data['author'] = author
@@ -34,4 +33,4 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('author', 'comments', 'content', 'uuid', 'privacy') # These fields will be available to the front end
+        fields = ('author', 'comments', 'content', 'uuid', 'privacy')  # These fields will be available to the front end
