@@ -40,8 +40,20 @@ INSTALLED_APPS = (
     'posts',
     'comments',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_docs',
 
 )
+
+
+
+#from http://geezhawk.github.io/user-authentication-with-react-and-django-rest-framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    )
+}
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -59,7 +71,7 @@ ROOT_URLCONF = 'blockbuster.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'static/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

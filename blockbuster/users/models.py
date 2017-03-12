@@ -1,6 +1,4 @@
 import uuid
-
-from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from core.utils import django_choice_options
 from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDING, \
@@ -10,10 +8,14 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from posts.constants import PRIVACY_PUBLIC
+
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)# http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
-    username = models.CharField(max_length=30, blank=False, null=False, default=None, editable=False) # This will be copied from user.username
+    user = models.OneToOneField(User,
+                                on_delete=models.CASCADE)  # http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
+    username = models.CharField(max_length=30, blank=False, null=False, default=None,
+                                editable=False)  # This will be copied from user.username
     github = models.URLField(null=True)  # github url can be null
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -30,16 +32,21 @@ class Profile(models.Model):
         return User.objects.filter(pk__in=friend_ids)
 
     def get_stream(self):
-        # TODO this needs to be optimized. This will result in a ton of DB queries
+        """
+        Returns: the user's stream
+        """
+        # TODO this should be optimized eventually
         stream = []
         for friend in self.friends:
             posts = Post.objects.filter(author=friend.id)
             for post in posts:
-                if self.id in post.viewable_to or post.is_public:
+                if self.id in post.viewable_to or post.privacy == PRIVACY_PUBLIC:
                     stream.append(post)
 
+        return stream
+
     def __str__(self):
-        return self.username # TODO this should be the url of their profile
+        return self.username  # TODO this should be the url of their profile
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
@@ -49,7 +56,6 @@ class Profile(models.Model):
         if created:
             u_p = Profile.objects.create(user=instance, username=instance.username)
 
-
     @receiver(post_save, sender=User)
     def save_user_profile(sender, instance, **kwargs):
         Profile.objects.get(user=instance).save()
@@ -58,9 +64,12 @@ class Profile(models.Model):
 class UserRelationship(models.Model):
     RELATIONSHIP_STATUS_OPTIONS = django_choice_options(
         RELATIONSHIP_STATUS_TYPES, 'name')
-    initiator = models.ForeignKey('users.Profile', null=False, related_name='initiated_relationships')  # person initiating a friendship
-    receiver = models.ForeignKey('users.Profile', null=False, related_name='received_relationships')  # person receiving friend request
-    status = models.CharField(choices=RELATIONSHIP_STATUS_OPTIONS, max_length='100', default=RELATIONSHIP_STATUS_PENDING)
+    initiator = models.ForeignKey('users.Profile', null=False,
+                                  related_name='initiated_relationships')  # person initiating a friendship
+    receiver = models.ForeignKey('users.Profile', null=False,
+                                 related_name='received_relationships')  # person receiving friend request
+    status = models.CharField(choices=RELATIONSHIP_STATUS_OPTIONS, max_length='100',
+                              default=RELATIONSHIP_STATUS_PENDING)
 
     class Meta:
         unique_together = (('initiator', 'receiver'),)
