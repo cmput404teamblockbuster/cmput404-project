@@ -14,15 +14,20 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Warning: This is returning the users unhashed password to the front end. Definitely not secure.
+    """
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
-    profile = ProfileSerializer()
+    profile = ProfileSerializer(required=False)
 
     class Meta:
         model = User
-        fields = ('username', 'profile')
+        fields = ('username', 'profile', 'email', 'password')
 
-    # TODO might need this def create(self, validated_data):
-    #     profile_data = validated_data.pop('profile')
-    #     user = User.objects.create(**validated_data)
-    #     Profile.objects.create(user=user, **profile_data)
-    #     return user
+    def validate(self, data):
+        data = super(UserSerializer, self).validate(data)
+        """
+        validate data here
+        """
+
+        return data
