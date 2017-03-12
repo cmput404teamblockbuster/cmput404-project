@@ -49,3 +49,9 @@ class ProfileModelTestCase(TestCase):
 
         friendship.delete()
         assertTrue(UserRelationship.objects.select_related('receiver__id').filter(initiator = user.profile, status = RELATIONSHIP_STATUS_FOLLOWING))
+
+    def test__create(self):	
+        profile = ProfileModelFactory()
+        self.assertTrue(isinstance(profile, Proifle))
+		#Make sure uuid is generated
+        self.assertTrue(profile.uuid)

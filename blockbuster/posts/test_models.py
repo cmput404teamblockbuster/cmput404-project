@@ -4,6 +4,7 @@ from users.factories import UserModelFactory
 from posts.constants import *
 from posts.factories import BasePostModelFactory
 from posts.models import *
+from users.factories import FriendsUserRelationshipModelFactory
 
 
 class PostModelTestCase(TestCase):
@@ -47,8 +48,12 @@ class PostModelTestCase(TestCase):
         author = UserModelFactory()
         post = BasePostModelFactory(author = author.profile, privacy = PRIVATE_TO_ALL_FRIENDS)
 		
-        author.friends.append(friend1.id)
-        author.friends.append(friend2.id)
+        #not sure if friends can be added this way
+        #author.friends.append(friend1.id)
+        #author.friends.append(friend2.id)
+
+        friendship1 = FriendsUserRelationshipModelFactory(initiator = author.profile, receiver = friend1.profile)
+        friendship2 = FriendsUserRelationshipModelFactory(initiator = author.profile, receiver = friend2.profile)
 
         self.assertEqual(len(post.viewable_to), 2)
         self.assertTrue(friend1.id in post.viewable_to)
@@ -65,11 +70,17 @@ class PostModelTestCase(TestCase):
 
         post = BasePostModelFactory(author = author.profile, privacy = PRIVATE_TO_FOF)
 		
-        author.friends.append(friend1.id)
-        author.friends.append(friend2.id)
+        #author.friends.append(friend1.id)
+        #author.friends.append(friend2.id)
 
-        friend1.friends.append(fof1.id)
-        friend2.friends.append(fof2.id)
+        #friend1.friends.append(fof1.id)
+        #friend2.friends.append(fof2.id)
+
+        friendship1 = FriendsUserRelationshipModelFactory(initiator = author.profile, receiver = friend1.profile)
+        friendship2 = FriendsUserRelationshipModelFactory(initiator = author.profile, receiver = friend2.profile)
+
+        fof1 = FriendsUserRelationshipModelFactory(initiator = friend1.profile, receiver = fof1.profile)
+        fof2 = FriendsUserRelationshipModelFactory(initiator = friend2.profile, receiver = fof2.profile)
 
         self.assertEqual(len(post.viewable_to), 4)
         self.assertTrue(friend1.id in post.viewable_to)
