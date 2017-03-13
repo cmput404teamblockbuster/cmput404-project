@@ -4,6 +4,10 @@ module.exports = {
         this.getAuthor(receiver,status, this.sendPostRequest);
     },
 
+    update: function (initiator, receiver, status) {
+        this.sendPostRequest(initiator, receiver, status);
+    },
+
     sendPostRequest: function (p1,p2, p3, cb) {
         var cookie = require('react-cookie');
         var axios = require('axios');
@@ -14,17 +18,9 @@ module.exports = {
         console.log(p1);
         console.log(p2);
         console.log(p3);
-        console.log("author: " + p1["username"]);
-
-        var dict = {};
-        dict["uuid"] = p2.id;
-        dict["username"] = p2.receiver;
-
-        var stat = {};
-        stat["status"] = p3;
 
         axios.post('/api/friendrequest/',
-            {"initiator":p1,"receiver":dict,"status":p3},
+            {"initiator":p1,"receiver":p2,"status":p3},
             {headers:{'X-CSRFToken':csrfToken,'Content-Type':'application/json'}})
             .then((res)=>{
                 cb();
