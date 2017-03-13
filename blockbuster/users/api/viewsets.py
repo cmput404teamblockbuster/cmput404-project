@@ -14,4 +14,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return Profile.objects.filter(uuid=self.request.user.profile.uuid)
+        """
+        The current users friends list
+        """
+        return self.request.user.profile.friends

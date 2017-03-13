@@ -1,8 +1,13 @@
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
 from users.api.serializers import UserSerializer
+from users.models import Profile
+from users.api.serializers import ProfileSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 class RegisterUserView(APIView):
@@ -21,3 +26,15 @@ class RegisterUserView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AuthenticatedUserProfileView(APIView):
+    """
+    Returns the currently authenticated users profile information
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        profile = Profile.objects.get(uuid=request.user.profile.uuid)
+        serializer = ProfileSerializer(profile)
+        return JsonResponse(serializer.data, safe=False)
