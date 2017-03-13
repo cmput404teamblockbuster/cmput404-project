@@ -16,7 +16,7 @@ export default class PendingContainer extends React.Component{
                 <Card className="textField">
                     <CardHeader title={<NameLink changePage={this.props.changePage} object={this.props.object['initiator']}/>}/>
                     <Divider/>
-                    <RespondToPending relation={this.props.object} refresh={this.refresh}/>
+                    <RespondToPending relation={this.props.object} refresh={this.props.refresh}/>
                 </Card>
             </li>
         );
