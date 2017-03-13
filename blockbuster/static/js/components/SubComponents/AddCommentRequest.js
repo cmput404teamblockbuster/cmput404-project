@@ -1,7 +1,7 @@
 
 module.exports = {
-    send: function (content, privacy, refreshCallback) {
-        this.getAuthor(content,privacy, this.sendPostRequest, refreshCallback);
+    send: function (content, uuid, Callback) {
+        this.getAuthor(content,uuid, this.sendPostRequest, Callback);
     },
 
     sendPostRequest: function (p1,p2, p3,cb) {

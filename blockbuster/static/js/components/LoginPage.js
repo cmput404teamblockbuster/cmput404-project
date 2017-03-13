@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper'
 import LoginForm from './SubComponents/LoginForm'
 import FlatButton from 'material-ui/FlatButton'
 import RegistrationDialog from './SubComponents/RegistrationDialog'
+
 export default class LoginPage extends React.Component{
     // props: finishLogIn: call back function to finish login
     constructor(props){

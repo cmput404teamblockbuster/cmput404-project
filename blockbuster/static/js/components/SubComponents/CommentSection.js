@@ -4,7 +4,7 @@ import AddComment from './AddComment'
 import Divider from 'material-ui/Divider'
 
 export default class CommentSection extends React.Component{
-    // props: object: a list of object, refresh: callback
+    // props: object: a list of object, refresh: callback, postid
     constructor(object,refresh){
         super(object,refresh);
 
@@ -17,7 +17,7 @@ export default class CommentSection extends React.Component{
 
             <ul className="commentList">
                 {this.comments}
-                <AddComment refresh={this.props.refresh}/>
+                <AddComment postid={this.props.postid} refresh={this.props.refresh}/>
             </ul>
         );
     }

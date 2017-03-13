@@ -99,7 +99,7 @@ db*
 # Dependency directories
 node_modules/
 webpack.stats.json
-static/bundles/
+static/bundles
 
 # Aaron's personal file
 # pip freeze
