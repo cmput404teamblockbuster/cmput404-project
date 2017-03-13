@@ -73,3 +73,11 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
     font-size: 2em;
 }
 
+.nameLink{
+    color:#82B1FF;
+    cursor: pointer;
+}
+.nameLink:hover{
+    text-decoration: underline;
+
+}
