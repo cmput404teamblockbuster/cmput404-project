@@ -24,8 +24,10 @@ export default class ProfileCard extends React.Component {
 
     changeButton(res){
         console.log("profile card");
-        console.log(res)
-        if (res === "No Relationship Found."){
+        console.log(res);
+        if (res === "The profile with the given UUID is your own."){
+            // your own
+        } else if (res === "No Relationship Found."){
             // send Friend Request Button
             this.setState({button: <BefriendToolbar receiver={this.props.object} refresh={this.changeButton}/>})
 
