@@ -4,8 +4,8 @@ module.exports = {
         this.getAuthor(receiver,status, this.sendPostRequest);
     },
 
-    update: function (initiator, receiver, status) {
-        this.sendPostRequest(initiator, receiver, status);
+    update: function (initiator, receiver, status, cb) {
+        this.sendPostRequest(initiator, receiver, status, cb);
     },
 
     sendPostRequest: function (p1,p2, p3, cb) {
@@ -14,16 +14,13 @@ module.exports = {
         const csrfToken = cookie.load('csrftoken');
         const userToken ="Token "+localStorage.token;
 
-        console.log("About to attempt the post");
-        console.log(p1);
-        console.log(p2);
-        console.log(p3);
-
         axios.post('/api/friendrequest/',
             {"initiator":p1,"receiver":p2,"status":p3},
             {headers:{'X-CSRFToken':csrfToken,'Content-Type':'application/json'}})
             .then((res)=>{
-                cb();
+                if(cb != null){
+                    cb();
+                }
                 console.log(res);
             })
     },
@@ -39,7 +36,7 @@ module.exports = {
             .then((res)=>{
                 console.log("result of get author");
                 console.log(res);
-               cb(res.data, p1, p2);
+               cb(res.data, p1, p2, cb);
                console.log(res);
             })
     }

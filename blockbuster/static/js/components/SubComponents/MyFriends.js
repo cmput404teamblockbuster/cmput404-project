@@ -37,7 +37,7 @@ export default class MyFriends extends React.Component{
                        		<SendFollowCard object={this.props.object}/>
                     	</li>
                     	<div>
-                        	<h4 style={{color:'#757575', textAlign:'center'}}> Pending Friendship Requests </h4> 
+                        	<h4 id="pendingHeader"style={{color:'#757575', textAlign:'center'}}> Received Friendship Requests Go Here: </h4> 
                         </div>
                     	{this.state.pendings}
                 </ul>
