@@ -1,27 +1,26 @@
 import React from 'react'
 import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
-import MakePost from './MakePost'
-import GetStreamRequest from './GetStreamRequest'
+import ProfileCard from './ProfileCard'
+import GetHisPostsRequest from './GetHisPostsRequest'
 import PostContainer from './PostContainer'
-export default class MyStream extends React.Component{
-    constructor(changePage){
-        // props: changePage
-        super(changePage);
+
+export default class ProfilePage extends React.Component{
+    constructor(object, changePage){
+        // props: change
+        super(object, changePage);
+        console.log(this.props)
+        this.title = this.props.object['username'] + "'s Profile";
         this.state = {posts:<li/>};
         this.componentWillMount = this.componentWillMount.bind(this);
-        console.log(this.props)
-        console.log("look at me")
     }
 
     componentWillMount(callback){
-        GetStreamRequest.get(
+        GetHisPostsRequest.get(this.props.object['uuid'],
             (PostList)=>{
-                console.log(PostList)
-                console.log("see here")
                 this.setState({posts:PostList.map(
-                    (post)=> <PostContainer changePage={this.props.changePage} key={post['uuid']} object={post} refresh={this.componentWillMount}/>)
-                })
+                    (post)=> <PostContainer key={post['uuid']} object={post} refresh={this.componentWillMount} changePage={this.props.changePage}/>)
+                });
                 if (callback){
                     callback()
                 }
@@ -33,10 +32,10 @@ export default class MyStream extends React.Component{
     render(){
         return(
             <Paper className="streamContainer">
-                <AppBar className="title" title="My Stream" iconElementLeft={<div/>}/>
+                <AppBar className="title" title={this.title} iconElementLeft={<div/>}/>
                 <ul className="mainList">
                     <li>
-                       <MakePost refresh={this.componentWillMount}/>
+                       <ProfileCard object={this.props.object}/>
                     </li>
                     {this.state.posts}
                 </ul>
