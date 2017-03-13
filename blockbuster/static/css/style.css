@@ -1,4 +1,4 @@
-html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #424242; overflow: auto}
+html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #424242}
 
 .noMargin{
     margin: 0;
@@ -14,34 +14,13 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
     margin-left: 25%;
     height: 100%;
     width: 50%;
-    padding-bottom: 30px;
-
+    position: fixed;
 }
 
 .mainList{
     list-style-type: none;
     padding-left: 20px;
     padding-right: 20px;
-}
-
-.commentList{
-    list-style-type: none;
-    padding-top: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-    border-left: solid 1px #757575;
-    border-right: solid 1px #757575;
-    border-bottom: solid 1px #757575;
-}
-
-.comment{
-
-    border: solid 1px #757575;
-
-}
-
-.mainList li{
-    margin-bottom: 10px;
 }
 
 .title{
@@ -51,7 +30,6 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
 .textField{
     padding-left: 20px;
     padding-right: 20px;
-    padding-bottom:20px;
 }
 
 .fullWidth{
@@ -69,6 +47,9 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
     opacity: 0;
 }
 
+.innerText{
+    color: #9E9E9E;
+
 .postBody{
     font-size: 2em;
 }
@@ -79,5 +60,4 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
 }
 .nameLink:hover{
     text-decoration: underline;
-
 }
