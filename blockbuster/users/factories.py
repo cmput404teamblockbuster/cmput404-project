@@ -4,6 +4,7 @@ from users.models import Profile, UserRelationship
 from users.constants import RELATIONSHIP_STATUS_FRIENDS
 from users.constants import RELATIONSHIP_STATUS_FOLLOWING
 from django.contrib.auth.models import User
+from users.models import UserRelationship
 
 
 class ProfileModelFactory(factory.DjangoModelFactory):
@@ -45,6 +46,7 @@ class UserModelFactory(factory.django.DjangoModelFactory):
 class BaseUserRelationshipModelFactory(factory.DjangoModelFactory):
     initiator = factory.SubFactory(UserModelFactory)
     receiver = factory.SubFactory(UserModelFactory)
+
     class Meta:
       model = UserRelationship
 
