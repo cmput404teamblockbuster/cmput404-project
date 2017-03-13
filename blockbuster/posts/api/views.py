@@ -26,7 +26,6 @@ class ProfilePostDetailView(APIView):
         result = []
         author = Profile.objects.get(uuid=uuid)
         users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
-        print users_posts
         for post in users_posts:
             if post.privacy == PRIVACY_PUBLIC or request.user.id in post.viewable_to:  # check if the post is visible to logged in user
                 result.append(post)
