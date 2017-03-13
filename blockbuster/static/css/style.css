@@ -1,1 +1,48 @@
-html,body{ margin:0; padding:0; height:100%; width:100%; }
+html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #424242}
+
+.noMargin{
+    margin: 0;
+}
+
+.dialogWidth{
+    width: 20%;
+    text-align: center;
+    max-width: none;
+}
+
+.streamContainer{
+    margin-left: 25%;
+    height: 100%;
+    width: 50%;
+    position: fixed;
+}
+
+.mainList{
+    list-style-type: none;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.title{
+    text-align: center;
+}
+
+.textField{
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.fullWidth{
+    width: 100%;
+}
+
+.uploadInput{
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+}

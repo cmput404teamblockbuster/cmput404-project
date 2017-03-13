@@ -26,6 +26,7 @@ export default class LoginForm extends React.Component{
     login(){
         auth.login(this.state.username,this.state.password,(success)=>{
             if (success){
+                console.log(localStorage.token)
                 this.props.finishLogin()
             }
         })

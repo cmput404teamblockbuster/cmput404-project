@@ -49,6 +49,18 @@ class Post(models.Model):
 
         return []
 
+    def viewable_for_author(self, author):
+        """
+        will check to see if the given author can see the post
+        Returns: boolean
+        """
+        if self.privacy == PRIVACY_PUBLIC:
+            return True
+        if author.id in self.viewable_to:
+            return True
+
+        return False
+
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
         if not self.id:
