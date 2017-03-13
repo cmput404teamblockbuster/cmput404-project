@@ -1,5 +1,7 @@
 # cmput404-project
 
+API docs available at ```/api/docs```
+
 ## Create environment ##
 Run these commands in the root folder
 ```
