@@ -30,11 +30,12 @@ export default class MyFriends extends React.Component{
 
 	constructor(props) {
     	super(props);
-    	this.handleTextChange = this.handleTextChange.bind(this);
+    	this.handleNameChange = this.handleNameChange.bind(this);
+    	this.handleUUIDChange = this.handleUUIDChange.bind(this);
         this.handleFollow = this.handleFollow.bind(this);
         this.handleUnFriend = this.handleUnFriend.bind(this);
 
-        this.data = {receiver:"", status:"status_friendship_pending"};
+        this.data = {receiver:"", id:""};
 	}
     
     handleFollow(){
@@ -42,12 +43,16 @@ export default class MyFriends extends React.Component{
          if (this.data.receiver !== ""){
          	//this.requestStatus = {};
          	//this.requestStatus["status"] = 'status_pending';
-            ChangeRelationRequest.send(this.data.receiver, this.data.status);
+            ChangeRelationRequest.send(this.data, "status_friendship_pending");
         }
        
     }
-    handleTextChange(event){
+    handleNameChange(event){
         this.data.receiver = event.target.value;
+
+    }
+    handleUUIDChange(event){
+        this.data.id = event.target.value;
 
     }
 
@@ -63,7 +68,9 @@ export default class MyFriends extends React.Component{
 					<Paper style={{backgroundColor: '#424242', padding:'10px 20px 10px 20px', margin: '10px 20px 10px 20px'}} zDepth={1}>
 						<p className="innerText"> Follow this author: </p>
 	                	<TextField hintStyle={{paddingLeft:'20px'}} 
-	                		textareaStyle={{padding:'0px 20px 0px 20px'}} onChange={this.handleTextChange} hintText="Author's UUID"/>
+	                		textareaStyle={{padding:'0px 20px 0px 20px'}} onChange={this.handleNameChange} hintText="Author's Username"/>
+	                	<TextField hintStyle={{paddingLeft:'20px'}} 
+	                		textareaStyle={{padding:'0px 20px 0px 20px'}} onChange={this.handleUUIDChange} hintText="Author's UUID"/>
 	                	<FlatButton style={{marginLeft: '20px'}} label="Follow" onTouchTap={this.handleFollow}/>
 	                	<p className="innerText"> If the author follows you back you will become friends! </p>
 	                </Paper>     

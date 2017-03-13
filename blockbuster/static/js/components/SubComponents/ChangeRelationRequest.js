@@ -17,8 +17,8 @@ module.exports = {
         console.log("author: " + p1["username"]);
 
         var dict = {};
-        dict["uuid"] = p2;
-        dict["username"] = "user1";
+        dict["uuid"] = p2.id;
+        dict["username"] = p2.receiver;
 
         var stat = {};
         stat["status"] = p3;
