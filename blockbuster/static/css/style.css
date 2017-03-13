@@ -1,4 +1,4 @@
-html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #424242}; overflow: auto
+html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #424242; overflow: auto}
 
 .noMargin{
     margin: 0;
@@ -87,4 +87,8 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
 }
 .nameLink:hover{
     text-decoration: underline;
+}
+
+.greyToolbar{
+    background-color: #9E9E9E;
 }

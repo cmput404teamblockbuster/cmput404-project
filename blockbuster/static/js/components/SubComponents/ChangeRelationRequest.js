@@ -1,7 +1,7 @@
 
 module.exports = {
-    send: function (receiver, status) {
-        this.getAuthor(receiver,status, this.sendPostRequest);
+    send: function (receiver, status, callback) {
+        this.getAuthor(receiver,status, this.sendPostRequest,callback);
     },
 
     update: function (initiator, receiver, status, cb) {
@@ -16,16 +16,16 @@ module.exports = {
 
         axios.post('/api/friendrequest/',
             {"initiator":p1,"receiver":p2,"status":p3},
-            {headers:{'X-CSRFToken':csrfToken,'Content-Type':'application/json'}})
+            {headers:{'X-CSRFToken':csrfToken,'Content-Type':'application/json','Authorization':userToken}})
             .then((res)=>{
                 if(cb != null){
-                    cb();
+                    cb(res.data);
                 }
-                console.log(res);
+
             })
     },
 
-    getAuthor:function (p1,p2,cb) {
+    getAuthor:function (p1,p2,cb,cb2) {
         var cookie = require('react-cookie');
         var axios = require('axios');
         const csrfToken = cookie.load('csrftoken');
@@ -34,10 +34,7 @@ module.exports = {
         axios.get('/api/author/me',
             {headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}})
             .then((res)=>{
-                console.log("result of get author");
-                console.log(res);
-               cb(res.data, p1, p2, cb);
-               console.log(res);
+               cb(res.data, p1, p2, cb2);
             })
     }
 };
