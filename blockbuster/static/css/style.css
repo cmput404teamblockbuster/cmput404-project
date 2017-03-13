@@ -1,4 +1,4 @@
-html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #424242; overflow: auto}
+html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #424242}; overflow: auto
 
 .noMargin{
     margin: 0;
@@ -15,7 +15,6 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
     height: 100%;
     width: 50%;
     padding-bottom: 30px;
-
 }
 
 .mainList{
@@ -69,6 +68,15 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
     opacity: 0;
 }
 
+
+.postBody{
+    font-size: 2em;
+}
+
+.innerText{
+    color: #9E9E9E;
+}
+
 .postBody{
     font-size: 2em;
 }
@@ -79,5 +87,4 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
 }
 .nameLink:hover{
     text-decoration: underline;
-
 }

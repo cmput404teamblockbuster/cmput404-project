@@ -61,4 +61,9 @@ class UserRelationshipSerializer(serializers.ModelSerializer):
             receiver = Profile.objects.get(uuid=receiver_data.get('uuid'))
             validated_data['initiator'] = initiator
             validated_data['receiver'] = receiver
-        return UserRelationship.objects.create(**validated_data)
+        defaults = None
+        # status isn't required, and if not given then we are creating a relationship with the model defaults
+        if 'status' in validated_data:
+            defaults = {'status':validated_data.pop('status')}
+        relationship, created = UserRelationship.objects.update_or_create(defaults=defaults, **validated_data) # https://docs.djangoproject.com/en/1.9/ref/models/querysets/#update-or-create
+        return relationship

@@ -26,7 +26,7 @@ export default class BasePage extends React.Component{
                 this.setState({currentPage:<MyStream changePage={this.changePage} />});
                 break;
             case 1:
-                this.setState({currentPage:<MyFriends changePage={this.changePage}/>});
+                this.setState({currentPage:<MyFriends changePage={this.changePage} object={this.author}/>});;
                 break;
             case 2:
                 this.setState({currentPage:<ProfilePage changePage={this.changePage} object={this.author}/>});
