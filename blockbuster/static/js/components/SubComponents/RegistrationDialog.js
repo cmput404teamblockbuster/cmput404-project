@@ -73,7 +73,7 @@ export default class RegistrationDialog extends React.Component{
             this.state.pass!=="" &&
             this.state.email!=="" &&
             this.state.matchError==""){
-            CreateUserReuqest.send(this.state.username, this.state.pass, this.state.email, this.cancel)
+            CreateUserRequest.send(this.state.username, this.state.pass, this.state.email, this.cancel)
         }
     }
 
