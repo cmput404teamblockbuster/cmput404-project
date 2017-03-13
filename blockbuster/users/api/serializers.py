@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from users.models import Profile
 from django.contrib.auth.models import User
+from users.models import UserRelationship
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -31,3 +32,33 @@ class UserSerializer(serializers.ModelSerializer):
         """
 
         return data
+
+
+class UserRelationshipSerializer(serializers.ModelSerializer):
+    initiator = ProfileSerializer(required=False, read_only=False)
+    receiver = ProfileSerializer(required=False, read_only=False)
+
+    class Meta:
+        model = UserRelationship
+        fields = ('initiator', 'receiver', 'status',)
+
+    def validate(self, data):
+        data = super(UserRelationshipSerializer, self).validate(data)
+        """
+        validate data here
+        """
+
+        return data
+
+    def create(self, validated_data):
+        """
+        Create and return a UserRelationship instance
+        """
+        initiator_data = validated_data.pop('initiator', None)
+        receiver_data = validated_data.pop('receiver', None)
+        if initiator_data and receiver_data:
+            initiator = Profile.objects.get(uuid=initiator_data.get('uuid'))
+            receiver = Profile.objects.get(uuid=receiver_data.get('uuid'))
+            validated_data['initiator'] = initiator
+            validated_data['receiver'] = receiver
+        return UserRelationship.objects.create(**validated_data)

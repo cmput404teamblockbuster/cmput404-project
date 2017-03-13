@@ -7,7 +7,6 @@ from posts.constants import *
 
 
 # TODO test that UserRelationship delete method works
-# Create your tests here.
 class ProfileModelTestCase(TestCase):
     def test__get_stream(self):
         user = UserModelFactory()
