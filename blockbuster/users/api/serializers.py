@@ -40,7 +40,7 @@ class UserRelationshipSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserRelationship
-        fields = ('id', 'initiator', 'receiver', 'status',)
+        fields = ('initiator', 'receiver', 'status',)
 
     def validate(self, data):
         data = super(UserRelationshipSerializer, self).validate(data)
