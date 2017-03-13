@@ -7,7 +7,6 @@ from posts.models import Post
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from posts.constants import PRIVACY_PUBLIC
 
 
@@ -21,15 +20,15 @@ class Profile(models.Model):
 
     @property
     def friends(self):
-        friend_ids = []
-        for r in UserRelationship.objects.select_related('initiator__id').filter(receiver=self.id,
+        friend_uuids = []
+        for r in UserRelationship.objects.select_related('initiator__uuid').filter(receiver=self.id,
                                                                                  status=RELATIONSHIP_STATUS_FRIENDS):
-            friend_ids.append(r.initiator.id)
-        for r in UserRelationship.objects.select_related('receiver__id').filter(initiator=self.id,
+            friend_uuids.append(r.initiator.uuid)
+        for r in UserRelationship.objects.select_related('receiver__uuid').filter(initiator=self.id,
                                                                                 status=RELATIONSHIP_STATUS_FRIENDS):
-            friend_ids.append(r.receiver.id)
+            friend_uuids.append(r.receiver.uuid)
 
-        return User.objects.filter(pk__in=friend_ids)
+        return Profile.objects.filter(uuid__in=friend_uuids)
 
     def get_stream(self):
         """
