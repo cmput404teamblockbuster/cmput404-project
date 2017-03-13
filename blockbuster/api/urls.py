@@ -1,11 +1,9 @@
 from django.conf.urls import url
 from posts.api.viewsets import PostViewSet
-from users.api.viewsets import ProfileViewSet
 from comments.api.viewsets import CommentViewSet
 from posts.api.views import ProfilePostsListView, ProfilePostDetailView
-from users.api.views import RegisterUserView, AuthenticatedUserProfileView
-from users.api.viewsets import UserRelationshipViewSet
-from users.api.viewsets import UserRelationshipFriendRequestViewSet
+from users.api.views import RegisterUserView, AuthenticatedUserProfileView, UserRelationshipCheckView
+from users.api.viewsets import ProfileViewSet, UserRelationshipViewSet,UserRelationshipFriendRequestViewSet
 
 """
 contents from this file are from http://www.django-rest-framework.org/tutorial/6-viewsets-and-routers/#binding-viewsets-to-urls-explicitly
@@ -29,7 +27,7 @@ post_detail_comments = CommentViewSet.as_view({
     'get': 'list',
     'post': 'create',
 })
-author_friends = UserRelationshipViewSet.as_view({
+author_friends_list = UserRelationshipViewSet.as_view({
     'get': 'list',
 })
 author_friend_requests = UserRelationshipFriendRequestViewSet.as_view({
@@ -48,6 +46,7 @@ urlpatterns = [
     url(r'^author/me/$', AuthenticatedUserProfileView.as_view(), name='auth_profile_detail'),
     url(r'^author/(?P<uuid>[^/]+)/$', profile_detail, name='profile-detail'),
     url(r'^author/(?P<uuid>[^/]+)/posts/$', ProfilePostDetailView.as_view(), name='profile-post-detail'),
-    url(r'^author/(?P<uuid>[^/]+)/friends/$', author_friends, name='author-friends-list'),
+    url(r'^author/(?P<uuid>[^/]+)/friends/$', author_friends_list, name='author-friends-list'),
+    url(r'^author/(?P<uuid>[^/]+)/friends/(?P<uuid_2>[^/]+)/$', UserRelationshipCheckView.as_view(), name='check_author_relationship'),
 
 ]

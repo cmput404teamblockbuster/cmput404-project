@@ -5,7 +5,7 @@ from users.factories import UserModelFactory
 from users.factories import FriendsUserRelationshipModelFactory
 from users.models import UserRelationship
 from users.constants import RELATIONSHIP_STATUS_PENDING
-from users.factories import BaseUserRelationshipModelFactory
+from users.factories import BaseUserRelationshipModelFactory, FollowingUserRelationshipModelFactory
 
 
 class UserViewTestCase(APITestCase):
@@ -63,6 +63,7 @@ class UserViewTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get("username")[0], "This field is required.")
 
+
 class UserRelationshipViewTestCase(APITestCase):
     def test__users_friends_are_returned(self):
         # GIVEN a user has a friend
@@ -83,7 +84,6 @@ class UserRelationshipViewTestCase(APITestCase):
 
 
 class UserRelationshipFriendRequestViewSet(APITestCase):
-
     def test_friend_request_creates_friend_request(self):
         # GIVEN an authenticated user makes a friend request for another user
         authed_user = UserModelFactory()
@@ -133,3 +133,33 @@ class UserRelationshipFriendRequestViewSet(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+class UserRelationshipCheckViewTestCase(APITestCase):
+    def test_check_two_uuids_are_friends_success(self):
+        # GIVEN two users are friends
+        friend1 = UserModelFactory()
+        friend2 = UserModelFactory()
+
+        friendship = FriendsUserRelationshipModelFactory(initiator=friend1.profile, receiver=friend2.profile)
+        url = 'http://127.0.0.1:8000/api/author/%s/friends/%s/' % (friend1.profile.uuid, friend2.profile.uuid)
+
+        # WHEN the request is made
+        response = self.client.get(url)
+
+        # THEN a successful response is made and the boolean is true
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data.get('friends'))
+
+    def test_check_two_uuids_are_friends_fails(self):
+        # GIVEN two users are not friends
+        friend1 = UserModelFactory()
+        friend2 = UserModelFactory()
+
+        friendship = FollowingUserRelationshipModelFactory(initiator=friend1.profile, receiver=friend2.profile)
+        url = 'http://127.0.0.1:8000/api/author/%s/friends/%s/' % (friend1.profile.uuid, friend2.profile.uuid)
+
+        # WHEN the request is made
+        response = self.client.get(url)
+
+        # THEN a successful response is made and the boolean is true
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data.get('friends'))

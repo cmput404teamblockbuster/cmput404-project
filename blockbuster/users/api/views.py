@@ -38,3 +38,15 @@ class AuthenticatedUserProfileView(APIView):
         profile = Profile.objects.get(uuid=request.user.profile.uuid)
         serializer = ProfileSerializer(profile)
         return JsonResponse(serializer.data, safe=False)
+
+class UserRelationshipCheckView(APIView):
+    """
+    Returns a boolean checking if two Users are friends
+    """
+    def get(self, request, uuid, uuid_2): # TODO unit test this!!
+        user1 = Profile.objects.get(uuid=uuid)
+        user2 = Profile.objects.get(uuid=uuid_2)
+        if user2 in user1.friends:
+            return Response(data={'friends': True}, status=status.HTTP_200_OK)
+        else:
+            return Response(data={'friends': False}, status=status.HTTP_200_OK)
