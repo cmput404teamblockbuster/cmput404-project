@@ -1,16 +1,15 @@
 import React from 'react'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import MakePostContent from './MakePostContent'
-import TextField from 'material-ui/TextField'
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar'
-import Checkbox from 'material-ui/Checkbox'
 import FlatButton from 'material-ui/FlatButton'
 import PostVisibility from './PostVisibility'
 import CreatePostRequest from './CreatePostRequest'
 
 export default class MakePost extends React.Component {
-    constructor(props) {
-        super(props);
+    constructor(refresh) {
+        // props: refresh: callback function to re-render MyStream
+        super(refresh);
 
         this.data = {content:"", visibility:"privacy_public"};
 
@@ -31,13 +30,13 @@ export default class MakePost extends React.Component {
 
     handleSubmit(){
         if (this.data.content !== ""){
-            CreatePostRequest.send(this.data.content,this.data.visibility)
+            CreatePostRequest.send(this.data.content,this.data.visibility, this.props.refresh)
         }
     }
 
     render() {
         return (
-            <Card className="textField">
+            <Card className="textField" style={{backgroundColor:'#424242'}}>
                 <CardHeader title="Make a new post"/>
 
                 <CardMedia>
