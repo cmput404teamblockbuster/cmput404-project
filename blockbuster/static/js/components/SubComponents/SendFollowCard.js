@@ -38,9 +38,9 @@ export default class SendFollowCard extends React.Component {
         return (
             <Card className="textField">
                 <CardHeader title={"Follow an author. If they accpet you will become friends!"}/>
-                <TextField hintStyle={{paddingLeft:'20px'}} 
+                <TextField style={{width:'50%'}} hintStyle={{paddingLeft:'20px'}} 
 	            	textareaStyle={{padding:'0px 20px 0px 20px'}} onChange={this.handleNameChange} hintText="Author's Username"/>
-	            <TextField hintStyle={{paddingLeft:'20px'}} 
+	            <TextField style={{width:'50%'}} hintStyle={{paddingLeft:'20px'}} 
 	            	textareaStyle={{padding:'0px 20px 0px 20px'}} onChange={this.handleUUIDChange} hintText="Author's UUID"/>
 	            <CardMedia>
 	            	<FlatButton label="Follow" onTouchTap={this.handleFollow}/>

@@ -18,7 +18,7 @@ export default class RespondToPending extends React.Component{
     }
 
     remount(){
-        this.setState();
+        this.forceUpdate();
         this.props.refresh();
     }
 
@@ -36,10 +36,10 @@ export default class RespondToPending extends React.Component{
 
     render(){
         return(
-            <CardMedia>
-                <FlatButton label='Accept' onTouchTap={this.handleAccept}/>
-                <FlatButton label='Ignore' onTouchTap={this.handleIgnore}/>
-            </CardMedia>
+            <div>
+                <FlatButton style={{width:'50%'}} label='Accept' onTouchTap={this.handleAccept}/>
+                <FlatButton style={{width:'50%'}} label='Ignore' onTouchTap={this.handleIgnore}/>
+            </div>
 
         );
     }
