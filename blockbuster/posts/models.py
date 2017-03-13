@@ -3,7 +3,7 @@ from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from core.utils import django_choice_options
 from django.utils import timezone
-from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVATE_TO_ME, PRIVACY_PUBLIC
+from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVATE_TO_ME, PRIVACY_PUBLIC, PRIVATE_TO_FOF
 
 
 class Post(models.Model):
@@ -32,16 +32,17 @@ class Post(models.Model):
 
         elif self.privacy == PRIVATE_TO_ONE_FRIEND:
             return [self.private_to.id]
-
-        elif self.privacy == self.PRIVATE_TO_FOF:
-            canView = []
-            for friend in self.author.friends:
-                if !(friend.id in canView):
-                    canView.append(friend.id)
-                for fof in friend.friends:
-                    if !(fof.id in canView):
-                    canView.append(fof.id)  
-            return canView
+        
+        #doesn't work
+        #elif self.privacy == PRIVATE_TO_FOF:
+        #    canView = []
+        #    for friend in self.author.friends:
+        #        if friend.id not in canView:
+        #            canView.append(friend.id)
+        #        for fof in friend.friends:
+        #            if fof.id not in canView:
+        #                canView.append(fof.id)  
+        #    return canView
 
         elif self.privacy == PRIVATE_TO_ME:
             return [self.author.id]

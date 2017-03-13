@@ -1,6 +1,6 @@
 import factory
 from django.db.models.signals import post_save
-from users.models import Profile
+from users.models import Profile, UserRelationship
 from users.constants import RELATIONSHIP_STATUS_FRIENDS
 from users.constants import RELATIONSHIP_STATUS_FOLLOWING
 from django.contrib.auth.models import User
@@ -45,6 +45,8 @@ class UserModelFactory(factory.django.DjangoModelFactory):
 class BaseUserRelationshipModelFactory(factory.DjangoModelFactory):
     initiator = factory.SubFactory(UserModelFactory)
     receiver = factory.SubFactory(UserModelFactory)
+    class Meta:
+      model = UserRelationship
 
 
 class FriendsUserRelationshipModelFactory(BaseUserRelationshipModelFactory):

@@ -4,7 +4,8 @@ from users.factories import UserModelFactory
 from posts.constants import *
 from posts.factories import BasePostModelFactory
 from posts.models import *
-from users.factories import FriendsUserRelationshipModelFactory
+from users.factories import BaseUserRelationshipModelFactory
+from users.constants import *
 
 
 class PostModelTestCase(TestCase):
@@ -44,7 +45,7 @@ class PostModelTestCase(TestCase):
     def test__viewable_to_friends(self):
         friend1 = UserModelFactory()
         friend2 = UserModelFactory()
-        notFriend = UserModeFactory()
+        notFriend = UserModelFactory()
         author = UserModelFactory()
         post = BasePostModelFactory(author = author.profile, privacy = PRIVATE_TO_ALL_FRIENDS)
 		
@@ -52,14 +53,15 @@ class PostModelTestCase(TestCase):
         #author.friends.append(friend1.id)
         #author.friends.append(friend2.id)
 
-        friendship1 = FriendsUserRelationshipModelFactory(initiator = author.profile, receiver = friend1.profile)
-        friendship2 = FriendsUserRelationshipModelFactory(initiator = author.profile, receiver = friend2.profile)
+        friendship1 = BaseUserRelationshipModelFactory(initiator = author.profile, receiver = friend1.profile, status = RELATIONSHIP_STATUS_FRIENDS)
+        friendship2 = BaseUserRelationshipModelFactory(initiator = author.profile, receiver = friend2.profile, status = RELATIONSHIP_STATUS_FRIENDS)
 
         self.assertEqual(len(post.viewable_to), 2)
         self.assertTrue(friend1.id in post.viewable_to)
         self.assertTrue(friend2.id in post.viewable_to)
         self.assertFalse(notFriend.id in post.viewable_to)
 
+    #viewable_to_fof isn't working yet
     def test__viewable_to_fof(self):
         friend1 = UserModelFactory()
         friend2 = UserModelFactory()
@@ -76,11 +78,11 @@ class PostModelTestCase(TestCase):
         #friend1.friends.append(fof1.id)
         #friend2.friends.append(fof2.id)
 
-        friendship1 = FriendsUserRelationshipModelFactory(initiator = author.profile, receiver = friend1.profile)
-        friendship2 = FriendsUserRelationshipModelFactory(initiator = author.profile, receiver = friend2.profile)
+        friendship1 = BaseUserRelationshipModelFactory(initiator = author.profile, receiver = friend1.profile, status = RELATIONSHIP_STATUS_FRIENDS)
+        friendship2 = BaseUserRelationshipModelFactory(initiator = author.profile, receiver = friend2.profile, status = RELATIONSHIP_STATUS_FRIENDS)
 
-        fof1 = FriendsUserRelationshipModelFactory(initiator = friend1.profile, receiver = fof1.profile)
-        fof2 = FriendsUserRelationshipModelFactory(initiator = friend2.profile, receiver = fof2.profile)
+        fof1 = BaseUserRelationshipModelFactory(initiator = friend1.profile, receiver = fof1.profile, status = RELATIONSHIP_STATUS_FRIENDS)
+        fof2 = BaseUserRelationshipModelFactory(initiator = friend2.profile, receiver = fof2.profile, status = RELATIONSHIP_STATUS_FRIENDS)
 
         self.assertEqual(len(post.viewable_to), 4)
         self.assertTrue(friend1.id in post.viewable_to)

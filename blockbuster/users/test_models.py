@@ -3,6 +3,7 @@ from users.factories import *
 from users.constants import *
 from users.models import *
 from posts.factories import BasePostModelFactory
+from posts.constants import *
 
 # TODO test that UserRelationship delete method works
 # Create your tests here.
@@ -13,10 +14,10 @@ class ProfileModelTestCase(TestCase):
         #user.friends.append(friend.id)
         friendship = FriendsUserRelationshipModelFactory(initiator = user.profile, receiver = friend.profile)
         
-        friend_post1 = BasePostModelFactory(author = friend.proifle, privacy = PRIVATE_TO_ALL_FRIENDS)
-        friend_post2 = BasePostModelFactory(author = friend.proifle, privacy = PRIVACY_PUBLIC)
+        friend_post1 = BasePostModelFactory(author = friend.profile, privacy = PRIVATE_TO_ALL_FRIENDS)
+        friend_post2 = BasePostModelFactory(author = friend.profile, privacy = PRIVACY_PUBLIC)
         
-        stream = user.get_stream()
+        stream = user.profile.get_stream()
         self.assertTrue(friend_post1 in stream)
         self.assertTrue(friend_post2 in stream)
 
@@ -24,11 +25,11 @@ class ProfileModelTestCase(TestCase):
         user = UserModelFactory()
         friend = UserModelFactory()
 
-        friendship = FriendsUserRelationshipModelFactory(initiator = user.profile, receiver = friend.profile)
+        friendship = BaseUserRelationshipModelFactory(initiator = user.profile, receiver = friend.profile, status = RELATIONSHIP_STATUS_FRIENDS)
 
         self.assertEqual(friendship.status, RELATIONSHIP_STATUS_FRIENDS)
-        self.assertTrue(friend.id in user.friends)
-        self.assertTrue(user.id in friend.friends)
+        self.assertTrue(friend.id in user.profile.friends)
+        self.assertTrue(user.id in friend.profile.friends)
 
     def test__following(self):
         user = UserModelFactory()
@@ -44,14 +45,9 @@ class ProfileModelTestCase(TestCase):
         friendship = FriendsUserRelationshipModelFactory(initiator = user.profile, receiver = friend.profile)
 
         self.assertEqual(friendship.status, RELATIONSHIP_STATUS_FRIENDS)
-        self.assertTrue(friend.id in user.friends)
-        self.assertTrue(user.id in friend.friends)
+        self.assertTrue(friend.id in user.profile.friends)
+        self.assertTrue(user.id in friend.profile.friends)
 
         friendship.delete()
         assertTrue(UserRelationship.objects.select_related('receiver__id').filter(initiator = user.profile, status = RELATIONSHIP_STATUS_FOLLOWING))
 
-    def test__create(self):	
-        profile = ProfileModelFactory()
-        self.assertTrue(isinstance(profile, Proifle))
-		#Make sure uuid is generated
-        self.assertTrue(profile.uuid)
