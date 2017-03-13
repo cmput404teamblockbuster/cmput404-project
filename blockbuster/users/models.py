@@ -7,7 +7,6 @@ from posts.models import Post
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from posts.constants import PRIVACY_PUBLIC
 
 
 class Profile(models.Model):
@@ -39,7 +38,7 @@ class Profile(models.Model):
         for friend in self.friends:
             posts = Post.objects.filter(author=friend.id)
             for post in posts:
-                if self.id in post.viewable_to or post.privacy == PRIVACY_PUBLIC:
+                if post.viewable_for_author(author=self):
                     stream.append(post)
 
         return stream

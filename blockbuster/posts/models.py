@@ -28,7 +28,7 @@ class Post(models.Model):
             return []
 
         elif self.privacy == PRIVATE_TO_ALL_FRIENDS:
-            return [friend for friend in self.author.friends]
+            return [friend.id for friend in self.author.friends]
 
         elif self.privacy == PRIVATE_TO_ONE_FRIEND:
             return [self.private_to.id]
