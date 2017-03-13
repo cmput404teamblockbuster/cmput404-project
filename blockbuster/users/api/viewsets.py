@@ -38,6 +38,9 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def list(self, request, uuid):
+        """
+        lists a given users friends
+        """
         requested_profile = Profile.objects.get(uuid=uuid)
         friends = requested_profile.friends
         serializer = ProfileSerializer(friends, many=True)
