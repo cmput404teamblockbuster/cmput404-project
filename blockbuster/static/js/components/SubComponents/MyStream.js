@@ -10,15 +10,11 @@ export default class MyStream extends React.Component{
         super(changePage);
         this.state = {posts:<li/>};
         this.componentWillMount = this.componentWillMount.bind(this);
-        console.log(this.props)
-        console.log("look at me")
     }
 
     componentWillMount(callback){
         GetStreamRequest.get(
             (PostList)=>{
-                console.log(PostList)
-                console.log("see here")
                 this.setState({posts:PostList.map(
                     (post)=> <PostContainer changePage={this.props.changePage} key={post['uuid']} object={post} refresh={this.componentWillMount}/>)
                 })
