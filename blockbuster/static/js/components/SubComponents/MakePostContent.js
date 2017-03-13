@@ -6,11 +6,10 @@ import FlatButton from 'material-ui/FlatButton'
 
 export default class MakePostContent extends React.Component{
     constructor(props){
-        // props: { change: (function)}
+        // props: { change: (function),message}
         super(props);
 
-        this.state = {uploadText:"Upload Image"};
-        this.contentText = "";
+        this.state = {uploadText:"Upload Image",contentText:this.props.message};
 
         this.changeTab = this.changeTab.bind(this);
         this.handleTextChange=this.handleTextChange.bind(this);
@@ -18,12 +17,11 @@ export default class MakePostContent extends React.Component{
     }
 
     changeTab(){
-        this.contentText = "";
-        this.setState({uploadText:"Upload Image"});
+        this.setState({uploadText:"Upload Image",contentText:""});
     };
 
     handleTextChange(event){
-        this.contentText = event.target.value;
+        this.setState({contentText: event.target.value});
         this.props.change(event.target.value);
 
     }
@@ -35,10 +33,10 @@ export default class MakePostContent extends React.Component{
 
     render(){
         return(
-            <Tabs onChange={this.changeTab}>
+            <Tabs ref="hello" onChange={this.changeTab}>
                 <Tab label="Text Post" value="text">
                     <TextField hintStyle={{paddingLeft:'20px'}} textareaStyle={{padding:'0px 20px 0px 20px'}}
-                               fullWidth={true} multiLine={true} onChange={this.handleTextChange} hintText="Content"/>
+                               fullWidth={true} multiLine={true} onChange={this.handleTextChange} hintText="Content" value={this.state.contentText}/>
                 </Tab>
                 <Tab label="Image Post">
                     <FlatButton icon={<Upload/>} labelPosition='after' label={this.state.uploadText} containerElement="label" className="fullWidth">

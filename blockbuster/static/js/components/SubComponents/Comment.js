@@ -10,7 +10,7 @@ export default class Comment extends React.Component{
           <CardText className="comment">
             {this.props.object['body']}
             <p style={{color:'#9E9E9E'}}> - by
-              <span style={{color:'blue'}}> {this.props.object['author']['username']}</span>
+              <span style={{color:'#82B1FF'}}> {this.props.object['author']['username']}</span>
               <span > at {this.props.object['created']}</span>
             </p>
           </CardText>
