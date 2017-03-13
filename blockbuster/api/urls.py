@@ -2,11 +2,8 @@ from django.conf.urls import url
 from posts.api.viewsets import PostViewSet
 from users.api.viewsets import ProfileViewSet
 from comments.api.viewsets import CommentViewSet
-
 from posts.api.views import ProfilePostsListView, ProfilePostDetailView
-
-from users.api.views import RegisterUserView
-
+from users.api.views import RegisterUserView, AuthenticatedUserProfileView
 from users.api.viewsets import UserRelationshipViewSet
 
 """
@@ -27,24 +24,26 @@ profile_list = ProfileViewSet.as_view({
 profile_detail = ProfileViewSet.as_view({
     'get': 'retrieve'
 })
-
 post_detail_comments = CommentViewSet.as_view({
     'get': 'list',
     'post': 'create',
 })
 author_friends_list = UserRelationshipViewSet.as_view({
     'get': 'list',
-    # 'post': 'create'
+    'post': 'create'
 })
 
 urlpatterns = [
     url(r'^register/$', RegisterUserView.as_view(), name='register_user'),
+    url(r'^friendrequest/$', author_friends_list, name='friend-request'),
     url(r'^posts/$', post_list, name='post-list'),
     url(r'^posts/(?P<uuid>[^/]+)/$', post_detail, name='post-detail'),
     url(r'^posts/(?P<uuid>[^/]+)/comments/$', post_detail_comments, name='post-detail-comments'),
     url(r'^author/$', profile_list, name='profile-list'),
     url(r'^author/posts/$', ProfilePostsListView.as_view(), name='profile-post-list'),
+    url(r'^author/me/$', AuthenticatedUserProfileView.as_view(), name='auth_profile_detail'),
     url(r'^author/(?P<uuid>[^/]+)/$', profile_detail, name='profile-detail'),
     url(r'^author/(?P<uuid>[^/]+)/posts/$', ProfilePostDetailView.as_view(), name='profile-post-detail'),
     url(r'^author/(?P<uuid>[^/]+)/friends/$', author_friends_list, name='author-friends-list'),
+
 ]

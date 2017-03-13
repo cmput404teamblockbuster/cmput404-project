@@ -15,7 +15,7 @@ class ProfilePostsListView(APIView):
 
         stream = user.profile.get_stream()
         serializer = PostSerializer(stream, many=True)
-        return JsonResponse(serializer.data, safe=False) # TODO look into what safe=False does
+        return JsonResponse(serializer.data, safe=False)
 
 class ProfilePostDetailView(APIView):
     """

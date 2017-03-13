@@ -5,10 +5,10 @@ from http://geezhawk.github.io/user-authentication-with-react-and-django-rest-fr
 
 module.exports = {
     login: function(username, pass, cb) {
-        if (localStorage.token) {
-            if (cb) cb(true);
-            return
-        }
+        // if (localStorage.token) {
+        //     if (cb) cb(true);
+        //     return
+        // }
         this.getToken(username, pass, (res) => {
             if (res.authenticated) {
                 localStorage.token = res.token;

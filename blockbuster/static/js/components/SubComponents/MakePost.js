@@ -42,17 +42,15 @@ export default class MakePost extends React.Component {
 
                 <CardMedia>
                     <MakePostContent change={this.changeContent}/>
-
                     <Toolbar style={{backgroundColor: '#424242'}}>
                         <ToolbarGroup/>
                         <ToolbarGroup >
                             <PostVisibility change={this.changeVisibility}/>
-                            {/*<FlatButton style={{margin: '0'}} label="Cancel"  />*/}
                             <FlatButton style={{margin: '0'}} label="Submit" onTouchTap={this.handleSubmit}/>
                         </ToolbarGroup>
                     </Toolbar>
-
                 </CardMedia>
+                <CardActions/> /* Just for some margin */
             </Card>
         );
     }

@@ -18,4 +18,8 @@ module.exports = {
             })
     },
 
+    obtainToken(){
+
+    }
+
 };
