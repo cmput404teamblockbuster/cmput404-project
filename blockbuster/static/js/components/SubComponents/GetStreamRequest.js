@@ -10,7 +10,9 @@ module.exports = {
         const csrfToken = cookie.load('csrftoken');
         const userToken ="Token "+localStorage.token;
 
-        axios.get('/api/author/posts/',
+        // const url = '/api/author/posts/';
+        const url = '/api/posts/'; //TODO: change it back to author/posts/
+        axios.get(url,
             {headers:{'X-CSRFToken':csrfToken,'Authorization':userToken}})
             .then((res)=>{
                 cb(res.data);

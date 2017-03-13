@@ -1,10 +1,10 @@
 
 module.exports = {
-    send: function (content, privacy) {
-        this.getAuthor(content,privacy, this.sendPostRequest);
+    send: function (content, privacy, refreshCallback) {
+        this.getAuthor(content,privacy, this.sendPostRequest, refreshCallback);
     },
 
-    sendPostRequest: function (p1,p2, p3) {
+    sendPostRequest: function (p1,p2, p3,cb) {
         var cookie = require('react-cookie');
         var axios = require('axios');
         const csrfToken = cookie.load('csrftoken');
@@ -17,11 +17,12 @@ module.exports = {
             'Content-Type':'application/json',
             'Authorization':userToken}})
             .then((res)=>{
+                cb();
                 console.log(res);
             })
     },
 
-    getAuthor:function (p1,p2,cb) {
+    getAuthor:function (p1,p2,cb,cb2) {
         var cookie = require('react-cookie');
         var axios = require('axios');
         const csrfToken = cookie.load('csrftoken');
@@ -30,7 +31,7 @@ module.exports = {
         axios.get('/api/author/',
             {headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}})
             .then((res)=>{
-               cb(p1, p2, res.data[0]);
+               cb(p1, p2, res.data[0],cb2);
             })
     }
 };
