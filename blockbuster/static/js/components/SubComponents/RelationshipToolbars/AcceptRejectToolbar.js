@@ -4,7 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import ChangeRelationRequest from '../ChangeRelationRequest'
 
 
-export default class AcceptRejcetToolbar extends React.Component{
+export default class AcceptRejectToolbar extends React.Component{
     constructor(object,refresh){
         super(object,refresh);
 
@@ -14,11 +14,12 @@ export default class AcceptRejcetToolbar extends React.Component{
 
     sendAcceptRequest(){
         ChangeRelationRequest.update(this.props.object['initiator'],this.props.object['receiver'],
-            "status_friendship_pending",this.props.refresh)
+            "status_friends",this.props.refresh)
     }
 
     sendIgnoreRequest(){
-
+        ChangeRelationRequest.update(this.props.object['initiator'],this.props.object['receiver'],
+            "status_following",this.props.refresh)
     }
     //props: Object { initiator: Object, receiver: Object, status: "status_friendship_pending" }
     render(){
