@@ -1,37 +1,42 @@
 import React from 'react'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import MakePostContent from './MakePostContent'
-import TextField from 'material-ui/TextField'
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar'
-import Checkbox from 'material-ui/Checkbox'
 import FlatButton from 'material-ui/FlatButton'
 import PostVisibility from './PostVisibility'
 import CreatePostRequest from './CreatePostRequest'
 
 export default class MakePost extends React.Component {
-    constructor(props) {
-        super(props);
+    constructor(refresh) {
+        // props: refresh: callback function to re-render MyStream
+        super(refresh);
 
-        this.data = {content:"", visibility:"privacy_public"};
-
+        this.state = {content:"", visibility:"privacy_public"};
         this.changeContent = this.changeContent.bind(this);
         this.changeVisibility = this.changeVisibility.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.afterSubmit = this.afterSubmit.bind(this);
     }
 
 
     changeContent(data){
-        this.data.content = data;
+        this.setState({content:data});
     }
 
     changeVisibility(data){
-        this.data.visibility = data;
+        this.setState({visibility:data});
         console.log(data)
     }
 
+    afterSubmit(){
+        this.setState({content:""});
+        this.child.changeTab();
+        this.props.refresh();
+    }
+
     handleSubmit(){
-        if (this.data.content !== ""){
-            CreatePostRequest.send(this.data.content,this.data.visibility)
+        if (this.state.content !== ""){
+            CreatePostRequest.send(this.state.content,this.state.visibility, this.afterSubmit)
         }
     }
 
@@ -41,7 +46,7 @@ export default class MakePost extends React.Component {
                 <CardHeader title="Make a new post"/>
 
                 <CardMedia>
-                    <MakePostContent change={this.changeContent}/>
+                    <MakePostContent ref={(input)=>{this.child=input}} change={this.changeContent}/>
                     <Toolbar style={{backgroundColor: '#424242'}}>
                         <ToolbarGroup/>
                         <ToolbarGroup >
