@@ -43,7 +43,7 @@ class UserRelationshipCheckView(APIView):
     """
     Returns a boolean checking if two Users are friends
     """
-    def get(self, request, uuid, uuid_2): # TODO unit test this!!
+    def get(self, request, uuid, uuid_2):
         user1 = Profile.objects.get(uuid=uuid)
         user2 = Profile.objects.get(uuid=uuid_2)
         if user2 in user1.friends:
