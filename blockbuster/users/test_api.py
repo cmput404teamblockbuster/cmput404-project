@@ -229,3 +229,58 @@ class UserRelationshipCheckViewTestCase(APITestCase):
         # THEN a successful response is made and the boolean is true
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(response.data.get('friends'))
+
+
+class AuthenticatedUserRelationshipViewTestCase(APITestCase):
+    def test_check_relationship_exists__as_receiver_success(self):
+        # GIVEN an authenticated user is friends with another person
+        authed_user = UserModelFactory()
+        follower1 = UserModelFactory()
+        self.client.force_authenticate(user=authed_user)
+
+        friendship1 = BaseUserRelationshipModelFactory(initiator=follower1.profile, receiver=authed_user.profile)
+        self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_PENDING)
+        url = 'http://127.0.0.1:8000/api/author/me/relationship/%s/' % follower1.profile.uuid
+
+        # WHEN the request is made
+        response = self.client.get(url)
+
+        # THEN a successful response is made
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        fields = ['status', 'initiator', 'receiver']
+        for field in fields:
+            self.assertTrue(field in response.data)
+
+    def test_check_relationship_exists__as_initiator_success(self):
+        # GIVEN an authenticated user is friends with another person
+        authed_user = UserModelFactory()
+        follower1 = UserModelFactory()
+        self.client.force_authenticate(user=authed_user)
+
+        friendship1 = BaseUserRelationshipModelFactory(initiator=authed_user.profile, receiver=follower1.profile)
+        self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_PENDING)
+        url = 'http://127.0.0.1:8000/api/author/me/relationship/%s/' % follower1.profile.uuid
+
+        # WHEN the request is made
+        response = self.client.get(url)
+
+        # THEN a successful response is made
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        fields = ['status', 'initiator', 'receiver']
+        for field in fields:
+            self.assertTrue(field in response.data)
+
+    def test_relationship_when_no_relationship_exists(self):
+        # GIVEN an authenticated user has no relationship with another person
+        authed_user = UserModelFactory()
+        follower1 = UserModelFactory()
+        self.client.force_authenticate(user=authed_user)
+
+        url = 'http://127.0.0.1:8000/api/author/me/relationship/%s/' % follower1.profile.uuid
+
+        # WHEN the request is made
+        response = self.client.get(url)
+
+        # THEN a successful response is made
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, "No Relationship Found.")
