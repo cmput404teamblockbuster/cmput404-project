@@ -27,6 +27,7 @@ export default class MakePostContent extends React.Component{
     }
 
     handleImageChange(event){
+        console.log(event.target.files[0]);
         this.props.change(event.target.value);
         this.setState({uploadText:event.target.value})
     }
