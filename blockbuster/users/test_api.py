@@ -284,3 +284,18 @@ class AuthenticatedUserRelationshipViewTestCase(APITestCase):
         # THEN a successful response is made
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, "No Relationship Found.")
+
+    def test_relationship_when_own_uuid_given(self):
+        # GIVEN an authenticated user requests a relationship with themself
+        authed_user = UserModelFactory()
+        self.client.force_authenticate(user=authed_user)
+
+        url = 'http://127.0.0.1:8000/api/author/me/relationship/%s/' % authed_user.profile.uuid
+
+        # WHEN the request is made
+        response = self.client.get(url)
+        print response
+
+        # THEN a successful response is made
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, "The profile with the given UUID is your own.")
