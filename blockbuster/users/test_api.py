@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from users.factories import UserModelFactory
 from users.factories import FriendsUserRelationshipModelFactory
 from users.models import UserRelationship
-from users.constants import RELATIONSHIP_STATUS_PENDING
+from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from users.factories import BaseUserRelationshipModelFactory, FollowingUserRelationshipModelFactory
 
 
@@ -106,12 +106,78 @@ class UserRelationshipFriendRequestViewSet(APITestCase):
         response = self.client.post(url, data, format='json')
 
         # THEN the relationship is created
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         friendship = UserRelationship.objects.all()[0]
         # AND friendship status should be PENDING by default
         self.assertEqual(friendship.status, RELATIONSHIP_STATUS_PENDING)
         self.assertEqual(friendship.initiator, authed_user.profile)
         self.assertEqual(friendship.receiver, friend.profile)
+
+    def test_accept_friend_request_accepts_friend_request(self):
+        # GIVEN a user has pending friend requests
+        authed_user = UserModelFactory()
+        follower1 = UserModelFactory()
+        self.client.force_authenticate(user=authed_user)
+
+        friendship1 = BaseUserRelationshipModelFactory(initiator=follower1.profile, receiver=authed_user.profile)
+        self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_PENDING)
+
+        url = 'http://127.0.0.1:8000/api/friendrequest/'
+        data = dict(
+            initiator=dict(
+                uuid=follower1.profile.uuid,
+                username=follower1.profile.username
+            ),
+            receiver=dict(
+                uuid=authed_user.profile.uuid,
+                username=authed_user.profile.username
+            ),
+            status=RELATIONSHIP_STATUS_FRIENDS
+        )
+
+        # WHEN the request is made
+        response = self.client.post(url, data, format='json')
+
+        # THEN the relationship is created
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        friendship = UserRelationship.objects.get(id=friendship1.id)
+        # AND friendship status should be FRIENDS
+        self.assertEqual(friendship.status, RELATIONSHIP_STATUS_FRIENDS)
+        self.assertEqual(friendship.initiator, follower1.profile)
+        self.assertEqual(friendship.receiver, authed_user.profile)
+
+    def test_decline_friend_request_creates_following_friendship(self):
+        # GIVEN a user has pending friend requests
+        authed_user = UserModelFactory()
+        follower1 = UserModelFactory()
+        self.client.force_authenticate(user=authed_user)
+
+        friendship1 = BaseUserRelationshipModelFactory(initiator=follower1.profile, receiver=authed_user.profile)
+        self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_PENDING)
+
+        url = 'http://127.0.0.1:8000/api/friendrequest/'
+        data = dict(
+            initiator=dict(
+                uuid=follower1.profile.uuid,
+                username=follower1.profile.username
+            ),
+            receiver=dict(
+                uuid=authed_user.profile.uuid,
+                username=authed_user.profile.username
+            ),
+            status=RELATIONSHIP_STATUS_FOLLOWING
+        )
+
+        # WHEN the request is made
+        response = self.client.post(url, data, format='json')
+
+        # THEN the relationship is created
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        friendship = UserRelationship.objects.get(id=friendship1.id)
+        # AND friendship status should be FRIENDS
+        self.assertEqual(friendship.status, RELATIONSHIP_STATUS_FOLLOWING)
+        self.assertEqual(friendship.initiator, follower1.profile)
+        self.assertEqual(friendship.receiver, authed_user.profile)
 
     def test_get_users_friend_requests_list(self):
         # GIVEN an authenticated user has friend requests

@@ -32,7 +32,7 @@ author_friends_list = UserRelationshipViewSet.as_view({
 })
 author_friend_requests = UserRelationshipFriendRequestViewSet.as_view({
     'get': 'list',
-    'post': 'create',
+    'post': 'create_or_update',
 })
 
 urlpatterns = [

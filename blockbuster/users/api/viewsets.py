@@ -50,18 +50,21 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         """
         return UserRelationship.objects.filter(receiver=self.request.user.profile, status=RELATIONSHIP_STATUS_PENDING)
 
-    def create(self, *args, **kwargs):
+    def create_or_update(self, *args, **kwargs):
         """
-        creates a user relationship via a post request to `api/friendrequest/`
+        creates a user relationship via a post request to `api/friendrequest/` if initiator/receiver pair not in the DB
         required params:
             initiator = dict containing initiating users uuid
             receiver = dict containing receiving users uuid
+
+        otherwise it will update the UserRelationship represented by initiator/receiver pair
+            to update you need to add the status param
         """
         data = self.request.data
         serializer = UserRelationshipSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+            return Response(status=status.HTTP_200_OK, data=serializer.data)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
 
