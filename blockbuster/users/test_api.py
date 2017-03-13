@@ -2,6 +2,10 @@ from rest_framework.test import APIRequestFactory, force_authenticate, APITestCa
 from rest_framework import status
 from django.contrib.auth.models import User
 
+from users.factories import UserModelFactory
+
+from users.factories import FriendsUserRelationshipModelFactory
+
 
 class UserViewTestCase(APITestCase):
     def test__create_user_is_successful(self):
@@ -57,3 +61,16 @@ class UserViewTestCase(APITestCase):
         # THEN the error message is displayed
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get("username")[0], "This field is required.")
+
+class UserRelationshipViewTestCase(APITestCase):
+    def test__users_friends_are_returned(self):
+        # GIVEN a user has a friend
+        authed_user = UserModelFactory()
+        friend = UserModelFactory()
+        friendship = FriendsUserRelationshipModelFactory(initiator=authed_user.profile, receiver=friend.profile)
+        self.client.force_authenticate(user=authed_user)
+        data = dict()
+        url = 'http://127.0.0.1:8000/api/author/%s/friends/' % authed_user.profile.uuid
+
+        response = self.client.get(url)
+        print response
