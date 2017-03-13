@@ -5,7 +5,6 @@ import Divider from 'material-ui/Divider'
 export default class Comment extends React.Component{
     // props: object: {author,body,created,uuid}
     render(){
-        console.log(this.props.object)
         return(
           <CardText className="comment">
             {this.props.object['body']}

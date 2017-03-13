@@ -35,7 +35,7 @@ export default class MakePostContent extends React.Component{
         return(
             <Tabs ref="hello" onChange={this.changeTab}>
                 <Tab label="Text Post" value="text">
-                    <TextField hintStyle={{paddingLeft:'20px'}} textareaStyle={{padding:'0px 20px 0px 20px'}}
+                    <TextField id="post-content" hintStyle={{paddingLeft:'20px'}} textareaStyle={{padding:'0px 20px 0px 20px'}}
                                fullWidth={true} multiLine={true} onChange={this.handleTextChange} hintText="Content" value={this.state.contentText}/>
                 </Tab>
                 <Tab label="Image Post">

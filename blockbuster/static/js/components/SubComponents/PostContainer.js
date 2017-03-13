@@ -5,29 +5,29 @@ import CommentSection from './CommentSection'
 import AddComment from './AddComment'
 
 export default class PostContainer extends React.Component{
-    constructor(object){
-        super(object);
+    constructor(object,refresh){
+        super(object,refresh);
 
-        this.state = {refresh:true};
-
-        this.componentWillMount = this.componentWillMount.bind(this);
+        // this.state = {refresh:true};
+        //
+        // this.componentWillMount = this.componentWillMount.bind(this);
     }
 
-    componentWillMount(){
-        this.setState({refresh:!this.state.refresh});
-    }
+    // componentWillMount(){
+    //     this.setState({refresh:!this.state.refresh});
+    // }
 
     render(){
         return(
             <li>
-                <Card className="textField" style={{backgroundColor:'#424242', paddingBottom:'20px'}}>
+                <Card className="textField">
                     <CardHeader title={this.props.object['author']['username']} titleColor={'#82B1FF'} /><Divider/>
                     <CardText >
                         <p className="postBody">{this.props.object['content']}</p>
                     </CardText>
                     <Divider/>
                     <CardMedia>
-                        <CommentSection postid={this.props.object['uuid']} object={this.props.object['comments']} refresh={this.componentWillMount}/>
+                        <CommentSection postid={this.props.object['uuid']} object={this.props.object['comments']} refresh={this.props.refresh}/>
                     </CardMedia>
                 </Card>
             </li>

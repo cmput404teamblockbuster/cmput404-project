@@ -42,7 +42,7 @@ export default class MakePost extends React.Component {
 
     render() {
         return (
-            <Card className="textField" style={{backgroundColor:'#424242'}}>
+            <Card className="textField">
                 <CardHeader title="Make a new post"/>
 
                 <CardMedia>

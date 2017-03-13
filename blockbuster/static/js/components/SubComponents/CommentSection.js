@@ -4,20 +4,34 @@ import AddComment from './AddComment'
 import Divider from 'material-ui/Divider'
 
 export default class CommentSection extends React.Component{
-    // props: object: a list of object, refresh: callback, postid
-    constructor(object,refresh){
-        super(object,refresh);
+    // props: object: a list of object,  postid
+    constructor(object,refresh,postid){
+        super(object,refresh,postid);
+        this.state = {comments: this.props.object.map((comment)=>
+            <Comment key={comment['uuid']} object={comment}/>)};
 
-        this.comments = this.props.object.map((comment)=>
-            <Comment key={comment['uuid']} object={comment}/>
-        )
+        this.refresh = this.refresh.bind(this);
     }
+
+    refresh(){
+        this.props.refresh(
+            ()=>{this.setState({comments: this.props.object.map((comment)=>
+                <Comment key={comment['uuid']} object={comment}/>)})
+                console.log(this.props.object)
+                console.log("in comment section")
+        });
+
+
+    }
+
+
+
     render(){
         return(
 
             <ul className="commentList">
-                {this.comments}
-                <AddComment postid={this.props.postid} refresh={this.props.refresh}/>
+                {this.state.comments}
+                <AddComment postid={this.props.postid} refresh={this.refresh}/>
             </ul>
         );
     }
