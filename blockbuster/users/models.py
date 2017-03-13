@@ -35,7 +35,7 @@ class Profile(models.Model):
         Returns: the user's stream
         """
         # TODO this should be optimized eventually
-        stream = []
+        stream = [post for post in Post.objects.filter(author=self)]
         for friend in self.friends:
             posts = Post.objects.filter(author=friend.id)
             for post in posts:
