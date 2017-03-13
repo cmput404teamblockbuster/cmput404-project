@@ -1,11 +1,10 @@
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
-from users.api.serializers import UserSerializer
-from users.models import Profile
+from users.api.serializers import UserSerializer, UserRelationshipSerializer
+from users.models import Profile, UserRelationship
 from users.api.serializers import ProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 
@@ -38,6 +37,28 @@ class AuthenticatedUserProfileView(APIView):
         profile = Profile.objects.get(uuid=request.user.profile.uuid)
         serializer = ProfileSerializer(profile)
         return JsonResponse(serializer.data, safe=False)
+
+
+class AuthenticatedUserRelationshipView(APIView):
+    """
+    returns the UserRelationship object with the current user and a specified user
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, uuid):
+        auth_user = request.user.profile
+        other_user = Profile.objects.get(uuid=uuid)
+        qs1 = UserRelationship.objects.filter(initiator=auth_user, receiver=other_user)
+        qs2 = UserRelationship.objects.filter(initiator=other_user, receiver=auth_user)
+        result = qs1 | qs2
+        if result:
+            serializer = UserRelationshipSerializer(result[0])
+            if serializer.is_valid:
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data=serializer.errors)
+        else:
+            return Response(data='No Relationship Found.', status=status.HTTP_200_OK)
+
 
 class UserRelationshipCheckView(APIView):
     """

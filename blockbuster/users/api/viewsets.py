@@ -13,6 +13,14 @@ class ProfileViewSet(viewsets.ModelViewSet):
     lookup_field = 'uuid'
     lookup_value_regex = '[^/]+'
     serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+
+
+class MyFriendsProfilesViewSet(viewsets.ModelViewSet):
+    """
+    returns the authenticated users friends list
+    """
+    serializer_class = ProfileSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
@@ -30,6 +38,9 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def list(self, request, uuid):
+        """
+        lists a given users friends
+        """
         requested_profile = Profile.objects.get(uuid=uuid)
         friends = requested_profile.friends
         serializer = ProfileSerializer(friends, many=True)

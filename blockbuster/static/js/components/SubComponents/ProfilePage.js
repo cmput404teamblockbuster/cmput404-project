@@ -7,7 +7,7 @@ import PostContainer from './PostContainer'
 
 export default class ProfilePage extends React.Component{
     constructor(object, changePage){
-        // props: change
+        // props: changePage, object
         super(object, changePage);
         console.log(this.props)
         this.title = this.props.object['username'] + "'s Profile";
