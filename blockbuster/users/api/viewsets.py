@@ -1,10 +1,9 @@
 from rest_framework import viewsets, status
-from users.models import Profile
-from users.api.serializers import ProfileSerializer
-from users.api.serializers import UserRelationshipSerializer
-from users.models import UserRelationship
+from users.models import Profile, UserRelationship
+from users.api.serializers import ProfileSerializer, UserRelationshipSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from users.constants import RELATIONSHIP_STATUS_PENDING
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
@@ -35,6 +34,21 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
         friends = requested_profile.friends
         serializer = ProfileSerializer(friends, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
+    lookup_field = 'uuid'
+    lookup_value_regex = '[^/]+'
+    serializer_class = UserRelationshipSerializer
+    model = UserRelationship
+    permission_classes = (IsAuthenticated,)
+
+
+    def get_queryset(self):
+        """
+        lists all authed users pending friend requests
+        """
+        return UserRelationship.objects.filter(receiver=self.request.user.profile, status=RELATIONSHIP_STATUS_PENDING)
 
     def create(self, *args, **kwargs):
         """

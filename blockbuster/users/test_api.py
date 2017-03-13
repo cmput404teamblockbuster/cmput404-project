@@ -5,6 +5,7 @@ from users.factories import UserModelFactory
 from users.factories import FriendsUserRelationshipModelFactory
 from users.models import UserRelationship
 from users.constants import RELATIONSHIP_STATUS_PENDING
+from users.factories import BaseUserRelationshipModelFactory
 
 
 class UserViewTestCase(APITestCase):
@@ -80,6 +81,9 @@ class UserRelationshipViewTestCase(APITestCase):
         self.assertEqual(response.data[0].get('uuid'), str(friend.profile.uuid))
         self.assertEqual(len(response.data), len(authed_user.profile.friends))
 
+
+class UserRelationshipFriendRequestViewSet(APITestCase):
+
     def test_friend_request_creates_friend_request(self):
         # GIVEN an authenticated user makes a friend request for another user
         authed_user = UserModelFactory()
@@ -108,3 +112,24 @@ class UserRelationshipViewTestCase(APITestCase):
         self.assertEqual(friendship.status, RELATIONSHIP_STATUS_PENDING)
         self.assertEqual(friendship.initiator, authed_user.profile)
         self.assertEqual(friendship.receiver, friend.profile)
+
+    def test_get_users_friend_requests_list(self):
+        # GIVEN an authenticated user has friend requests
+        authed_user = UserModelFactory()
+        follower1 = UserModelFactory()
+        follower2 = UserModelFactory()
+        self.client.force_authenticate(user=authed_user)
+
+        friendship1 = BaseUserRelationshipModelFactory(initiator=follower1.profile, receiver=authed_user.profile)
+        friendship2 = BaseUserRelationshipModelFactory(initiator=follower2.profile, receiver=authed_user.profile)
+        self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_PENDING)
+        self.assertEquals(friendship2.status, RELATIONSHIP_STATUS_PENDING)
+        url = 'http://127.0.0.1:8000/api/friendrequest/'
+
+        # WHEN the request is made
+        response = self.client.get(url)
+
+        # THEN a successful response is made
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
