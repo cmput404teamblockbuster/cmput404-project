@@ -31,7 +31,12 @@ export default class BasePage extends React.Component{
                 this.setState({currentPage:<MyFriends changePage={this.changePage} object={this.author}/>});;
                 break;
             case 2:
-                this.setState({currentPage:<ProfilePage changePage={this.changePage} object={this.author}/>});
+                if (this.state.count % 2 === 0){
+                    this.setState({currentPage:<ProfilePage2 changePage={this.changePage} object={this.author}/>});
+                } else {
+                    this.setState({currentPage:<ProfilePage changePage={this.changePage} object={this.author}/>});
+                }
+
                 break;
             case 3:
                 // to let react notice that this state actually changed, otherwist it won't notice any change if the prop changes
