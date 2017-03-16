@@ -1,7 +1,7 @@
 import React from 'react';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import RaisedButton from 'material-ui/RaisedButton';
-import ChangeRelationRequest from '../ChangeRelationRequest'
+import ChangeRelationRequest from '../../Requests/ChangeRelationRequest'
 
 
 export default class AcceptRejectToolbar extends React.Component{

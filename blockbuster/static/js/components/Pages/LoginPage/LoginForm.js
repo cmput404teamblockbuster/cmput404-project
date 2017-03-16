@@ -2,7 +2,7 @@ import React from 'react'
 import TextField from 'material-ui/TextField'
 import {Card,CardMedia,CardActions } from 'material-ui/Card'
 import RaisedButton from 'material-ui/RaisedButton'
-import auth from './auth'
+import auth from '../../Requests/auth'
 
 export default class LoginForm extends React.Component{
     constructor(props){

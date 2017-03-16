@@ -1,7 +1,7 @@
 import React from 'react';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
-import CommentSection from './CommentSection'
+import CommentSection from '../CommentList/CommentSection'
 import NameLink from './NameLink'
 
 export default class PostContainer extends React.Component{

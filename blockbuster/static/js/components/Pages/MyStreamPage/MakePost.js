@@ -3,8 +3,8 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import MakePostContent from './MakePostContent'
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar'
 import FlatButton from 'material-ui/FlatButton'
-import PostVisibility from './PostVisibility'
-import CreatePostRequest from './CreatePostRequest'
+import PostVisibility from '../../SubComponents/PostList/PostVisibility'
+import CreatePostRequest from '../../Requests/CreatePostRequest'
 
 export default class MakePost extends React.Component {
     constructor(refresh) {

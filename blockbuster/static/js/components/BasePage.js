@@ -1,11 +1,11 @@
 import React from 'react'
 import TopBar from './SubComponents/TopBar'
 import Drawer from 'material-ui/Drawer'
-import MyStream from './SubComponents/MyStream'
-import MyFriends from './SubComponents/MyFriends'
-import ProfilePage from './SubComponents/ProfilePage'
-import ProfilePage2 from './SubComponents/ProfilePage2'
-import GetMeRequest from './SubComponents/GetMeRequest'
+import MyStream from './Pages/MyStreamPage/MyStream'
+import MyFriends from './Pages/MyFriendsPage/MyFriends'
+import ProfilePage from './Pages/ProfilePage/ProfilePage'
+import ProfilePage2 from './Pages/ProfilePage/ProfilePage2'
+import GetMeRequest from './Requests/GetMeRequest'
 
 export default class BasePage extends React.Component{
     constructor(props){

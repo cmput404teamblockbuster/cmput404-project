@@ -2,8 +2,8 @@ import React from 'react'
 import ReactDom from 'react-dom'
 import AppWrapper from './components/AppWrapper'
 import BasePage from './components/BasePage'
-import LoginPage from './components/LoginPage'
-import auth from './components/SubComponents/auth'
+import LoginPage from './components/Pages/LoginPage/LoginPage'
+import auth from './components/Requests/auth'
 
 class Main extends React.Component{
     constructor(props){
@@ -33,6 +33,7 @@ class Main extends React.Component{
 
     componentWillMount(){
         this.checkLogIn();
+
     }
 
 

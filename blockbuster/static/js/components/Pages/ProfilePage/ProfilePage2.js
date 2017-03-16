@@ -2,8 +2,8 @@ import React from 'react'
 import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
 import ProfileCard from './ProfileCard'
-import GetHisPostsRequest from './GetHisPostsRequest'
-import PostContainer from './PostContainer'
+import GetHisPostsRequest from '../../Requests/GetHisPostsRequest'
+import PostContainer from '../../SubComponents/PostList/PostContainer'
 
 export default class ProfilePage extends React.Component{
     constructor(object, changePage){

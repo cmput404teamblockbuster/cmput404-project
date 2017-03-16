@@ -3,7 +3,7 @@ import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar'
 import TextField from 'material-ui/TextField'
 import FlatButton from 'material-ui/FlatButton'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import AddCommentRequest from './AddCommentRequest'
+import AddCommentRequest from '../../Requests/AddCommentRequest'
 export default class AddComment extends React.Component{
     //props: refresh: callback function, postid: uuid of the post
     constructor(refresh,postid){

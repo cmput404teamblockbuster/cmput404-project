@@ -2,12 +2,12 @@ import React from 'react'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 // import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar'
 import Divider from 'material-ui/Divider'
-import GetRelationshipWithMeRequest from './GetRelationshipWithMeRequest'
-import WithdrawPendingToolbar from './RelationshipToolbars/WithdrawPendingToolbar'
-import AcceptRejectToolbar from './RelationshipToolbars/AcceptRejectToolbar'
-import UnFriendToolbar from './RelationshipToolbars/UnFriendToolbar'
-import BefriendToolbar from './RelationshipToolbars/BefriendToolbar'
-import UnfollowToolbar from './RelationshipToolbars/UnfollowToolbar'
+import GetRelationshipWithMeRequest from '../../Requests/GetRelationshipWithMeRequest'
+import WithdrawPendingToolbar from '../../SubComponents/RelationshipToolbars/WithdrawPendingToolbar'
+import AcceptRejectToolbar from '../../SubComponents/RelationshipToolbars/AcceptRejectToolbar'
+import UnFriendToolbar from '../../SubComponents/RelationshipToolbars/UnFriendToolbar'
+import BefriendToolbar from '../../SubComponents/RelationshipToolbars/BefriendToolbar'
+import UnfollowToolbar from '../../SubComponents/RelationshipToolbars/UnfollowToolbar'
 
 export default class ProfileCard extends React.Component {
     constructor(object) {

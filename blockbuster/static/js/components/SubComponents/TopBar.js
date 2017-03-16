@@ -3,8 +3,8 @@ import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import RaisedButton from 'material-ui/RaisedButton';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import TextField from 'material-ui/TextField'
-import auth from './auth';
-import SearchUserDialog from './SearchUserDialog';
+import auth from '../Requests/auth';
+import SearchUserDialog from './Search/SearchUserDialog';
 export default class TopBar extends React.Component{
     constructor(change, checkLogin){
         // change is a function that will change the page

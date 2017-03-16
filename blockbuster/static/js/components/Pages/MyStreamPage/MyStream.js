@@ -2,8 +2,8 @@ import React from 'react'
 import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
 import MakePost from './MakePost'
-import GetStreamRequest from './GetStreamRequest'
-import PostContainer from './PostContainer'
+import GetStreamRequest from '../../Requests/GetStreamRequest'
+import PostContainer from '../../SubComponents/PostList/PostContainer'
 export default class MyStream extends React.Component{
     constructor(changePage){
         // props: changePage

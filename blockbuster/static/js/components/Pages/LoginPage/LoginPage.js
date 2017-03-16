@@ -1,9 +1,9 @@
 import React from 'react'
-import LoginTopBar from './SubComponents/LoginTopBar'
+import LoginTopBar from './LoginTopBar'
 import Paper from 'material-ui/Paper'
-import LoginForm from './SubComponents/LoginForm'
+import LoginForm from './LoginForm'
 import FlatButton from 'material-ui/FlatButton'
-import RegistrationDialog from './SubComponents/RegistrationDialog'
+import RegistrationDialog from './RegistrationDialog'
 
 export default class LoginPage extends React.Component{
     // props: finishLogIn: call back function to finish login

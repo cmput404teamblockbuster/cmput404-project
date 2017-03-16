@@ -1,7 +1,7 @@
 import React from 'react'
 import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
-import GetMyPendingRequest from './GetMyPendingRequest'
+import GetMyPendingRequest from '../../Requests/GetMyPendingRequest'
 import PendingContainer from './PendingContainer'
 import SendFollowCard from './SendFollowCard'
 

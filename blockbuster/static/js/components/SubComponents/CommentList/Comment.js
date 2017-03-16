@@ -1,7 +1,7 @@
 import React from 'react'
 import {CardText} from 'material-ui/Card'
 import Divider from 'material-ui/Divider'
-import NameLink from './NameLink'
+import NameLink from '../PostList/NameLink'
 
 export default class Comment extends React.Component{
     // props: object: {author,body,created,uuid}, changePage
