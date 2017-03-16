@@ -6,9 +6,9 @@ import GetHisPostsRequest from '../../Requests/GetHisPostsRequest'
 import PostContainer from '../../SubComponents/PostList/PostContainer'
 
 export default class ProfilePage extends React.Component{
-    constructor(object, changePage){
-        // props: changePage, object
-        super(object, changePage);
+    constructor(object){
+        // props: object
+        super(object);
 
     }
 
@@ -21,7 +21,7 @@ export default class ProfilePage extends React.Component{
         GetHisPostsRequest.get(this.props.object['uuid'],
             (PostList)=>{
                 this.setState({posts:PostList.map(
-                    (post)=> <PostContainer key={post['uuid']} object={post} refresh={this.componentWillMount} changePage={this.props.changePage}/>)
+                    (post)=> <PostContainer key={post['uuid']} object={post} refresh={this.componentWillMount} />)
                 });
                 if (callback){
                     callback()

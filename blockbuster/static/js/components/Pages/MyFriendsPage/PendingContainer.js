@@ -6,15 +6,15 @@ import RespondToPending from './RespondToPending'
 import FlatButton from 'material-ui/FlatButton'
 
 export default class PendingContainer extends React.Component{
-    constructor(object,refresh, changePage){
-        super(object,refresh, changePage);
+    constructor(object,refresh){
+        super(object,refresh);
     }
 
     render(){
         return(
             <li>
                 <Card className="textField" style={{paddingBottom:'5px'}}>
-                    <CardHeader title={<NameLink changePage={this.props.changePage} object={this.props.object['initiator']}/>}/>
+                    <CardHeader title={<NameLink object={this.props.object['initiator']}/>}/>
                     <RespondToPending relation={this.props.object} refresh={this.props.refresh}/>
                 </Card>
             </li>

@@ -2,7 +2,7 @@ import React from 'react'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import {List, ListItem} from 'material-ui/List';
-import GetAllUsersRequest from '../../Requests/GetAllUsersRequest'
+import GetAuthorRequest from '../../Requests/GetAuthorRequest'
 import SearchListItem from './SearchListItem'
 
 export default class SearchUserDialog extends React.Component{
@@ -20,14 +20,12 @@ export default class SearchUserDialog extends React.Component{
 
     getAllUsers(){
         const cb= (objectList) =>{
-            console.log("search dialog");
-            console.log(objectList)
             this.setState({items: objectList.map(
                 (object)=><SearchListItem key={object['username']} object={object} changePage={this.props.changePage}/>
             )})
         };
 
-        GetAllUsersRequest.get(cb)
+        GetAuthorRequest.getAll(cb)
     }
 
     render(){

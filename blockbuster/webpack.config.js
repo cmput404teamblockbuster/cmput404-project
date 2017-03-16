@@ -13,13 +13,15 @@ module.exports = {
     context: __dirname,
     
     //our app's entry point
-    /*to make multiple bundles:
-    * entry: {
-    *    main: './static/js/index.js'
-    *    singlePost: './static/js/post.js'
-    * }
-    * */
-    entry: './static/js/index.js',
+    //to make multiple bundles:
+     entry: {
+         myStream: './static/js/components/Pages/MyStreamPage/index.js',
+         myFriends: './static/js/components/Pages/MyFriendsPage/index.js',
+         profile: './static/js/components/Pages/ProfilePage/index.js',
+         login: './static/js/components/Pages/LoginPage/index.js',
+     },
+
+    // entry: './static/js/index.js',
     
     output:{
         //where you want your compiled bundle to be stored

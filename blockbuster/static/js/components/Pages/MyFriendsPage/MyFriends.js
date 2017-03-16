@@ -6,9 +6,8 @@ import PendingContainer from './PendingContainer'
 import SendFollowCard from './SendFollowCard'
 
 export default class MyFriends extends React.Component{
-	constructor(object, changePage){
-        super(object, changePage);
-        console.log(this.props)
+	constructor(object){
+        super(object);
         this.state = {pendings:<li/>};
         this.componentWillMount = this.componentWillMount.bind(this);
     }
@@ -18,7 +17,7 @@ export default class MyFriends extends React.Component{
         GetMyPendingRequest.getPending(this.props.object['uuid'],
             (PendingList)=>{
                 this.setState({pendings:PendingList.map(
-                    (pending, index)=> <PendingContainer key={index++} object={pending} refresh={this.componentWillMount} changePage={this.props.changePage}/>)
+                    (pending, index)=> <PendingContainer key={index++} object={pending} refresh={this.componentWillMount}/>)
                 });
                 if (callback){
                     callback()
@@ -37,7 +36,7 @@ export default class MyFriends extends React.Component{
                        		<SendFollowCard object={this.props.object}/>
                     	</li>
                     	<div>
-                        	<h4 id="pendingHeader"style={{color:'#757575', textAlign:'center'}}> Received Friendship Requests Go Here: </h4> 
+                        	<h4 id="pendingHeader" style={{color:'#757575', textAlign:'center'}}> Received Friendship Requests Go Here: </h4>
                         </div>
                     	{this.state.pendings}
                 </ul>

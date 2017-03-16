@@ -27,6 +27,13 @@ module.exports = {
         return !!localStorage.token
     },
 
+    checkLogin: function () {
+        if( ! this.loggedIn() ){
+            // go to login page
+            window.location.assign("/login/");
+        }
+    },
+
     getToken: function(username, pass, cb) {
         var cookie = require('react-cookie');
         const csrftoken = cookie.load('csrftoken');
@@ -41,19 +48,5 @@ module.exports = {
                     token: res.data.token
                 })
             });
-    //     $.ajax({
-    //         type: 'POST',
-    //         url: '/api/obtain-auth-token/',
-    //         data: {
-    //             username: username,
-    //             password: pass
-    //         },
-    //         success: function(res){
-    //             cb({
-    //                 authenticated: true,
-    //                 token: res.token
-    //             })
-    //         }
-    //     })
     },
 }

@@ -2,15 +2,16 @@ import React from 'react';
 
 export default class NameLink extends React.Component{
     // changePage, name
-    constructor(changePage, object){
-        super(changePage,object);
+    constructor(object){
+        super(object);
 
         this.handleClick = this.handleClick.bind(this);
 
     }
 
     handleClick(){
-        this.props.changePage(3,this.props.object)
+        const path = '/profile?' + this.props.object['uuid'];
+        window.location.assign(path)
     }
 
     render(){

@@ -10,7 +10,7 @@ export default class SearchListItem extends React.Component{
     changePage(){
         console.log("search list item");
         console.log(this.props.object);
-        this.props.changePage(3,this.props.object);
+        this.props.changePage(this.props.object);
     }
 
     render(){

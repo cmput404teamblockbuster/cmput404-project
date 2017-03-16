@@ -22,7 +22,7 @@ module.exports = {
             })
     },
 
-    getAuthor:function (p1,p2,cb,cb2) {
+    getMe:function (p1, p2, cb, cb2) {
         var cookie = require('react-cookie');
         var axios = require('axios');
         const csrfToken = cookie.load('csrftoken');

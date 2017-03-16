@@ -5,9 +5,8 @@ import MakePost from './MakePost'
 import GetStreamRequest from '../../Requests/GetStreamRequest'
 import PostContainer from '../../SubComponents/PostList/PostContainer'
 export default class MyStream extends React.Component{
-    constructor(changePage){
-        // props: changePage
-        super(changePage);
+    constructor(){
+        super();
         this.state = {posts:<li/>};
         this.componentWillMount = this.componentWillMount.bind(this);
     }
@@ -16,7 +15,7 @@ export default class MyStream extends React.Component{
         GetStreamRequest.get(
             (PostList)=>{
                 this.setState({posts:PostList.map(
-                    (post)=> <PostContainer changePage={this.props.changePage} key={post['uuid']} object={post} refresh={this.componentWillMount}/>)
+                    (post)=> <PostContainer key={post['uuid']} object={post} refresh={this.componentWillMount}/>)
                 })
                 if (callback){
                     callback()

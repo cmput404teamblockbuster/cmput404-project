@@ -5,10 +5,10 @@ import Divider from 'material-ui/Divider'
 
 export default class CommentSection extends React.Component{
     // props: object: a list of object,  postid
-    constructor(object,refresh,postid, changePage){
-        super(object,refresh,postid, changePage);
+    constructor(object,refresh,postid){
+        super(object,refresh,postid);
         this.state = {comments: this.props.object.map((comment)=>
-            <Comment key={comment['uuid']} object={comment} changePage={this.props.changePage}/> )};
+            <Comment key={comment['uuid']} object={comment} /> )};
 
         this.refresh = this.refresh.bind(this);
     }
@@ -16,7 +16,7 @@ export default class CommentSection extends React.Component{
     refresh(){
         this.props.refresh(
             ()=>{this.setState({comments: this.props.object.map((comment)=>
-                <Comment key={comment['uuid']} object={comment} changePage={this.props.changePage}/>)})
+                <Comment key={comment['uuid']} object={comment} />)})
 
         });
 

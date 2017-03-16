@@ -2,14 +2,11 @@ import React from 'react';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import RaisedButton from 'material-ui/RaisedButton';
 import SearchIcon from 'material-ui/svg-icons/action/search';
-import TextField from 'material-ui/TextField'
 import auth from '../Requests/auth';
-import SearchUserDialog from './Search/SearchUserDialog';
+import SearchUserDialog from '../SubComponents/Search/SearchUserDialog';
 export default class TopBar extends React.Component{
-    constructor(change, checkLogin){
-        // change is a function that will change the page
-        // checkLogin: call back function to finish login
-        super(change, checkLogin);
+    constructor(){
+        super();
 
         this.state = { dialog:<div/>};
         this.Stream = this.Stream.bind(this);
@@ -22,28 +19,29 @@ export default class TopBar extends React.Component{
     }
 
     Stream(){
-        this.props.change(0)
+        window.location.assign("/");
     }
 
     Friends(){
-        this.props.change(1)
+        window.location.assign("/myFriends/");
     }
     Profile(){
-        this.props.change(2)
+        window.location.assign("/profile/");
     }
 
     Logout(){
         auth.logout();
-        this.props.checkLogin()
+        auth.checkLogin();
     }
 
-    changePage(index, object){
+    changePage(object){
         this.CloseSearch();
-        this.props.change(index,object);
+        const path = "/profile?"+object['uuid'];
+        window.location.assign(path);
     }
 
     CloseSearch(){
-        this.setState({dialog:<SearchUserDialog open={false} closeAction={this.CloseSearch} changePage={this.changePage}/>})
+        this.setState({dialog: <SearchUserDialog open={false} closeAction={this.CloseSearch} changePage={this.changePage}/>})
     }
 
     OpenSearch() {
