@@ -13,12 +13,20 @@ module.exports = {
     context: __dirname,
     
     //our app's entry point
+    /*to make multiple bundles:
+    * entry: {
+    *    main: './static/js/index.js'
+    *    singlePost: './static/js/post.js'
+    * }
+    * */
     entry: './static/js/index.js',
     
     output:{
         //where you want your compiled bundle to be stored
         path: path.resolve('./static/bundles'),
         //naming convention webpack should use for your files
+        /*publicPath: 'http://localhost:8000/'*/
+
         filename: "[name].js",
     },
     watch: true,
@@ -42,6 +50,13 @@ module.exports = {
                     presets: ['react']
                 }
             },
+            /* we can add another loader here to render the static image file */
+            // from :https://medium.com/@rajaraodv/webpack-the-confusing-parts-58712f8fcad9#.4mcf8uagv
+            /*{
+                test: /\.png?$/,
+                loader: "url-loader?limit=1"
+            },*/
+
         ]
     },
     

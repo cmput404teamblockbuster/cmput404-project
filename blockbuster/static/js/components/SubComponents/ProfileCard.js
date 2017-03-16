@@ -4,7 +4,7 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import Divider from 'material-ui/Divider'
 import GetRelationshipWithMeRequest from './GetRelationshipWithMeRequest'
 import WithdrawPendingToolbar from './RelationshipToolbars/WithdrawPendingToolbar'
-import AcceptRejcetToolbar from './RelationshipToolbars/AcceptRejcetToolbar'
+import AcceptRejectToolbar from './RelationshipToolbars/AcceptRejectToolbar'
 import UnFriendToolbar from './RelationshipToolbars/UnFriendToolbar'
 import BefriendToolbar from './RelationshipToolbars/BefriendToolbar'
 import UnfollowToolbar from './RelationshipToolbars/UnfollowToolbar'
@@ -39,7 +39,7 @@ export default class ProfileCard extends React.Component {
             if (res['receiver']['username'] === this.props.object['username']){
                 this.setState({button:<WithdrawPendingToolbar object={res}/>})
             } else {
-                this.setState({button:<AcceptRejcetToolbar object={res}/>})
+                this.setState({button:<AcceptRejectToolbar object={res}/>})
             }
 
         } else if (res['status'] === "status_following"){
