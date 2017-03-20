@@ -36,6 +36,7 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
     serializer_class = UserRelationshipSerializer
     model = UserRelationship
     permission_classes = (IsAuthenticated,)
+    queryset = Profile.objects.all()
 
     def list(self, request, uuid):
         """

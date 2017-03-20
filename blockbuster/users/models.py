@@ -14,7 +14,7 @@ class Profile(models.Model):
                                 on_delete=models.CASCADE)  # http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
     username = models.CharField(max_length=30, blank=False, null=False, default=None,
                                 editable=False)  # This will be copied from user.username
-    github = models.URLField(null=True)  # github url can be null
+    github = models.URLField(null=True, blank=True)  # github url can be null
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     @property
@@ -56,7 +56,7 @@ class Profile(models.Model):
 
     @receiver(post_save, sender=User)
     def save_user_profile(sender, instance, **kwargs):
-        Profile.objects.get(user=instance).save()
+        Profile.objects.get(user=instance, username=instance.username).save()
 
 
 class UserRelationship(models.Model):
