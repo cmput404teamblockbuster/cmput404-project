@@ -4,11 +4,14 @@ from posts.models import Post
 from users.models import Profile
 from posts.constants import PRIVACY_PUBLIC
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+
 
 class ProfilePostsListView(APIView):
     """
     List all posts available to currently authenticated user. This is their "stream".
     """
+    permission_classes = (IsAuthenticated,)
     def get(self, request):
         # http://www.django-rest-framework.org/tutorial/3-class-based-views/#rewriting-our-api-using-class-based-views
         user = request.user

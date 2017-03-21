@@ -33,14 +33,19 @@ post_detail_comments = CommentViewSet.as_view({
 author_friends_list = UserRelationshipViewSet.as_view({
     'get': 'list',
 })
-author_friend_requests = UserRelationshipFriendRequestViewSet.as_view({
+author_friend_requests_list = UserRelationshipFriendRequestViewSet.as_view({
     'get': 'list',
     'post': 'create_or_update',
+    'delete': 'destroy'
+})
+author_friend_requests_detail = UserRelationshipFriendRequestViewSet.as_view({
+    'delete': 'destroy',
 })
 
 urlpatterns = [
     url(r'^register/$', RegisterUserView.as_view(), name='register_user'),
-    url(r'^friendrequest/$', author_friend_requests, name='friend-request'),
+    url(r'^friendrequest/$', author_friend_requests_list, name='friend-request'),
+    url(r'^friendrequest/(?P<pk>[0-9]+)/$', author_friend_requests_detail, name='friend-request'),
     url(r'^posts/$', post_list, name='post-list'),
     url(r'^posts/(?P<uuid>[^/]+)/$', post_detail, name='post-detail'),
     url(r'^posts/(?P<uuid>[^/]+)/comments/$', post_detail_comments, name='post-detail-comments'),
