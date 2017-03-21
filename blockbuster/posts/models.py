@@ -24,10 +24,7 @@ class Post(models.Model):
         """
         Returns: a qs of users that the post is viewable to
         """
-        if self.privacy == PRIVACY_PUBLIC:
-            return []
-
-        elif self.privacy == PRIVATE_TO_ALL_FRIENDS:
+        if self.privacy == PRIVATE_TO_ALL_FRIENDS:
             return [friend.id for friend in self.author.friends]
 
         elif self.privacy == PRIVATE_TO_ONE_FRIEND:

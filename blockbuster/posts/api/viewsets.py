@@ -40,7 +40,6 @@ class PostViewSet(viewsets.ModelViewSet):
     model = Post
 
     def create(self, *args, **kwargs):
-        # data = JSONParser().parse(self.request)
         data = self.request.data
         serializer = PostSerializer(data=data)
         if serializer.is_valid():

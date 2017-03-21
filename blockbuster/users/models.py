@@ -4,6 +4,7 @@ from core.utils import django_choice_options
 from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDING, \
     RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from posts.models import Post
+from posts.constants import PRIVACY_UNLISTED
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -34,7 +35,7 @@ class Profile(models.Model):
         Returns: the user's stream
         """
         # TODO this should be optimized eventually
-        stream = [post for post in Post.objects.filter(author=self)]
+        stream = [post for post in Post.objects.filter(author=self).exclude(privacy=PRIVACY_UNLISTED)]
         for friend in self.friends:
             posts = Post.objects.filter(author=friend.id)
             for post in posts:
@@ -71,18 +72,6 @@ class UserRelationship(models.Model):
 
     class Meta:
         unique_together = (('initiator', 'receiver'),)
-
-    # def delete(self):
-    #     """
-    #     overwrite delete method so unfriending keeps the other friend following as the initiator
-    #     """
-    #     if self.status == RELATIONSHIP_STATUS_FRIENDS:
-    #         if self.initiator == 'logged in user':  # TODO this will have to be done in a serializer
-    #             new_friendship = UserRelationship(initiator=self.receiver, receiver=self.initiator,
-    #                                               status=RELATIONSHIP_STATUS_FOLLOWING)
-    #             new_friendship.save()
-    #
-    #     super(UserRelationship, self).delete()
 
     def __str__(self):
         return '%s -> %s' % (self.initiator, self.receiver)
