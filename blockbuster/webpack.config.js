@@ -19,6 +19,7 @@ module.exports = {
          myFriends: './static/js/components/Pages/MyFriendsPage/index.js',
          profile: './static/js/components/Pages/ProfilePage/index.js',
          login: './static/js/components/Pages/LoginPage/index.js',
+         singlePost: './static/js/components/Pages/SinglePostPage/index.js'
      },
 
     // entry: './static/js/index.js',

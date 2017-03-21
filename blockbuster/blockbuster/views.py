@@ -17,6 +17,9 @@ def myFriends(request):
 def profile(request):
     return render(request, 'profile.html')
 
+def singlePost(request):
+    return render(request, 'singlePost.html')
+
 
 # def login_view(request):
 #     """

@@ -22,7 +22,7 @@ class Main extends React.Component{
             // if success:
             if(document.referrer){
                 // back to where you come from
-                window.history.go(-1);
+                window.location.assign(document.referrer)
             } else {
                 // go to home page
                 window.location.assign("/");
