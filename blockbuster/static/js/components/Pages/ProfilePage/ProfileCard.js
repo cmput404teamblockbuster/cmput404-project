@@ -32,19 +32,26 @@ export default class ProfileCard extends React.Component {
             this.setState({button: <BefriendToolbar receiver={this.props.object} refresh={this.changeButton}/>})
 
         } else if (res['status'] === "status_friends"){
-            this.setState({button: <UnFriendToolbar object={res}/>})
+            this.setState({button: <UnFriendToolbar object={res} refresh={this.changeButton}/>})
 
         } else if (res['status'] === "status_friendship_pending"){
             // Cancel Request(not in the requirements) or Reject/Accept Pending request
             if (res['receiver']['username'] === this.props.object['username']){
-                this.setState({button:<WithdrawPendingToolbar object={res}/>})
+                this.setState({button:<WithdrawPendingToolbar object={res} refresh={this.changeButton}/>})
             } else {
-                this.setState({button:<AcceptRejectToolbar object={res}/>})
+                this.setState({button:<AcceptRejectToolbar object={res} refresh={this.changeButton}/>})
             }
 
         } else if (res['status'] === "status_following"){
             // UnFollow
-            this.setState({button:UnfollowToolbar})
+            if (res['receiver']['username'] === this.props.object['username']){
+                // if I am the initiator
+                this.setState({button:<UnfollowToolbar/>})
+            } else {
+                // if I am the receiver
+                this.setState({button:<BefriendToolbar receiver={this.props.object} refresh={this.changeButton}/>})
+            }
+            
         }
     }
 

@@ -29,8 +29,8 @@ export default class AcceptRejectToolbar extends React.Component{
                     <ToolbarTitle text="Friend Request Received"/>
                 </ToolbarGroup>
                 <ToolbarGroup>
-                    <RaisedButton label="Accept"/>
-                    <RaisedButton label="Ignore"/>
+                    <RaisedButton label="Accept" onTouchTap={this.sendAcceptRequest}/>
+                    <RaisedButton label="Ignore" onTouchTap={this.sendIgnoreRequest}/>
                 </ToolbarGroup>
             </Toolbar>
         );
