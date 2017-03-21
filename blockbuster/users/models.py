@@ -72,17 +72,17 @@ class UserRelationship(models.Model):
     class Meta:
         unique_together = (('initiator', 'receiver'),)
 
-    def delete(self):
-        """
-        overwrite delete method so unfriending keeps the other friend following as the initiator
-        """
-        if self.status == RELATIONSHIP_STATUS_FRIENDS:
-            if self.initiator == 'logged in user':  # TODO this will have to be done in a serializer
-                new_friendship = UserRelationship(initiator=self.receiver, receiver=self.initiator,
-                                                  status=RELATIONSHIP_STATUS_FOLLOWING)
-                new_friendship.save()
-
-        super(UserRelationship, self).delete()
+    # def delete(self):
+    #     """
+    #     overwrite delete method so unfriending keeps the other friend following as the initiator
+    #     """
+    #     if self.status == RELATIONSHIP_STATUS_FRIENDS:
+    #         if self.initiator == 'logged in user':  # TODO this will have to be done in a serializer
+    #             new_friendship = UserRelationship(initiator=self.receiver, receiver=self.initiator,
+    #                                               status=RELATIONSHIP_STATUS_FOLLOWING)
+    #             new_friendship.save()
+    #
+    #     super(UserRelationship, self).delete()
 
     def __str__(self):
         return '%s -> %s' % (self.initiator, self.receiver)
