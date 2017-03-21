@@ -37,6 +37,7 @@
   "dependencies": {
     "axios": "^0.15.3",
     "material-ui": "^0.17.0",
+    "moment": "^2.18.0",
     "react-cookie": "^1.0.4",
     "react-tap-event-plugin": "^2.0.1"
   }

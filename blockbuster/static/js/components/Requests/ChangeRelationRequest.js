@@ -33,10 +33,12 @@ module.exports = {
     },
 
     deleteRelation: function(relationshipObject, callback){
-        const path = '/api/friendrequest/';
+        if (!relationshipObject.id){
+            alert("change relationship request")
+        }
+        const path = '/api/friendrequest/'+relationshipObject.id+'/';
 
         axios.delete(path, {
-            data: relationshipObject,
             headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}
         })
             .then((res)=>{

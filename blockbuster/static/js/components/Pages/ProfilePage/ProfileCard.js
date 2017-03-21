@@ -46,7 +46,7 @@ export default class ProfileCard extends React.Component {
             // UnFollow
             if (res['receiver']['username'] === this.props.object['username']){
                 // if I am the initiator
-                this.setState({button:<UnfollowToolbar/>})
+                this.setState({button:<UnfollowToolbar object={res} refresh={this.changeButton}/>})
             } else {
                 // if I am the receiver
                 this.setState({button:<BefriendToolbar receiver={this.props.object} refresh={this.changeButton}/>})
