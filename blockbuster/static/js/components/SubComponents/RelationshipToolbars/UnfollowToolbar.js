@@ -22,7 +22,7 @@ export default class UnfollowToolbar extends React.Component{
                     <ToolbarTitle text="Following"/>
                 </ToolbarGroup>
                 <ToolbarGroup>
-                    <RaisedButton label="Unfollow(not done)" onTouchTap={this.sendRequest}/>
+                    <RaisedButton label="Unfollow" onTouchTap={this.sendRequest}/>
                 </ToolbarGroup>
             </Toolbar>
         );

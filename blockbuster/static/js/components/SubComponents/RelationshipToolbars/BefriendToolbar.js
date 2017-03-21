@@ -19,7 +19,7 @@ export default class BefriendToolbar extends React.Component{
         return(
             <Toolbar >
                 <ToolbarGroup>
-                    <ToolbarTitle text="Not A Friend"/>
+                    {/*<ToolbarTitle text="Not A Friend"/>*/}
                 </ToolbarGroup>
                 <ToolbarGroup>
                     <RaisedButton label="Send Friend Request" onTouchTap={this.sendRequest}/>

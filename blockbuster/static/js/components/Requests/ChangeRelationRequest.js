@@ -43,7 +43,11 @@ module.exports = {
         })
             .then((res)=>{
                 if (callback){
-                    callback(res.data);
+                    if (res.data==="success"){
+                        callback("No Relationship Found.")
+                    } else {
+                        callback(res.data);
+                    }
                 }
             })
     },
