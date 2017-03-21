@@ -5,14 +5,18 @@ import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar'
 import FlatButton from 'material-ui/FlatButton'
 import PostVisibility from '../../SubComponents/PostList/PostVisibility'
 import CreatePostRequest from '../../Requests/CreatePostRequest'
+import SelectAuthorButton from './SelectAuthorButton'
 
 export default class MakePost extends React.Component {
     constructor(refresh) {
         // props: refresh: callback function to re-render MyStream
         super(refresh);
 
-        this.state = {content:"", visibility:"privacy_public"};
+        this.state = {content:"", visibility:"privacy_public", button: false};
+        this.author = undefined;
+
         this.changeContent = this.changeContent.bind(this);
+        this.changeAuthor = this.changeAuthor.bind(this);
         this.changeVisibility = this.changeVisibility.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.afterSubmit = this.afterSubmit.bind(this);
@@ -20,23 +24,45 @@ export default class MakePost extends React.Component {
 
 
     changeContent(data){
-        this.setState({content:data});
+        this.setState({content:data, button:false});
+        this.author = undefined;
     }
 
+    changeAuthor(data){
+        this.author = data;
+        console.log("makePost: ", data)
+    }
     changeVisibility(data){
-        this.setState({visibility:data});
-        console.log(data)
+        if (data === "private_to_one_friend"){
+            // TODO: add props to the button
+            this.setState({button: <SelectAuthorButton changeAuthor={this.changeAuthor}/>})
+        } else {
+            this.setState({visibility:data, button:false});
+        }
+
+
     }
 
     afterSubmit(){
-        this.setState({content:""});
+        if (this.state.visibility === "URL_post"){
+            //TODO: Return user a url here
+        }
+        this.setState({content:"", visibility:"privacy_public", button: false});
+        this.author = undefined;
         this.child.changeTab();
         this.props.refresh();
     }
 
     handleSubmit(){
         if (this.state.content !== ""){
-            CreatePostRequest.send(this.state.content,this.state.visibility, this.afterSubmit)
+            if (this.state.visibility === "URL_post"){
+                //TODO: post an unlisted post
+            } else if (this.state.visibility === "private_to_one_friend" && this.author){
+                // TODO: post to one single user
+            } else {
+                CreatePostRequest.send(this.state.content,this.state.visibility, this.afterSubmit)
+            }
+
         }
     }
 
@@ -48,7 +74,9 @@ export default class MakePost extends React.Component {
                 <CardMedia>
                     <MakePostContent ref={(input)=>{this.child=input}} change={this.changeContent}/>
                     <Toolbar style={{backgroundColor: '#424242'}}>
-                        <ToolbarGroup/>
+                        <ToolbarGroup>
+                            {this.state.button}
+                        </ToolbarGroup>
                         <ToolbarGroup >
                             <PostVisibility change={this.changeVisibility}/>
                             <FlatButton style={{margin: '0'}} label="Submit" onTouchTap={this.handleSubmit}/>

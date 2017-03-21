@@ -4,7 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import ChangeRelationRequest from '../../Requests/ChangeRelationRequest'
 
 export default class BefriendToolbar extends React.Component{
-    //props: receiver { receiver: Object, status: "status_friendship_pending" }
+    //props: receiver { receiver: Object, status: "status_friendship_pending", id }
     constructor(receiver,refresh){
         super(receiver,refresh);
 
@@ -19,7 +19,7 @@ export default class BefriendToolbar extends React.Component{
         return(
             <Toolbar >
                 <ToolbarGroup>
-                    <ToolbarTitle text="Not A Friend"/>
+                    {/*<ToolbarTitle text="Not A Friend"/>*/}
                 </ToolbarGroup>
                 <ToolbarGroup>
                     <RaisedButton label="Send Friend Request" onTouchTap={this.sendRequest}/>

@@ -104,6 +104,6 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         else:
             instance.delete()
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(data="success",status=status.HTTP_200_OK)
 
 
