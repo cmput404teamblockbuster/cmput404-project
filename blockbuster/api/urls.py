@@ -44,19 +44,19 @@ author_friend_requests_detail = UserRelationshipFriendRequestViewSet.as_view({
 
 urlpatterns = [
     url(r'^register/$', RegisterUserView.as_view(), name='register_user'),
-    url(r'^friendrequest/$', author_friend_requests_list, name='friend-request'),
+    url(r'^friendrequest/$', author_friend_requests_list, name='friend-request'), # TODO DOCUMENT
     url(r'^friendrequest/(?P<pk>[0-9]+)/$', author_friend_requests_detail, name='friend-request'),
-    url(r'^posts/$', post_list, name='post-list'),
-    url(r'^posts/(?P<uuid>[^/]+)/$', post_detail, name='post-detail'),
-    url(r'^posts/(?P<uuid>[^/]+)/comments/$', post_detail_comments, name='post-detail-comments'),
-    url(r'^author/$', my_friends_list, name='my-friends-list'),
-    url(r'^author/posts/$', ProfilePostsListView.as_view(), name='profile-post-list'),
+    url(r'^posts/$', post_list, name='post-list'), # TODO DOCUMENT
+    url(r'^posts/(?P<uuid>[^/]+)/$', post_detail, name='post-detail'), # TODO DOCUMENT
+    url(r'^posts/(?P<uuid>[^/]+)/comments/$', post_detail_comments, name='post-detail-comments'), # TODO DOCUMENT
+    url(r'^author/$', my_friends_list, name='my-friends-list'), # TODO DOCUMENT
+    url(r'^author/posts/$', ProfilePostsListView.as_view(), name='profile-post-list'), # TODO DOCUMENT
     url(r'^author/me/$', AuthenticatedUserProfileView.as_view(), name='auth_profile_detail'),
     url(r'^author/me/relationship/(?P<uuid>[^/]+)/$', AuthenticatedUserRelationshipView.as_view(), name='authenticated-user-relationship-detail'),
     url(r'^author/all/$', profile_list, name='all_users'),
-    url(r'^author/(?P<uuid>[^/]+)/$', profile_detail, name='profile-detail'),
-    url(r'^author/(?P<uuid>[^/]+)/posts/$', ProfilePostDetailView.as_view(), name='profile-post-detail'),
-    url(r'^author/(?P<uuid>[^/]+)/friends/$', author_friends_list, name='author-friends-list'),
-    url(r'^author/(?P<uuid>[^/]+)/friends/(?P<uuid_2>[^/]+)/$', UserRelationshipCheckView.as_view(), name='check_author_relationship'),
+    url(r'^author/(?P<uuid>[^/]+)/$', profile_detail, name='profile-detail'), # TODO DOCUMENT
+    url(r'^author/(?P<uuid>[^/]+)/posts/$', ProfilePostDetailView.as_view(), name='profile-post-detail'), # TODO DOCUMENT
+    url(r'^author/(?P<uuid>[^/]+)/friends/$', author_friends_list, name='author-friends-list'), # TODO DOCUMENT
+    url(r'^author/(?P<uuid>[^/]+)/friends/(?P<uuid_2>[^/]+)/$', UserRelationshipCheckView.as_view(), name='check_author_relationship'), # TODO DOCUMENT
 
 ]
