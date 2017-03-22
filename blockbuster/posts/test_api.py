@@ -1,19 +1,22 @@
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase, APIClient
-from users.factories import ProfileModelFactory, UserModelFactory
+from users.factories import ProfileModelFactory, UserModelFactory, FriendsUserRelationshipModelFactory
 from rest_framework import status
 from posts.models import Post
-from posts.constants import PRIVACY_PUBLIC
+from posts.constants import PRIVACY_PUBLIC, PRIVATE_TO_ME, PRIVATE_TO_ALL_FRIENDS, PRIVACY_UNLISTED
+from posts.factories import BasePostModelFactory
 
 
 class PostViewSetTestCase(APITestCase):
     client = APIClient()
+
     # from example http://www.django-rest-framework.org/api-guide/testing/#example
 
     def test__create_post_sucess(self):
         # author = ProfileModelFactory()
         # GIVEN an authenticated user chooses to make a post
         author = UserModelFactory()
-        self.client.force_authenticate(user=author) # http://www.django-rest-framework.org/api-guide/testing/#force_authenticateusernone-tokennone
+        self.client.force_authenticate(
+            user=author)  # http://www.django-rest-framework.org/api-guide/testing/#force_authenticateusernone-tokennone
         data = dict(
             author=dict(
                 uuid=str(author.profile.uuid),
@@ -29,3 +32,75 @@ class PostViewSetTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Post.objects.count(), 1)
+
+    def test_retrieve_private_post_anon_user_fails(self):
+        # GIVEN an unauthed user
+        user = UserModelFactory()
+        post = BasePostModelFactory(privacy=PRIVATE_TO_ME, author=user.profile)
+
+        # WHEN they try to view details of the post
+        url = 'http://127.0.0.1:8000/api/posts/%s/' % post.uuid
+        response = self.client.get(url)
+
+        # THEN an error should be raised
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, 'You do not have permission to see this post.')
+
+    def test_retrieve_private_post_authed_user_fails(self):
+        # GIVEN an authed user that is not friends with a user that makes a friend post
+        user = UserModelFactory()
+        post = BasePostModelFactory(privacy=PRIVATE_TO_ALL_FRIENDS, author=user.profile)
+        self.client.force_authenticate(user=user)
+
+        # WHEN they try to view details of the post
+        url = 'http://127.0.0.1:8000/api/posts/%s/' % post.uuid
+        response = self.client.get(url)
+
+        # THEN an error should be raised
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, 'You do not have permission to see this post.')
+
+    def test_retrieve__post_authed_user_friends_success(self):
+        # GIVEN an authed user that is friends with a user that makes a friend post
+        user = UserModelFactory()
+        authed_user = UserModelFactory()
+        post = BasePostModelFactory(privacy=PRIVATE_TO_ALL_FRIENDS, author=user.profile)
+        friendship = FriendsUserRelationshipModelFactory(initiator=user.profile, receiver=authed_user.profile)
+        self.client.force_authenticate(user=authed_user)
+
+        # WHEN they try to view details of the post
+        url = 'http://127.0.0.1:8000/api/posts/%s/' % post.uuid
+        response = self.client.get(url)
+
+        # THEN the post should be retrieved
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('uuid'), str(post.uuid))
+
+    def test_retrieve_unlisted_post_anon_user_success(self):
+        # GIVEN an unauthed user requests a post that an author made to be unlisted
+        user = UserModelFactory()
+        post = BasePostModelFactory(privacy=PRIVACY_UNLISTED, author=user.profile)
+
+        # WHEN they try to view details of the post
+        url = 'http://127.0.0.1:8000/api/posts/%s/' % post.uuid
+        response = self.client.get(url)
+
+        # THEN the post should be retrieved
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('uuid'), str(post.uuid))
+
+    def test_unlisted_post_does_not_show_up_in_posts_endpoint(self):
+        # GIVEN an unlsited post
+        user = UserModelFactory()
+        unlisted_post = BasePostModelFactory(privacy=PRIVACY_UNLISTED, author=user.profile)
+        public_post = BasePostModelFactory(author=user.profile)
+
+
+        # WHEN they try to view a list of posts
+        url = 'http://127.0.0.1:8000/api/posts/'
+        response = self.client.get(url)
+
+        # THEN the unlisted post should not be returned
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0].get('uuid'), str(public_post.uuid))

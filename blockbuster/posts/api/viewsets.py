@@ -2,9 +2,8 @@ from rest_framework import viewsets, status
 from posts.api.serializers import PostSerializer
 from posts.models import Post
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from posts.constants import PRIVACY_PUBLIC
+from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -35,9 +34,9 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'uuid'
     lookup_value_regex = '[^/]+'
-    # lookup_value_regex = '[0-9a-f]{32}'
     serializer_class = PostSerializer
     model = Post
+    queryset = Post.objects.all()
 
     def create(self, *args, **kwargs):
         data = self.request.data
@@ -48,9 +47,27 @@ class PostViewSet(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
 
-    def get_queryset(self):
+    def list(self, *args, **kwargs):
         """
-        if no specific post object is specified in the url params, then all public posts will be returned
+        all public posts will be returned
         """
-        return Post.objects.filter(privacy=PRIVACY_PUBLIC)
+        data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
+        serializer = PostSerializer(data, many=True)
+        return Response(data=serializer.data)
+
+    def retrieve(self, *args, **kwargs):
+        """
+        Given a valid uuid, it will display the post to the user as long as it is viewable to them.
+        """
+        user = self.request.user
+        post = Post.objects.get(uuid=kwargs.get('uuid'))
+        if post.privacy == PRIVACY_PUBLIC or post.privacy == PRIVACY_UNLISTED:
+            serializer = PostSerializer(post)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        if not user.is_anonymous():
+            if post.viewable_for_author(user.profile):
+                serializer = PostSerializer(post)
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        return Response('You do not have permission to see this post.', status=status.HTTP_403_FORBIDDEN)
 
