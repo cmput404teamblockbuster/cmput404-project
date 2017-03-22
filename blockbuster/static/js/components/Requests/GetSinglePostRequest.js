@@ -12,7 +12,7 @@ module.exports = {
         const url = '/api/posts/'+id+'/';
 
         axios.get(url,
-            {headers:{'X-CSRFToken':csrfToken,'Authorization':userToken}})
+            {headers:{'X-CSRFToken':csrfToken}})
             .then((res)=>{
                 cb(res.data);
                 console.log("get single post", res.data);

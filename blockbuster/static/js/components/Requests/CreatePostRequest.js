@@ -17,7 +17,7 @@ module.exports = {
             'Content-Type':'application/json',
             'Authorization':userToken}})
             .then((res)=>{
-                cb();
+                cb(res.data);
                 console.log(res);
             })
     },
