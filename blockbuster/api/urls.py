@@ -21,7 +21,7 @@ my_friends_list = MyFriendsProfilesViewSet.as_view({
     'get': 'list'
 })
 profile_list = ProfileViewSet.as_view({
-    'get':'list'
+    'get': 'list'
 })
 profile_detail = ProfileViewSet.as_view({
     'get': 'retrieve'
