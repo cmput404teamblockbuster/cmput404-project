@@ -26,7 +26,7 @@ class PostViewSetTestCase(APITestCase):
             ),
             content='TEST CONTENT'
         )
-        url = 'http://127.0.0.1:8000/api/posts/'
+        url = '/api/posts/'
 
         response = self.client.post(url, data, format='json')
 
@@ -39,7 +39,7 @@ class PostViewSetTestCase(APITestCase):
         post = BasePostModelFactory(privacy=PRIVATE_TO_ME, author=user.profile)
 
         # WHEN they try to view details of the post
-        url = 'http://127.0.0.1:8000/api/posts/%s/' % post.uuid
+        url = '/api/posts/%s/' % post.uuid
         response = self.client.get(url)
 
         # THEN an error should be raised
@@ -53,7 +53,7 @@ class PostViewSetTestCase(APITestCase):
         self.client.force_authenticate(user=user)
 
         # WHEN they try to view details of the post
-        url = 'http://127.0.0.1:8000/api/posts/%s/' % post.uuid
+        url = '/api/posts/%s/' % post.uuid
         response = self.client.get(url)
 
         # THEN an error should be raised
@@ -69,7 +69,7 @@ class PostViewSetTestCase(APITestCase):
         self.client.force_authenticate(user=authed_user)
 
         # WHEN they try to view details of the post
-        url = 'http://127.0.0.1:8000/api/posts/%s/' % post.uuid
+        url = '/api/posts/%s/' % post.uuid
         response = self.client.get(url)
 
         # THEN the post should be retrieved
@@ -82,7 +82,7 @@ class PostViewSetTestCase(APITestCase):
         post = BasePostModelFactory(privacy=PRIVACY_UNLISTED, author=user.profile)
 
         # WHEN they try to view details of the post
-        url = 'http://127.0.0.1:8000/api/posts/%s/' % post.uuid
+        url = '/api/posts/%s/' % post.uuid
         response = self.client.get(url)
 
         # THEN the post should be retrieved
@@ -97,7 +97,7 @@ class PostViewSetTestCase(APITestCase):
 
 
         # WHEN they try to view a list of posts
-        url = 'http://127.0.0.1:8000/api/posts/'
+        url = '/api/posts/'
         response = self.client.get(url)
 
         # THEN the unlisted post should not be returned

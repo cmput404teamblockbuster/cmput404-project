@@ -29,7 +29,7 @@ class CommentViewSetTestCase(APITestCase):
                 uuid=post_obj.uuid,
             )
         )
-        url = 'http://127.0.0.1:8000/api/posts/%s/comments/' % post_obj.uuid
+        url = '/api/posts/%s/comments/' % post_obj.uuid
 
         # WHEN the comment is posted
         response = self.client.post(url, data, format='json')
@@ -62,7 +62,7 @@ class CommentViewSetTestCase(APITestCase):
                 uuid=post_obj.uuid,
             )
         )
-        url = 'http://127.0.0.1:8000/api/posts/%s/comments/' % post_obj.uuid
+        url = '/api/posts/%s/comments/' % post_obj.uuid
 
         # WHEN the comment is posted
         response = self.client.post(url, data, format='json')
@@ -89,7 +89,7 @@ class CommentViewSetTestCase(APITestCase):
                 uuid=post_obj.uuid,
             )
         )
-        url = 'http://127.0.0.1:8000/api/posts/%s/comments/' % post_obj.uuid
+        url = '/api/posts/%s/comments/' % post_obj.uuid
 
         # WHEN the comment is posted
         response = self.client.post(url, data, format='json')
@@ -118,7 +118,7 @@ class CommentViewSetTestCase(APITestCase):
                 uuid=post_obj.uuid,
             )
         )
-        url = 'http://127.0.0.1:8000/api/posts/%s/comments/' % post_obj.uuid
+        url = '/api/posts/%s/comments/' % post_obj.uuid
 
         # WHEN the comment is posted
         response = self.client.post(url, data, format='json')
