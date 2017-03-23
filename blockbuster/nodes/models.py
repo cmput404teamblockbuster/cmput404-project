@@ -6,6 +6,6 @@ from django.db import models
 
 
 class node(models.Model):
-    url = models.URLField(max_length=500)
-    permission = models.BooleanField()
+    host = models.URLField(max_length=500)
+    is_allowed = models.BooleanField()
     
