@@ -98,12 +98,15 @@ db*
 
 # Dependency directories
 node_modules/
-#webpack.stats.json
-#static/bundles/
+webpack.stats.json
+static/bundles/
 
 # Aaron's personal file
 # pip freeze
 my.txt
 # run script
 run.vbs
+
+#no more web webpack.stats.json creates merge conflict
+
 
