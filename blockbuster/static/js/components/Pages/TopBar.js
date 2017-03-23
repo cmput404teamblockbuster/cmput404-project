@@ -23,7 +23,7 @@ export default class TopBar extends React.Component{
     }
 
     Friends(){
-        window.location.assign("/myFriends/");
+        window.location.assign("/friends/");
     }
     Profile(){
         window.location.assign("/profile/");
