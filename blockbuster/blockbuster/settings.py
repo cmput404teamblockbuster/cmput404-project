@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'users',
     'posts',
     'comments',
+    'nodes',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_docs',
@@ -52,7 +53,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
-    )
+    ),
+    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%S.%fZ",
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
 }
 
 MIDDLEWARE_CLASSES = (
@@ -143,3 +147,5 @@ WEBPACK_LOADER = {
 # https://warehouse.python.org/project/whitenoise/
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+
