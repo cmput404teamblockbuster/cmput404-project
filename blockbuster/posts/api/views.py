@@ -1,10 +1,13 @@
-from django.http import JsonResponse
 from posts.api.serializers import PostSerializer
 from posts.models import Post
 from users.models import Profile
 from posts.constants import PRIVACY_PUBLIC
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+
+
 
 
 class ProfilePostsListView(APIView):
@@ -18,7 +21,7 @@ class ProfilePostsListView(APIView):
 
         stream = user.profile.get_stream()
         serializer = PostSerializer(stream, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ProfilePostDetailView(APIView):
     """
@@ -36,4 +39,4 @@ class ProfilePostDetailView(APIView):
         # TODO implement pagination here
 
         serializer = PostSerializer(result, many=True)  # TODO maybe a different serilizer for validating that permissions are met
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
