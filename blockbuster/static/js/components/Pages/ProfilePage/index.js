@@ -33,7 +33,7 @@ const cb =
         } else{
             const array = url.pathname.split('/');
             const uuid = array[array.length-1];
-            GetAuthorRequest.getHim(url.pathname,
+            GetAuthorRequest.getHim(uuid,
                 (object)=> {
                     ReactDom.render(<Main object={object}/>,
                         document.getElementById('container'));

@@ -3,6 +3,7 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 // import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar'
 import Divider from 'material-ui/Divider'
 import GetRelationshipWithMeRequest from '../../Requests/GetRelationshipWithMeRequest'
+import ExtractIdFromURL from '../../Requests/ExtractIdFromURL'
 import WithdrawPendingToolbar from '../../SubComponents/RelationshipToolbars/WithdrawPendingToolbar'
 import AcceptRejectToolbar from '../../SubComponents/RelationshipToolbars/AcceptRejectToolbar'
 import UnFriendToolbar from '../../SubComponents/RelationshipToolbars/UnFriendToolbar'
@@ -59,7 +60,7 @@ export default class ProfileCard extends React.Component {
     }
 
     getRelationshipWithMe(){
-        GetRelationshipWithMeRequest.get(this.props.object['uuid'],this.changeButton)
+        GetRelationshipWithMeRequest.get(ExtractIdFromURL.extract(this.props.object['id']) ,this.changeButton)
     }
 
     render() {
