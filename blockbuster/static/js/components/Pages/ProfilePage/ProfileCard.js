@@ -16,9 +16,12 @@ export default class ProfileCard extends React.Component {
         this.getRelationshipWithMe = this.getRelationshipWithMe.bind(this);
         this.changeButton = this.changeButton.bind(this);
 
-        this.state = {username:this.props.object['username'],
-            github:this.props.object['github'] ? this.props.object['github'] : "Don't have one yet" ,
-            uuid: this.props.object['uuid'], button:<div/>};
+        this.state = {
+            username: this.props.object['displayName'],
+            github: this.props.object['github'] ? this.props.object['github'] : "Don't have one yet",
+            host: this.props.object['host'],
+            url: this.props.object['url']
+        };
         this.getRelationshipWithMe();
     }
 
@@ -66,7 +69,9 @@ export default class ProfileCard extends React.Component {
                 <Divider/>
                 <CardHeader title={"Github  : "+this.state.github}/>
                 <Divider/>
-                <CardHeader title={"UUID: "+this.state.uuid}/>
+                <CardHeader title={"Host: "+this.state.host}/>
+                <Divider/>
+                <CardHeader title={"URL: "+this.state.url}/>
                 <Divider/>
                 {this.state.button}
             </Card>
