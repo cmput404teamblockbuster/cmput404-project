@@ -15,13 +15,13 @@ export default class ProfilePage extends React.Component{
     componentWillMount(callback){
         console.log("Profile Page");
         console.log(this.props.object);
-        this.title = this.props.object['username'] + "'s Profile";
+        this.title = this.props.object['displayName'] + "'s Profile";
         this.state = {posts:<li/>};
         this.componentWillMount = this.componentWillMount.bind(this);
-        GetHisPostsRequest.get(this.props.object['uuid'],
+        GetHisPostsRequest.get(this.props.object['id'],
             (PostList)=>{
                 this.setState({posts:PostList.map(
-                    (post)=> <PostContainer key={post['uuid']} object={post} refresh={this.componentWillMount} />)
+                    (post)=> <PostContainer key={post['id']} object={post} refresh={this.componentWillMount} />)
                 });
                 if (callback){
                     callback()

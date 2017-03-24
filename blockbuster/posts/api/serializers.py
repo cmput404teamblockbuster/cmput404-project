@@ -28,6 +28,7 @@ class PostSerializer(serializers.ModelSerializer):
         """
         # from http://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         author_data = validated_data.pop('author', None)
+        print (Profile.objects.filter(author_data))
         if author_data:
             author, created = Profile.objects.get_or_create(author_data)
             validated_data['author'] = author
