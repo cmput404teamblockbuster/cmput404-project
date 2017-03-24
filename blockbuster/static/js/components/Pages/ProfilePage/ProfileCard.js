@@ -29,14 +29,14 @@ export default class ProfileCard extends React.Component {
             // your own
         } else if (res === "No Relationship Found."){
             // send Friend Request Button
-            this.setState({button: <BefriendToolbar receiver={this.props.object} refresh={this.changeButton}/>})
+            this.setState({button: <BefriendToolbar friend={this.props.object} refresh={this.changeButton}/>})
 
         } else if (res['status'] === "status_friends"){
             this.setState({button: <UnFriendToolbar object={res} refresh={this.changeButton}/>})
 
         } else if (res['status'] === "status_friendship_pending"){
             // Cancel Request(not in the requirements) or Reject/Accept Pending request
-            if (res['receiver']['username'] === this.props.object['username']){
+            if (res['friend']['displayName'] === this.props.object['username']){
                 this.setState({button:<WithdrawPendingToolbar object={res} refresh={this.changeButton}/>})
             } else {
                 this.setState({button:<AcceptRejectToolbar object={res} refresh={this.changeButton}/>})
@@ -44,12 +44,12 @@ export default class ProfileCard extends React.Component {
 
         } else if (res['status'] === "status_following"){
             // UnFollow
-            if (res['receiver']['username'] === this.props.object['username']){
-                // if I am the initiator
+            if (res['friend']['displayName'] === this.props.object['username']){
+                // if I am the author
                 this.setState({button:<UnfollowToolbar object={res} refresh={this.changeButton}/>})
             } else {
-                // if I am the receiver
-                this.setState({button:<BefriendToolbar receiver={this.props.object} refresh={this.changeButton}/>})
+                // if I am the friend
+                this.setState({button:<BefriendToolbar friend={this.props.object} refresh={this.changeButton}/>})
             }
             
         }
