@@ -29,14 +29,13 @@ class CondensedProfileSerializer(serializers.ModelSerializer):
 
 class FullProfileSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
-    username = serializers.CharField(read_only=False)
-    uuid = serializers.CharField(read_only=False)  # TODO remove uuid
+    displayName = serializers.CharField(source='username')
     friends = CondensedProfileSerializer(many=True)
     id = serializers.CharField(source='api_id')
 
     class Meta:
         model = Profile
-        fields = ('id', 'username', 'github', 'host', 'url', 'friends', 'uuid')
+        fields = ('id', 'displayName', 'github', 'host', 'url', 'friends')
 
 
 class UserSerializer(serializers.ModelSerializer):
