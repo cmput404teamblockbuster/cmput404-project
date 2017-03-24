@@ -16,7 +16,7 @@ export default class MyStream extends React.Component{
             (PostList)=>{
                 this.setState({posts:PostList.map(
                     (post)=> <PostContainer key={post['id']} object={post} refresh={this.componentWillMount}/>)
-                })
+                });
                 if (callback){
                     callback()
                 }

@@ -27,7 +27,7 @@ export default class ProfileCard extends React.Component {
     }
 
     changeButton(res){
-        console.log("profile card");
+        console.log("profile card, object:",this.props.object);
         console.log(res);
         if (res === "The profile with the given UUID is your own."){
             // your own
@@ -40,7 +40,7 @@ export default class ProfileCard extends React.Component {
 
         } else if (res['status'] === "status_friendship_pending"){
             // Cancel Request(not in the requirements) or Reject/Accept Pending request
-            if (res['friend']['displayName'] === this.props.object['username']){
+            if (res['friend']['url'] === this.props.object['url']){
                 this.setState({button:<WithdrawPendingToolbar object={res} refresh={this.changeButton}/>})
             } else {
                 this.setState({button:<AcceptRejectToolbar object={res} refresh={this.changeButton}/>})
@@ -48,7 +48,7 @@ export default class ProfileCard extends React.Component {
 
         } else if (res['status'] === "status_following"){
             // UnFollow
-            if (res['friend']['displayName'] === this.props.object['username']){
+            if (res['friend']['url'] === this.props.object['url']){
                 // if I am the author
                 this.setState({button:<UnfollowToolbar object={res} refresh={this.changeButton}/>})
             } else {
