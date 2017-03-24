@@ -1,17 +1,20 @@
 from rest_framework import serializers
 from comments.models import Comment
-from users.api.serializers import ProfileSerializer
+from users.api.serializers import CondensedProfileSerializer
 from users.models import Profile
 # from posts.api.serializers import PostSerializer
 
 
 class CommentSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
-    author = ProfileSerializer()
+    author = CondensedProfileSerializer()
+    published = serializers.DateTimeField(source='created', required=False)
+    id = serializers.CharField(source='uuid', required=False)
+    comment = serializers.CharField(source='body')
 
     class Meta:
         model = Comment
-        fields = ('created', 'body', 'author', 'uuid') # These fields will be available to the front end
+        fields = ('published', 'comment', 'author', 'id') # These fields will be available to the front end
 
     def validate(self, data):
         data = super(CommentSerializer, self).validate(data)

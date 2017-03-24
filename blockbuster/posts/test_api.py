@@ -11,7 +11,7 @@ class PostViewSetTestCase(APITestCase):
 
     # from example http://www.django-rest-framework.org/api-guide/testing/#example
 
-    def test__create_post_sucess(self):
+    def test__create_post_success(self):
         # author = ProfileModelFactory()
         # GIVEN an authenticated user chooses to make a post
         author = UserModelFactory()
@@ -19,11 +19,12 @@ class PostViewSetTestCase(APITestCase):
             user=author)  # http://www.django-rest-framework.org/api-guide/testing/#force_authenticateusernone-tokennone
         data = dict(
             author=dict(
-                uuid=str(author.profile.uuid),
+                id=str(author.profile.api_id),
                 github='http://www.test.github.com',
-                username='bradley',
-                privacy=PRIVACY_PUBLIC
+                host='http://otherserver.com',
+                displayName=author.profile.username,
             ),
+            visibility=PRIVACY_PUBLIC,
             content='TEST CONTENT'
         )
         url = '/api/posts/'
@@ -74,7 +75,7 @@ class PostViewSetTestCase(APITestCase):
 
         # THEN the post should be retrieved
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('uuid'), str(post.uuid))
+        self.assertEqual(response.data.get('id'), str(post.uuid))
 
     def test_retrieve_unlisted_post_anon_user_success(self):
         # GIVEN an unauthed user requests a post that an author made to be unlisted
@@ -87,7 +88,7 @@ class PostViewSetTestCase(APITestCase):
 
         # THEN the post should be retrieved
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get('uuid'), str(post.uuid))
+        self.assertEqual(response.data.get('id'), str(post.uuid))
 
     def test_unlisted_post_does_not_show_up_in_posts_endpoint(self):
         # GIVEN an unlsited post
@@ -103,4 +104,4 @@ class PostViewSetTestCase(APITestCase):
         # THEN the unlisted post should not be returned
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0].get('uuid'), str(public_post.uuid))
+        self.assertEqual(response.data[0].get('id'), str(public_post.uuid))

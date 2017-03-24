@@ -9,6 +9,8 @@ class PostSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
     author = ProfileSerializer()
     comments = CommentSerializer(many=True, read_only=True)
+    id = serializers.CharField(source='uuid', required=False)
+    visibility = serializers.CharField(source='privacy')
 
     def validate(self, data):
         data = super(PostSerializer, self).validate(data)
@@ -27,10 +29,10 @@ class PostSerializer(serializers.ModelSerializer):
         # from http://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         author_data = validated_data.pop('author', None)
         if author_data:
-            author = Profile.objects.get(uuid=author_data.get('uuid'))
+            author, created = Profile.objects.get_or_create(author_data)
             validated_data['author'] = author
         return Post.objects.create(**validated_data)
 
     class Meta:
         model = Post
-        fields = ('author', 'comments', 'content', 'uuid', 'privacy')  # These fields will be available to the front end
+        fields = ('author', 'comments', 'content', 'id', 'visibility')  # These fields will be available to the front end
