@@ -6,6 +6,7 @@ from users.factories import FriendsUserRelationshipModelFactory
 from users.models import UserRelationship
 from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from users.factories import BaseUserRelationshipModelFactory, FollowingUserRelationshipModelFactory
+from nodes.factories import NodeModelFactory
 
 
 class UserViewTestCase(APITestCase):
@@ -86,7 +87,7 @@ class UserRelationshipViewTestCase(APITestCase):
 
 
 class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
-    def test_friend_request_creates_friend_request(self):
+    def test_local_friend_request_creates_friend_request(self):
         # GIVEN an authenticated user makes a friend request for another user
         authed_user = UserModelFactory()
         friend = UserModelFactory()
@@ -115,7 +116,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         self.assertEqual(friendship.initiator, authed_user.profile)
         self.assertEqual(friendship.receiver, friend.profile)
 
-    def test_accept_friend_request_accepts_friend_request(self):
+    def test_accept_local_friend_request_accepts_friend_request(self):
         # GIVEN a user has pending friend requests
         authed_user = UserModelFactory()
         follower1 = UserModelFactory()
@@ -148,7 +149,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         self.assertEqual(friendship.initiator, follower1.profile)
         self.assertEqual(friendship.receiver, authed_user.profile)
 
-    def test_decline_friend_request_creates_following_friendship(self):
+    def test_decline_local_friend_request_creates_following_friendship(self):
         # GIVEN a user has pending friend requests
         authed_user = UserModelFactory()
         follower1 = UserModelFactory()
@@ -181,7 +182,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         self.assertEqual(friendship.initiator, follower1.profile)
         self.assertEqual(friendship.receiver, authed_user.profile)
 
-    def test_befriend_a_following_person_becomes_friends(self):
+    def test_local_befriend_a_following_person_becomes_friends(self):
         authed_user = UserModelFactory()
         follower1 = UserModelFactory()
         self.client.force_authenticate(user=authed_user)
@@ -213,7 +214,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         self.assertEqual(friendship.receiver, follower1.profile)
         self.assertEqual(friendship.initiator, authed_user.profile)
 
-    def test_get_users_friend_requests_list(self):
+    def test_local_get_users_friend_requests_list(self):
         # GIVEN an authenticated user has friend requests
         authed_user = UserModelFactory()
         follower1 = UserModelFactory()
@@ -232,7 +233,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         # THEN a successful response is made
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_delete_relationship_when_friends__logged_in_user_is_initiator_success(self):
+    def test_local_delete_relationship_when_friends__logged_in_user_is_initiator_success(self):
         # GIVEN an authenticated user has a friend and the logged in user initiated that friendship
         authed_user = UserModelFactory()
         friend = UserModelFactory()
@@ -256,7 +257,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         self.assertEquals(friendship.receiver, authed_user.profile)
         self.assertEquals(friendship.status, RELATIONSHIP_STATUS_FOLLOWING)
 
-    def test_delete_relationship_when_friends_logged_in_user_is_receiver_success(self):
+    def test_local_delete_relationship_when_friends_logged_in_user_is_receiver_success(self):
         # GIVEN an authenticated user has a friend that the friend initiated
         authed_user = UserModelFactory()
         friend = UserModelFactory()
@@ -280,7 +281,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         self.assertEquals(friendship.receiver, authed_user.profile)
         self.assertEquals(friendship.status, RELATIONSHIP_STATUS_FOLLOWING)
 
-    def test_delete_relationship_when_other_is_following_removes_row_entirely(self):
+    def test_local_delete_relationship_when_other_is_following_removes_row_entirely(self):
         # GIVEN an authenticated user has a person following them
         authed_user = UserModelFactory()
         friend = UserModelFactory()
@@ -301,7 +302,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         with self.assertRaises(UserRelationship.DoesNotExist):
             friendship2 = UserRelationship.objects.get(id=friendship.id)
 
-    def test_delete_relationship_when_pending_removes_row_entirely(self):
+    def test_local_delete_relationship_when_pending_removes_row_entirely(self):
         # GIVEN an authenticated user has a pending relationship that the logged in user initiated
         authed_user = UserModelFactory()
         friend = UserModelFactory()
@@ -322,7 +323,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         with self.assertRaises(UserRelationship.DoesNotExist):
             friendship2 = UserRelationship.objects.get(id=friendship.id)
 
-    def test_delete_relationship_when_invalid_pk_given(self):
+    def test_local_delete_relationship_when_invalid_pk_given(self):
         # GIVEN an authenticated user tries to delete an invalid friendship object
         authed_user = UserModelFactory()
         # friend = UserModelFactory()
@@ -340,7 +341,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         # THEN there should be a successful response
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_relationship_when_another_relationships_pk_given(self):
+    def test_local_delete_relationship_when_another_relationships_pk_given(self):
         # GIVEN an authenticated user tries to delete an invalid friendship object
         authed_user = UserModelFactory()
         random = UserModelFactory()
@@ -359,6 +360,93 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         # THEN there should be a successful response
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data, 'You do not have access to this friendship.')
+
+    def test_foreign_friend_request_creates_friend_request(self):
+        # GIVEN a foreign user asks to befriend a user on our server. The foreign host is trusted
+        node = NodeModelFactory()
+        foreign_author = dict(
+            id = '%sapi/author/de305d54-75b4-431b-adb2-eb6b9e546013' % node.host,
+            displayName='foreigner',
+            host=node.host,
+        )
+        friend = UserModelFactory()
+
+        url = '/api/friendrequest/'
+        data = dict(
+            author=foreign_author,
+            friend=dict(
+                id=friend.profile.api_id,
+                displayName=friend.profile.username,
+                host=friend.profile.host
+            ),
+        )
+
+        # WHEN the request is made
+        response = self.client.post(url, data, format='json')
+
+        # THEN the relationship is created
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        friendship = UserRelationship.objects.all()[0]
+        # AND friendship status should be PENDING by default
+        self.assertEqual(friendship.status, RELATIONSHIP_STATUS_PENDING)
+        self.assertEqual(friendship.initiator.api_id, foreign_author['id'])
+        self.assertEqual(friendship.receiver, friend.profile)
+
+    def test_foreign_friend_request_creates_friend_request_untrusted_node_fails(self):
+        # GIVEN a foreign user asks to befriend a user on our server. The foreign host is NOT trusted
+        foreign_author = dict(
+            id = 'http://www.untristed.com/api/author/de305d54-75b4-431b-adb2-eb6b9e546013',
+            displayName='foreigner'
+        )
+        friend = UserModelFactory()
+
+        url = '/api/friendrequest/'
+        data = dict(
+            author=foreign_author,
+            friend=dict(
+                id=friend.profile.api_id,
+                displayName=friend.profile.username
+            ),
+        )
+
+        # WHEN the request is made
+        response = self.client.post(url, data, format='json')
+
+        # THEN an error is raised
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data, 'You are not an accepted server on our system.')
+
+    def test_request_to_foreign_user_friend_success(self):
+        # GIVEN a local authed user asks to befriend a user on another trusted server.
+        node = NodeModelFactory()
+        friend = dict(
+            id = '%sapi/author/de305d54-75b4-431b-adb2-eb6b9e546013' % node.host,
+            displayName='foreigner',
+            host=node.host
+        )
+        author = UserModelFactory()
+        self.client.force_authenticate(user=author)
+
+        url = '/api/friendrequest/'
+        data = dict(
+            friend=friend,
+            author=dict(
+                id=author.profile.api_id,
+                displayName=author.profile.username,
+                host=author.profile.host
+            ),
+        )
+
+        # WHEN the request is made
+        response = self.client.post(url, data, format='json')
+
+        # THEN the relationship is created
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        friendship = UserRelationship.objects.all()[0]
+        # AND friendship status should be PENDING by default
+        self.assertEqual(friendship.status, RELATIONSHIP_STATUS_PENDING)
+        self.assertEqual(friendship.initiator.api_id, author.profile.api_id)
+        self.assertEqual(friendship.receiver.api_id, friend['id'])
 
 
 class UserRelationshipCheckViewTestCase(APITestCase):

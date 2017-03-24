@@ -19,7 +19,7 @@ class CondensedProfileSerializer(serializers.ModelSerializer):
     """
     serializes less fields than the ProfileSerializer
     """
-    id = serializers.CharField(source='uuid')
+    id = serializers.CharField(source='api_id')
     displayName = serializers.CharField(source='username')
 
     class Meta:

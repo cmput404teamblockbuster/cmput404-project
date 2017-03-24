@@ -1,3 +1,5 @@
+import json
+import requests
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from users.models import Profile, UserRelationship
@@ -5,6 +7,9 @@ from users.api.serializers import FullProfileSerializer, UserRelationshipSeriali
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
+from urlparse import urlparse
+
+from nodes.models import Node
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
@@ -55,7 +60,8 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
 class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = UserRelationshipSerializer
     model = UserRelationship
-    permission_classes = (IsAuthenticated,)
+
+    # permission_classes = (IsAuthenticated,) # TODO implement basic auth
 
     def get_queryset(self):
         """
@@ -73,7 +79,54 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         otherwise it will update the UserRelationship represented by initiator/receiver pair
             to update you need to add the status param
         """
+        """
+        TODO implement node friending as follows
+        if requestor is from another site then we parse the requestors host and see if they exist in our db
+            if they do we create a profile of the requestor and set their uuid to ours
+            if they dont then we raise a authentication error
+        if requestor is local and person friending is foregin:
+            confirm the foreign person is in our accepted node host
+            make an api call to their friendrequest api
+        if local we do this as normal.
+        """
         data = self.request.data
+        foreign_user = None
+        role = None
+        try:
+            local_author = Profile.objects.get(username=data.get('author').get('displayName'))
+            local_initiator = True
+        except Profile.DoesNotExist:
+            local_initiator = False
+            foreign_user = data.get('author')
+            role = 'author'
+
+        try:
+            local_receiver = Profile.objects.get(username=data.get('friend').get('displayName'))
+            local_receiver = True
+        except Profile.DoesNotExist:
+            local_receiver = False
+            foreign_user = data.get('friend')
+            role = 'friend'
+
+        if not local_initiator or not local_receiver: # one of the users is from another server
+            url_contents = urlparse(foreign_user.get('id'))
+            host = foreign_user.get('host', foreign_user.get('id')[:foreign_user.get('id').find(url_contents.path) + 1])
+            node = Node.objects.filter(host=host)
+            if node:  # then we trust their server
+                uuid = url_contents.path.split('/')[-1]
+                if not local_receiver: # then a local user is requesting a friendship for a user on another server
+                    friend_request_url = '%sapi/friendrequest/' % node[0].host
+                    headers = {'Content-type': 'application/json'}
+                    response = requests.post(friend_request_url, json=json.dumps(data), headers=headers)
+                    print response # TODO implement this
+
+                new_profile = Profile.objects.create(uuid=uuid, username=foreign_user.get('displayName'),
+                                                     host=host)  # WARNING we will get errors because url will be our api endpoints
+                data[role] = CondensedProfileSerializer(new_profile).data
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED,
+                                data='You are not an accepted server on our system.')
+
         serializer = UserRelationshipSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -93,7 +146,7 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
             other_user_in_relationship = instance.receiver
         elif self.request.user.profile == instance.receiver:
             other_user_in_relationship = instance.initiator
-        else: # otherwise the user shouldn't have access to this object
+        else:  # otherwise the user shouldn't have access to this object
             return Response(data='You do not have access to this friendship.', status=status.HTTP_403_FORBIDDEN)
 
         if instance.status == RELATIONSHIP_STATUS_FRIENDS:
@@ -106,6 +159,4 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         else:
             instance.delete()
 
-        return Response(data="success",status=status.HTTP_200_OK)
-
-
+        return Response(data="success", status=status.HTTP_200_OK)
