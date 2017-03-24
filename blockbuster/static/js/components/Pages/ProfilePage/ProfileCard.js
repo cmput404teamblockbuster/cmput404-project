@@ -36,7 +36,7 @@ export default class ProfileCard extends React.Component {
 
         } else if (res['status'] === "status_friendship_pending"){
             // Cancel Request(not in the requirements) or Reject/Accept Pending request
-            if (res['friend']['username'] === this.props.object['username']){
+            if (res['friend']['displayName'] === this.props.object['username']){
                 this.setState({button:<WithdrawPendingToolbar object={res} refresh={this.changeButton}/>})
             } else {
                 this.setState({button:<AcceptRejectToolbar object={res} refresh={this.changeButton}/>})

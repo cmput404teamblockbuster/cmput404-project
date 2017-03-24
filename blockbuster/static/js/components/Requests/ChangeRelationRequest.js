@@ -5,6 +5,10 @@ const userToken ="Token "+localStorage.token;
 
 module.exports = {
     send: function (friend, status, callback) {
+        //duct tape solution to change 'username' to 'displayName' !!!!!!!!! Fix me !!!!!!!!!!!!!1
+        if(friend['displayName'] == null){
+            friend['displayName'] = friend['username'];
+        }
         this.getAuthor(friend,status, this.sendPostRequest,callback);
     },
 
