@@ -30,3 +30,11 @@ python manage.py runserver
 open browser to http://127.0.0.1:8000/
 
 
+
+
+
+## our list of live versions
+```
+http://warm-hollows-14698.herokuapp.com
+http://radiant-beyond-17792.herokuapp.com
+```

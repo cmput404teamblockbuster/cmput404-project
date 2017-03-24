@@ -5,6 +5,15 @@ from users.models import Profile
 from posts.constants import PRIVACY_PUBLIC
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
+
+from collections import OrderedDict
+
+class custom(PageNumberPagination):
+    page_size_query_param = 'size'
+    page_query_param = 'page'
+    
+
 
 
 class ProfilePostsListView(APIView):
@@ -34,6 +43,14 @@ class ProfilePostDetailView(APIView):
                 result.append(post)
 
         # TODO implement pagination here
-
-        serializer = PostSerializer(result, many=True)  # TODO maybe a different serilizer for validating that permissions are met
-        return JsonResponse(serializer.data, safe=False)
+        mypaginator = custom()
+        results = mypaginator.paginate_queryset(result,request)
+        page = self.request.GET.get('page', 1)
+        page_num = self.request.GET.get('size', 1000)
+        serializer = PostSerializer(results, many=True)  # TODO maybe a different serilizer for validating that permissions are met
+        return JsonResponse(OrderedDict([('count', mypaginator.page.paginator.count),
+        ('current', page),
+        ('next', mypaginator.get_next_link()),
+        ('previous', mypaginator.get_previous_link()),
+        ('size', page_num),
+        ('posts', serializer.data)]))
