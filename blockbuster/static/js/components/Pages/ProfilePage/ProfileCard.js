@@ -44,7 +44,7 @@ export default class ProfileCard extends React.Component {
 
         } else if (res['status'] === "status_following"){
             // UnFollow
-            if (res['friend']['username'] === this.props.object['username']){
+            if (res['friend']['displayName'] === this.props.object['username']){
                 // if I am the author
                 this.setState({button:<UnfollowToolbar object={res} refresh={this.changeButton}/>})
             } else {
