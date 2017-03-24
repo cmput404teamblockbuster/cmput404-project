@@ -21,10 +21,10 @@ class CommentViewSetTestCase(APITestCase):
         body = 'This is a comment on the post!'
         data = dict(
             author=dict(
-                uuid=str(comment_author.profile.uuid),
-                username='bradley',
+                id=str(comment_author.profile.api_id),
+                displayName='bradley',
             ),
-            body=body,
+            comment=body,
             post=dict(
                 uuid=post_obj.uuid,
             )
@@ -54,10 +54,10 @@ class CommentViewSetTestCase(APITestCase):
         body = 'This is a comment to myself'
         data = dict(
             author=dict(
-                uuid=str(comment_author.profile.uuid),
-                username='bradley',
+                id=str(comment_author.profile.api_id),
+                displayName='bradley',
             ),
-            body=body,
+            comment=body,
             post=dict(
                 uuid=post_obj.uuid,
             )
@@ -81,10 +81,10 @@ class CommentViewSetTestCase(APITestCase):
         body = 'This is a comment!'
         data = dict(
             author=dict(
-                uuid=str(comment_author.profile.uuid),
-                username='bradley',
+                id=str(comment_author.profile.api_id),
+                displayName='bradley',
             ),
-            body=body,
+            comment=body,
             post=dict(
                 uuid=post_obj.uuid,
             )
@@ -110,10 +110,10 @@ class CommentViewSetTestCase(APITestCase):
         body = ''
         data = dict(
             author=dict(
-                uuid=str(comment_author.profile.uuid),
-                username='bradley',
+                id=str(comment_author.profile.api_id),
+                displayName='bradley',
             ),
-            body=body,
+            comment=body,
             post=dict(
                 uuid=post_obj.uuid,
             )
@@ -125,5 +125,5 @@ class CommentViewSetTestCase(APITestCase):
 
         # THEN the comment should not be created, and an error status code raised
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data.get('body')[0], "This field may not be blank.")
+        self.assertEqual(response.data.get('comment')[0], "This field may not be blank.")
         self.assertEqual(Comment.objects.count(), 0)

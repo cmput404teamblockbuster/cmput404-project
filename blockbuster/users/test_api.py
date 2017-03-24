@@ -69,7 +69,9 @@ class UserRelationshipViewTestCase(APITestCase):
         # GIVEN a user has a friend
         authed_user = UserModelFactory()
         friend = UserModelFactory()
+        friend2 = UserModelFactory()
         friendship = FriendsUserRelationshipModelFactory(initiator=authed_user.profile, receiver=friend.profile)
+        friendship = FriendsUserRelationshipModelFactory(initiator=authed_user.profile, receiver=friend2.profile)
         self.client.force_authenticate(user=authed_user)
 
         # WHEN they request the api to view their friends list
@@ -79,8 +81,8 @@ class UserRelationshipViewTestCase(APITestCase):
 
         # THEN the response will contain their friends
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0].get('uuid'), str(friend.profile.uuid))
-        self.assertEqual(len(response.data), len(authed_user.profile.friends))
+        self.assertEqual(response.data.get('query'), 'friends')
+        self.assertEqual(len(response.data.get('authors')), len(authed_user.profile.friends))
 
 
 class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
@@ -92,13 +94,13 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
 
         url = '/api/friendrequest/'
         data = dict(
-            initiator=dict(
-                uuid=authed_user.profile.uuid,
-                username=authed_user.profile.username
+            author=dict(
+                id=authed_user.profile.api_id,
+                displayName=authed_user.profile.username
             ),
-            receiver=dict(
-                uuid=friend.profile.uuid,
-                username=friend.profile.username
+            friend=dict(
+                id=friend.profile.api_id,
+                displayName=friend.profile.username
             ),
         )
 
@@ -124,13 +126,13 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
 
         url = '/api/friendrequest/'
         data = dict(
-            initiator=dict(
-                uuid=follower1.profile.uuid,
-                username=follower1.profile.username
+            author=dict(
+                id=follower1.profile.api_id,
+                displayName=follower1.profile.username
             ),
-            receiver=dict(
-                uuid=authed_user.profile.uuid,
-                username=authed_user.profile.username
+            friend=dict(
+                id=authed_user.profile.api_id,
+                displayName=authed_user.profile.username
             ),
             status=RELATIONSHIP_STATUS_FRIENDS
         )
@@ -157,13 +159,13 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
 
         url = '/api/friendrequest/'
         data = dict(
-            initiator=dict(
-                uuid=follower1.profile.uuid,
-                username=follower1.profile.username
+            author=dict(
+                id=follower1.profile.api_id,
+                displayName=follower1.profile.username
             ),
-            receiver=dict(
-                uuid=authed_user.profile.uuid,
-                username=authed_user.profile.username
+            friend=dict(
+                id=authed_user.profile.api_id,
+                displayName=authed_user.profile.username
             ),
             status=RELATIONSHIP_STATUS_FOLLOWING
         )
@@ -178,6 +180,38 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         self.assertEqual(friendship.status, RELATIONSHIP_STATUS_FOLLOWING)
         self.assertEqual(friendship.initiator, follower1.profile)
         self.assertEqual(friendship.receiver, authed_user.profile)
+
+    def test_befriend_a_following_person_becomes_friends(self):
+        authed_user = UserModelFactory()
+        follower1 = UserModelFactory()
+        self.client.force_authenticate(user=authed_user)
+        # GIVEN a logged in user has someone following them
+        friendship1 = FollowingUserRelationshipModelFactory(initiator=follower1.profile, receiver=authed_user.profile)
+        self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_FOLLOWING)
+
+        # WHEN the logged in user wants to follow the person already following them
+        url = '/api/friendrequest/'
+        data = dict(
+            friend=dict(
+                id=follower1.profile.api_id,
+                displayName=follower1.profile.username
+            ),
+            author=dict(
+                id=authed_user.profile.api_id,
+                displayName=authed_user.profile.username
+            ),
+        )
+
+        # WHEN the request is made
+        response = self.client.post(url, data, format='json')
+
+        # THEN the relationship is created
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        friendship = UserRelationship.objects.get(id=friendship1.id)
+        # AND friendship status should be FRIENDS
+        self.assertEqual(friendship.status, RELATIONSHIP_STATUS_FRIENDS)
+        self.assertEqual(friendship.receiver, follower1.profile)
+        self.assertEqual(friendship.initiator, authed_user.profile)
 
     def test_get_users_friend_requests_list(self):
         # GIVEN an authenticated user has friend requests
@@ -375,7 +409,7 @@ class AuthenticatedUserRelationshipViewTestCase(APITestCase):
 
         # THEN a successful response is made
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        fields = ['status', 'initiator', 'receiver']
+        fields = ['status', 'author', 'friend']
         for field in fields:
             self.assertTrue(field in response.data)
 
@@ -394,7 +428,7 @@ class AuthenticatedUserRelationshipViewTestCase(APITestCase):
 
         # THEN a successful response is made
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        fields = ['status', 'initiator', 'receiver']
+        fields = ['status', 'author', 'friend']
         for field in fields:
             self.assertTrue(field in response.data)
 

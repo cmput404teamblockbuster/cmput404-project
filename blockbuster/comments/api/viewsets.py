@@ -28,17 +28,19 @@ class CommentViewSet(viewsets.ModelViewSet):
             if not post.viewable_for_author(author):
                 status_code = status.HTTP_403_FORBIDDEN
                 response_msg = dict(
+                    query='addComent',
                     success=False,
                     message='Comment not allowed'
                 )
             else:
                 Comment.objects.create(
                     author=author,
-                    body=serializer.data['body'],
+                    body=serializer.data['comment'],
                     post=post,
                 )
                 status_code = status.HTTP_201_CREATED
                 response_msg = dict(
+                    query='addComent',
                     success=True,
                     message='Comment Added'
                 )

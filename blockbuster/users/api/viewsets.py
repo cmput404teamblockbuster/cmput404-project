@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from users.models import Profile, UserRelationship
-from users.api.serializers import ProfileSerializer, UserRelationshipSerializer
+from users.api.serializers import FullProfileSerializer, UserRelationshipSerializer, CondensedProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
@@ -13,7 +13,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     """
     lookup_field = 'uuid'
     lookup_value_regex = '[^/]+'
-    serializer_class = ProfileSerializer
+    serializer_class = FullProfileSerializer
     queryset = Profile.objects.all()
 
 
@@ -21,7 +21,7 @@ class MyFriendsProfilesViewSet(viewsets.ModelViewSet):
     """
     returns the authenticated users friends list
     """
-    serializer_class = ProfileSerializer
+    serializer_class = CondensedProfileSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
@@ -45,15 +45,17 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
         """
         requested_profile = Profile.objects.get(uuid=uuid)
         friends = requested_profile.friends
-        serializer = ProfileSerializer(friends, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        data = dict(
+            query='friends',
+            authors=list((friend.url for friend in friends))
+        )
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = UserRelationshipSerializer
     model = UserRelationship
     permission_classes = (IsAuthenticated,)
-
 
     def get_queryset(self):
         """
@@ -65,8 +67,8 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         """
         creates a user relationship via a post request to `api/friendrequest/` if initiator/receiver pair not in the DB
         required params:
-            initiator = dict containing initiating users uuid
-            receiver = dict containing receiving users uuid
+            author = dict containing initiating users info
+            friend = dict containing receiving users info
 
         otherwise it will update the UserRelationship represented by initiator/receiver pair
             to update you need to add the status param
