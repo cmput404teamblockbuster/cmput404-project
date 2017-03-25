@@ -551,3 +551,4 @@ class AuthenticatedUserRelationshipViewTestCase(APITestCase):
         # THEN a successful response is made
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, "The profile with the given UUID is your own.")
+

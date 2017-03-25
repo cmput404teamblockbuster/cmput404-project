@@ -115,4 +115,5 @@ class UserRelationshipSerializer(serializers.ModelSerializer):
         if qs2: # This means that the author is trying to follow someone currently following them. They should become friends!
             create_friendship = True
         qs = qs1 | qs2
+
         return qs[0] if qs else None, create_friendship

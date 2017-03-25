@@ -49,4 +49,5 @@ export default class MyFriends extends React.Component{
             </Paper>
         );
     }
+
 }

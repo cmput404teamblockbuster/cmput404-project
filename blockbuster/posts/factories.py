@@ -13,3 +13,5 @@ class BasePostModelFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = Post
+
+
