@@ -16,7 +16,7 @@ class Post(models.Model):
     private_to = models.ForeignKey('users.Profile', blank=True, null=True,
                                    related_name='received_private_posts')  # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
     privacy = models.CharField(choices=PRIVACY_TYPE_OPTIONS, max_length='256', default=PRIVACY_PUBLIC)
-    content = models.CharField(max_length=1000, null=True, blank=True)
+    content = models.CharField(max_length=10000, null=True, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     
     contentType = models.CharField(
