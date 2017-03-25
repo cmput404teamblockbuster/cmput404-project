@@ -51,7 +51,7 @@ class Post(models.Model):
         will check to see if the given author can see the post
         Returns: boolean
         """
-        if self.privacy == PRIVACY_PUBLIC or self.privacy == PRIVACY_UNLISTED or author.id in self.viewable_to:
+        if self.privacy == PRIVACY_PUBLIC or author.id in self.viewable_to:
             return True
 
         return False
