@@ -2,6 +2,7 @@ import React from 'react'
 import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
 import GetSinglePostRequest from '../../Requests/GetSinglePostRequest'
+import ExtractIdFromURL from '../../Requests/ExtractIdFromURL'
 import PostContainer from '../../SubComponents/PostList/PostContainer'
 import EmptyPost from './EmptyPost'
 
@@ -14,7 +15,7 @@ export default class SinglePostPage extends React.Component{
     }
 
     componentWillMount(callback){
-        const uuid = window.location.search.substring(1);
+        const uuid = ExtractIdFromURL.extract(window.location.pathname) ;
         if (uuid){
             GetSinglePostRequest.get(uuid,(res)=>{
                     this.setState({post: res? <PostContainer object={res} refresh={this.componentWillMount}/> :<EmptyPost/>});

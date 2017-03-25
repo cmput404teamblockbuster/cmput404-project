@@ -47,7 +47,7 @@ export default class MakePost extends React.Component {
         if (this.state.visibility === "privacy_unlisted"){
             //TODO: Return user a url here
             const host = window.location.host;
-            const url = host+'/post/?'+res['uuid'] ;
+            const url = host+'/post/'+res['uuid'] ;
             alert("your url is: " + url)
         }
         this.setState({content:"", visibility:"privacy_public", button: false});
@@ -59,7 +59,7 @@ export default class MakePost extends React.Component {
     handleSubmit(){
         if (this.state.content !== ""){
             if (this.state.visibility === "private_to_one_friend" && this.author){
-                // TODO: post to one single user
+                // post to one single user TODO: make sure users on other server as well
                 CreatePostRequest.send(this.state.content,this.state.visibility, this.afterSubmit, this.author)
             } else {
                 CreatePostRequest.send(this.state.content,this.state.visibility, this.afterSubmit)
