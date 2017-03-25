@@ -108,4 +108,3 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
 
         return Response(data="success",status=status.HTTP_200_OK)
 
-

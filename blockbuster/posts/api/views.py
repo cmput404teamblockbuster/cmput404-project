@@ -27,7 +27,22 @@ class ProfilePostsListView(APIView):
 
         stream = user.profile.get_stream()
         serializer = PostSerializer(stream, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+                
+        mypaginator = custom()
+        
+        results = mypaginator.paginate_queryset(stream, request)
+
+
+        
+        page = self.request.GET.get('page', 1)
+        page_num = self.request.GET.get('size', 1000)
+        serializer = PostSerializer(results, many=True)  # TODO maybe a different serilizer for validating that permissions are met
+        return Response(OrderedDict([('count', mypaginator.page.paginator.count),
+                                     ('current', page),
+                                     ('next', mypaginator.get_next_link()),
+                                     ('previous', mypaginator.get_previous_link()),
+                                     ('size', page_num),
+                                     ('posts', serializer.data)]), status=status.HTTP_200_OK)
 
 
 class ProfilePostDetailView(APIView):
