@@ -5,10 +5,6 @@ from posts.models import Post
 
 from users.factories import UserModelFactory
 
-from posts.constants import PRIVATE_TO_ONE_FRIEND
-
-from users.factories import ProfileModelFactory
-
 
 class BasePostModelFactory(factory.DjangoModelFactory):
     author = factory.SubFactory(UserModelFactory)
