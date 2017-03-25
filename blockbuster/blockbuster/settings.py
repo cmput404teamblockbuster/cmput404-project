@@ -23,6 +23,7 @@ SECRET_KEY = '7!%v^$rz+ab05o32!v_bq$1+i8zu16l)o^r-68askjo-$i_rbw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+NODE_TESTING = False
 
 ALLOWED_HOSTS = []
 

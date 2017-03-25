@@ -7,6 +7,8 @@ from users.models import UserRelationship
 from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from users.factories import BaseUserRelationshipModelFactory, FollowingUserRelationshipModelFactory
 from nodes.factories import NodeModelFactory
+from blockbuster import settings
+import unittest
 
 
 class UserViewTestCase(APITestCase):
@@ -363,7 +365,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
 
     def test_foreign_friend_request_creates_friend_request(self):
         # GIVEN a foreign user asks to befriend a user on our server. The foreign host is trusted
-        node = NodeModelFactory()
+        node = NodeModelFactory(host='http://127.0.0.1:9000')
         foreign_author = dict(
             id = '%sapi/author/de305d54-75b4-431b-adb2-eb6b9e546013' % node.host,
             displayName='foreigner',
@@ -416,9 +418,10 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data, 'You are not an accepted server on our system.')
 
+    @unittest.skipIf(not settings.NODE_TESTING, 'must allow node testing')
     def test_request_to_foreign_user_friend_success(self):
         # GIVEN a local authed user asks to befriend a user on another trusted server.
-        node = NodeModelFactory()
+        node = NodeModelFactory(host='http://127.0.0.1:9000/')
         friend = dict(
             id = '%sapi/author/de305d54-75b4-431b-adb2-eb6b9e546013' % node.host,
             displayName='foreigner',
