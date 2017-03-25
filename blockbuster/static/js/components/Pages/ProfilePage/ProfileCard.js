@@ -68,7 +68,7 @@ export default class ProfileCard extends React.Component {
             <Card className="textField">
                 <CardHeader title={"Username: "+this.state.username}/>
                 <Divider/>
-                <CardHeader title={"Github  : "+this.state.github}/>
+                <CardHeader title={"GitHub  : "+this.state.github}/>
                 <Divider/>
                 <CardHeader title={"Host: "+this.state.host}/>
                 <Divider/>
