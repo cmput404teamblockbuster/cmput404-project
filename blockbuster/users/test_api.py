@@ -457,6 +457,9 @@ class UserRelationshipCheckViewTestCase(APITestCase):
         # GIVEN two users are friends
         friend1 = UserModelFactory()
         friend2 = UserModelFactory()
+        authed = UserModelFactory()
+
+        self.client.force_authenticate(user=authed)
 
         friendship = FriendsUserRelationshipModelFactory(initiator=friend1.profile, receiver=friend2.profile)
         url = '/api/author/%s/friends/%s/' % (friend1.profile.uuid, friend2.profile.uuid)
@@ -472,6 +475,8 @@ class UserRelationshipCheckViewTestCase(APITestCase):
         # GIVEN two users are not friends
         friend1 = UserModelFactory()
         friend2 = UserModelFactory()
+        authed = UserModelFactory()
+        self.client.force_authenticate(user=authed)
 
         friendship = FollowingUserRelationshipModelFactory(initiator=friend1.profile, receiver=friend2.profile)
         url = '/api/author/%s/friends/%s/' % (friend1.profile.uuid, friend2.profile.uuid)
