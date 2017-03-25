@@ -21,3 +21,19 @@ PRIVACY_TYPES = {
         'name': 'Unlisted'
     },
 }
+
+
+
+text_markdown = "text/markdown"
+text_plain = "text/plain"
+binary = "application/base64"
+png = "image/png;base64"
+jpeg = "image/jpeg;base64"
+
+contentchoices = (
+        (text_markdown, 'text/markdown'),
+        (text_plain, 'text/plain'),
+        (binary,'application/base64'),
+        (png, 'image/png;base64'),
+        (jpeg, 'image/jpeg;base64'),
+)
