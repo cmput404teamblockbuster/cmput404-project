@@ -2,23 +2,15 @@ import React from 'react'
 import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
 import GetMyPendingRequest from '../../Requests/GetMyPendingRequest'
-import GetTheirFriends from '../../Requests/GetTheirFriends'
 import PendingContainer from './PendingContainer'
 import SendFollowCard from './SendFollowCard'
+import MyFriendsTable from './MyFriendsTable'
 
 export default class MyFriends extends React.Component{
 	constructor(object){
         super(object);
         this.state = {pendings:<li/>};
         this.componentWillMount = this.componentWillMount.bind(this);
-
-
-        console.log("attempting to get their freinds. Have object:");
-        console.log(object);
-        GetTheirFriends.get(this.props.object['id'],function(res){
-            console.log("Got Friends:");
-            console.log(res);
-        });
     }
 
     componentWillMount(callback){
@@ -33,7 +25,6 @@ export default class MyFriends extends React.Component{
                 }
             }
         )
-
     }
 
 
@@ -49,6 +40,9 @@ export default class MyFriends extends React.Component{
                         	<h4 id="pendingHeader" style={{color:'#757575', textAlign:'center'}}> Received Friendship Requests Go Here: </h4>
                         </div>
                     	{this.state.pendings}
+
+                        <MyFriendsTable object={this.props.object} refresh={this.props.refresh}/>
+
                 </ul>
             </Paper>
         );

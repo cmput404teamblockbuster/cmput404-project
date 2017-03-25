@@ -16,9 +16,10 @@ module.exports = {
             })
     },
 
-    getHim: function (uuid, callback) {
+    getHim: function (id, callback) {
 
-        const url = '/api/author/'+uuid+'/';
+        //const url = '/api/author/'+uuid+'/';
+        const url = id+'/';
         axios.get(url,
             {headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}})
             .then((res)=>{
