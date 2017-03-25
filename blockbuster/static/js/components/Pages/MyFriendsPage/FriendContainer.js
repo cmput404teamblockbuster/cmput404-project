@@ -5,6 +5,7 @@ import NameLink from '../../SubComponents/PostList/NameLink'
 import RespondToPending from './RespondToPending'
 import GetAuthorRequest from '../../Requests/GetAuthorRequest'
 import FlatButton from 'material-ui/FlatButton'
+import {TableRow, TableRowColumn} from 'material-ui/Table'
 
 export default class FriendContainer extends React.Component{
     constructor(object,refresh){
@@ -31,16 +32,6 @@ export default class FriendContainer extends React.Component{
 
         this.setState({friend:<NameLink object={friend}/>});
 
-        return(
-            <li>
-                <Card className="textField" style={{paddingBottom:'5px'}}>
-                    <CardHeader title={<NameLink object={friend}/>}/>
-                    HELLO
-                </Card>
-            </li>
-        );
-
-
     }
 
 
@@ -49,9 +40,9 @@ export default class FriendContainer extends React.Component{
 
 
         return(
-            <div>
-            {this.state.friend}
-            </div>
+            <TableRow key={this.props.key}>
+            <TableRowColumn>{this.state.friend}</TableRowColumn>
+            </TableRow>
         );
     }
 }

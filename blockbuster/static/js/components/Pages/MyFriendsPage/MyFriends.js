@@ -40,7 +40,9 @@ export default class MyFriends extends React.Component{
                         	<h4 id="pendingHeader" style={{color:'#757575', textAlign:'center'}}> Received Friendship Requests Go Here: </h4>
                         </div>
                     	{this.state.pendings}
-
+                        <div>
+                        <h4 id="pendingHeader" style={{color:'#757575', textAlign:'center'}}> Your Friends Go Here: </h4>
+                        </div>
                         <MyFriendsTable object={this.props.object} refresh={this.props.refresh}/>
 
                 </ul>

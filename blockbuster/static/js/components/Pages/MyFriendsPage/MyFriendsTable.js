@@ -6,10 +6,12 @@ import GetTheirFriendsRequest from '../../Requests/GetTheirFriendsRequest'
 import FriendContainer from './FriendContainer'
 import SendFollowCard from './SendFollowCard'
 
+import {Table, TableBody} from 'material-ui/Table';
+
 export default class MyFriendsTable extends React.Component{
 	constructor(object){
         super(object);
-        this.state = {friends:<li/>};
+        this.state = {friends:<Table/>};
         this.componentWillMount = this.componentWillMount.bind(this);
     }
 
@@ -31,12 +33,12 @@ export default class MyFriendsTable extends React.Component{
 
     render(){
         return(
-            <Paper className="streamContainer">
-                    	<div>
-                        	<h4 id="friendsHeader" style={{color:'#757575', textAlign:'center'}}> Your Friends Go Here: </h4>
-                        </div>
-                    	{this.state.friends}
-            </Paper>
+            <Table className="relationTable" height="200px">
+            <TableBody displatRowCheckbox={false}>
+                    {this.state.friends}
+            </TableBody>
+            </Table>
+
         );
     }
 }
