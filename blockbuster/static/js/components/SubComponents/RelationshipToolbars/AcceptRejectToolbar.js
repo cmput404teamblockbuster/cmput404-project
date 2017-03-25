@@ -13,15 +13,15 @@ export default class AcceptRejectToolbar extends React.Component{
     }
 
     sendAcceptRequest(){
-        ChangeRelationRequest.update(this.props.object['initiator'],this.props.object['receiver'],
+        ChangeRelationRequest.update(this.props.object['author'],this.props.object['friend'],
             "status_friends",this.props.refresh)
     }
 
     sendIgnoreRequest(){
-        ChangeRelationRequest.update(this.props.object['initiator'],this.props.object['receiver'],
+        ChangeRelationRequest.update(this.props.object['author'],this.props.object['friend'],
             "status_following",this.props.refresh)
     }
-    //props: Object { initiator: Object, receiver: Object, status: "status_friendship_pending" }
+    //props: Object { author: Object, friend: Object, status: "status_friendship_pending" }
     render(){
         return(
             <Toolbar >

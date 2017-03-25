@@ -1,10 +1,9 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from users.models import Profile, UserRelationship
 from users.api.serializers import ProfileSerializer, UserRelationshipSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
+from users.constants import RELATIONSHIP_STATUS_PENDING
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
@@ -37,7 +36,6 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
     serializer_class = UserRelationshipSerializer
     model = UserRelationship
     permission_classes = (IsAuthenticated,)
-    queryset = Profile.objects.all()
 
     def list(self, request, uuid):
         """
@@ -50,6 +48,8 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
 
 
 class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
+    lookup_field = 'uuid'
+    lookup_value_regex = '[^/]+'
     serializer_class = UserRelationshipSerializer
     model = UserRelationship
     permission_classes = (IsAuthenticated,)
@@ -78,32 +78,3 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_200_OK, data=serializer.data)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
-
-    def destroy(self, *args, **kwargs):
-        """
-        Depending on the status of the relationship, we either remove the instance entirely, or change the status around
-        If friends --> the deleting user becomes receiver of a "following" relationship
-        If following --> The entire UserRelationship object is removed
-        """
-        pk = kwargs.get('pk', None)
-        instance = get_object_or_404(UserRelationship, pk=pk)
-        if self.request.user.profile == instance.initiator:
-            other_user_in_relationship = instance.receiver
-        elif self.request.user.profile == instance.receiver:
-            other_user_in_relationship = instance.initiator
-        else: # otherwise the user shouldn't have access to this object
-            return Response(data='You do not have access to this friendship.', status=status.HTTP_403_FORBIDDEN)
-
-        if instance.status == RELATIONSHIP_STATUS_FRIENDS:
-            # If friends then we change to following so other user can still see posts
-            instance.initiator = other_user_in_relationship
-            instance.receiver = self.request.user.profile
-            instance.status = RELATIONSHIP_STATUS_FOLLOWING
-            instance.save()
-
-        else:
-            instance.delete()
-
-        return Response(data="success",status=status.HTTP_200_OK)
-
-

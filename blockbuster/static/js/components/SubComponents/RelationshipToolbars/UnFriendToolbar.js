@@ -4,7 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import ChangeRelationRequest from '../../Requests/ChangeRelationRequest'
 
 export default class UnFriendToolbar extends React.Component{
-    //props: Object { initiator: Object, receiver: Object, status: "status_friendship_pending" }
+    //props: Object { author: Object, friend: Object, status: "status_friendship_pending" }
     constructor(object,refresh){
         super(object,refresh);
 

@@ -11,11 +11,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='node',
+            name='Node',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('url', models.URLField(max_length=500)),
-                ('permission', models.BooleanField()),
+                ('host', models.URLField(max_length=500)),
+                ('is_allowed', models.BooleanField(default=True)),
             ],
         ),
     ]

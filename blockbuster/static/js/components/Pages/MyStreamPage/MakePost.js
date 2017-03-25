@@ -60,6 +60,7 @@ export default class MakePost extends React.Component {
         if (this.state.content !== ""){
             if (this.state.visibility === "private_to_one_friend" && this.author){
                 // TODO: post to one single user
+                CreatePostRequest.send(this.state.content,this.state.visibility, this.afterSubmit, this.author)
             } else {
                 CreatePostRequest.send(this.state.content,this.state.visibility, this.afterSubmit)
             }

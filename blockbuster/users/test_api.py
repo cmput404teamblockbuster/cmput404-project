@@ -19,7 +19,7 @@ class UserViewTestCase(APITestCase):
             password=password,
             email=email
         )
-        url = '/api/register/'
+        url = 'http://127.0.0.1:8000/api/register/'
         # WHEN the request is made
         response = self.client.post(url, data, format='json')
         user = User.objects.get(username=username)
@@ -39,7 +39,7 @@ class UserViewTestCase(APITestCase):
             password=password,
             email=email
         )
-        url = '/api/register/'
+        url = 'http://127.0.0.1:8000/api/register/'
         # WHEN the request is made
         response = self.client.post(url, data, format='json')
 
@@ -55,7 +55,7 @@ class UserViewTestCase(APITestCase):
             password=password,
             email=email
         )
-        url = '/api/register/'
+        url = 'http://127.0.0.1:8000/api/register/'
         # WHEN the request is made
         response = self.client.post(url, data, format='json')
 
@@ -73,7 +73,7 @@ class UserRelationshipViewTestCase(APITestCase):
         self.client.force_authenticate(user=authed_user)
 
         # WHEN they request the api to view their friends list
-        url = '/api/author/%s/friends/' % authed_user.profile.uuid
+        url = 'http://127.0.0.1:8000/api/author/%s/friends/' % authed_user.profile.uuid
 
         response = self.client.get(url)
 
@@ -83,14 +83,14 @@ class UserRelationshipViewTestCase(APITestCase):
         self.assertEqual(len(response.data), len(authed_user.profile.friends))
 
 
-class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
+class UserRelationshipFriendRequestViewSet(APITestCase):
     def test_friend_request_creates_friend_request(self):
         # GIVEN an authenticated user makes a friend request for another user
         authed_user = UserModelFactory()
         friend = UserModelFactory()
         self.client.force_authenticate(user=authed_user)
 
-        url = '/api/friendrequest/'
+        url = 'http://127.0.0.1:8000/api/friendrequest/'
         data = dict(
             initiator=dict(
                 uuid=authed_user.profile.uuid,
@@ -122,7 +122,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         friendship1 = BaseUserRelationshipModelFactory(initiator=follower1.profile, receiver=authed_user.profile)
         self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_PENDING)
 
-        url = '/api/friendrequest/'
+        url = 'http://127.0.0.1:8000/api/friendrequest/'
         data = dict(
             initiator=dict(
                 uuid=follower1.profile.uuid,
@@ -155,7 +155,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         friendship1 = BaseUserRelationshipModelFactory(initiator=follower1.profile, receiver=authed_user.profile)
         self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_PENDING)
 
-        url = '/api/friendrequest/'
+        url = 'http://127.0.0.1:8000/api/friendrequest/'
         data = dict(
             initiator=dict(
                 uuid=follower1.profile.uuid,
@@ -190,141 +190,13 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         friendship2 = BaseUserRelationshipModelFactory(initiator=follower2.profile, receiver=authed_user.profile)
         self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_PENDING)
         self.assertEquals(friendship2.status, RELATIONSHIP_STATUS_PENDING)
-        url = '/api/friendrequest/'
+        url = 'http://127.0.0.1:8000/api/friendrequest/'
 
         # WHEN the request is made
         response = self.client.get(url)
 
         # THEN a successful response is made
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_delete_relationship_when_friends__logged_in_user_is_initiator_success(self):
-        # GIVEN an authenticated user has a friend and the logged in user initiated that friendship
-        authed_user = UserModelFactory()
-        friend = UserModelFactory()
-        self.client.force_authenticate(user=authed_user)
-
-        friendship = FriendsUserRelationshipModelFactory(initiator=authed_user.profile, receiver=friend.profile)
-        self.assertEquals(friendship.status, RELATIONSHIP_STATUS_FRIENDS)
-        self.assertEquals(friendship.initiator, authed_user.profile)
-        self.assertEquals(friendship.receiver, friend.profile)
-        # WHEN a delete request is made to the entity url
-        url = '/api/friendrequest/%s/' % friendship.id
-
-        # WHEN the request is made
-        response = self.client.delete(url, format='json')
-
-        friendship = UserRelationship.objects.get(id=friendship.id)
-        # THEN a successful response is made
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # The roles should be switched
-        self.assertEquals(friendship.initiator, friend.profile)
-        self.assertEquals(friendship.receiver, authed_user.profile)
-        self.assertEquals(friendship.status, RELATIONSHIP_STATUS_FOLLOWING)
-
-    def test_delete_relationship_when_friends_logged_in_user_is_receiver_success(self):
-        # GIVEN an authenticated user has a friend that the friend initiated
-        authed_user = UserModelFactory()
-        friend = UserModelFactory()
-        self.client.force_authenticate(user=authed_user)
-
-        friendship = FriendsUserRelationshipModelFactory(receiver=authed_user.profile, initiator=friend.profile)
-        self.assertEquals(friendship.status, RELATIONSHIP_STATUS_FRIENDS)
-        self.assertEquals(friendship.receiver, authed_user.profile)
-        self.assertEquals(friendship.initiator, friend.profile)
-        # WHEN a delete request is made to the entity url
-        url = '/api/friendrequest/%s/' % friendship.id
-
-        # WHEN the request is made
-        response = self.client.delete(url, format='json')
-
-        friendship = UserRelationship.objects.get(id=friendship.id)
-        # THEN a successful response is made
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # The roles should be switched
-        self.assertEquals(friendship.initiator, friend.profile)
-        self.assertEquals(friendship.receiver, authed_user.profile)
-        self.assertEquals(friendship.status, RELATIONSHIP_STATUS_FOLLOWING)
-
-    def test_delete_relationship_when_other_is_following_removes_row_entirely(self):
-        # GIVEN an authenticated user has a person following them
-        authed_user = UserModelFactory()
-        friend = UserModelFactory()
-        self.client.force_authenticate(user=authed_user)
-
-        friendship = FollowingUserRelationshipModelFactory(initiator=authed_user.profile, receiver=friend.profile)
-        self.assertEquals(friendship.status, RELATIONSHIP_STATUS_FOLLOWING)
-        self.assertEquals(friendship.initiator, authed_user.profile)
-        self.assertEquals(friendship.receiver, friend.profile)
-        url = '/api/friendrequest/%s/' % friendship.id
-
-        # WHEN the request is made
-        response = self.client.delete(url, format='json')
-        # THEN there should be a successful response
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # THEN an error should be raised
-        with self.assertRaises(UserRelationship.DoesNotExist):
-            friendship2 = UserRelationship.objects.get(id=friendship.id)
-
-    def test_delete_relationship_when_pending_removes_row_entirely(self):
-        # GIVEN an authenticated user has a pending relationship that the logged in user initiated
-        authed_user = UserModelFactory()
-        friend = UserModelFactory()
-        self.client.force_authenticate(user=authed_user)
-
-        friendship = BaseUserRelationshipModelFactory(initiator=authed_user.profile, receiver=friend.profile)
-        self.assertEquals(friendship.status, RELATIONSHIP_STATUS_PENDING)
-        self.assertEquals(friendship.initiator, authed_user.profile)
-        self.assertEquals(friendship.receiver, friend.profile)
-        url = '/api/friendrequest/%s/' % friendship.id
-
-        # WHEN the request is made
-        response = self.client.delete(url, format='json')
-        # THEN there should be a successful response
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # THEN an error should be raised
-        with self.assertRaises(UserRelationship.DoesNotExist):
-            friendship2 = UserRelationship.objects.get(id=friendship.id)
-
-    def test_delete_relationship_when_invalid_pk_given(self):
-        # GIVEN an authenticated user tries to delete an invalid friendship object
-        authed_user = UserModelFactory()
-        # friend = UserModelFactory()
-        self.client.force_authenticate(user=authed_user)
-
-        # friendship = BaseUserRelationshipModelFactory(initiator=authed_user.profile, receiver=friend.profile)
-        # self.assertEquals(friendship.status, RELATIONSHIP_STATUS_PENDING)
-        # self.assertEquals(friendship.initiator, authed_user.profile)
-        # self.assertEquals(friendship.receiver, friend.profile)
-        url = '/api/friendrequest/9999/'
-
-        # WHEN the request is made
-        response = self.client.delete(url, format='json')
-
-        # THEN there should be a successful response
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_delete_relationship_when_another_relationships_pk_given(self):
-        # GIVEN an authenticated user tries to delete an invalid friendship object
-        authed_user = UserModelFactory()
-        random = UserModelFactory()
-        friend = UserModelFactory()
-        self.client.force_authenticate(user=authed_user)
-
-        friendship = BaseUserRelationshipModelFactory(initiator=random.profile, receiver=friend.profile)
-        self.assertEquals(friendship.status, RELATIONSHIP_STATUS_PENDING)
-        self.assertEquals(friendship.initiator, random.profile)
-        self.assertEquals(friendship.receiver, friend.profile)
-        url = '/api/friendrequest/%s/' % friendship.id
-
-        # WHEN the request is made
-        response = self.client.delete(url, format='json')
-
-        # THEN there should be a successful response
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data, 'You do not have access to this friendship.')
 
 
 class UserRelationshipCheckViewTestCase(APITestCase):
@@ -334,7 +206,7 @@ class UserRelationshipCheckViewTestCase(APITestCase):
         friend2 = UserModelFactory()
 
         friendship = FriendsUserRelationshipModelFactory(initiator=friend1.profile, receiver=friend2.profile)
-        url = '/api/author/%s/friends/%s/' % (friend1.profile.uuid, friend2.profile.uuid)
+        url = 'http://127.0.0.1:8000/api/author/%s/friends/%s/' % (friend1.profile.uuid, friend2.profile.uuid)
 
         # WHEN the request is made
         response = self.client.get(url)
@@ -349,7 +221,7 @@ class UserRelationshipCheckViewTestCase(APITestCase):
         friend2 = UserModelFactory()
 
         friendship = FollowingUserRelationshipModelFactory(initiator=friend1.profile, receiver=friend2.profile)
-        url = '/api/author/%s/friends/%s/' % (friend1.profile.uuid, friend2.profile.uuid)
+        url = 'http://127.0.0.1:8000/api/author/%s/friends/%s/' % (friend1.profile.uuid, friend2.profile.uuid)
 
         # WHEN the request is made
         response = self.client.get(url)
@@ -368,7 +240,7 @@ class AuthenticatedUserRelationshipViewTestCase(APITestCase):
 
         friendship1 = BaseUserRelationshipModelFactory(initiator=follower1.profile, receiver=authed_user.profile)
         self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_PENDING)
-        url = '/api/author/me/relationship/%s/' % follower1.profile.uuid
+        url = 'http://127.0.0.1:8000/api/author/me/relationship/%s/' % follower1.profile.uuid
 
         # WHEN the request is made
         response = self.client.get(url)
@@ -387,7 +259,7 @@ class AuthenticatedUserRelationshipViewTestCase(APITestCase):
 
         friendship1 = BaseUserRelationshipModelFactory(initiator=authed_user.profile, receiver=follower1.profile)
         self.assertEquals(friendship1.status, RELATIONSHIP_STATUS_PENDING)
-        url = '/api/author/me/relationship/%s/' % follower1.profile.uuid
+        url = 'http://127.0.0.1:8000/api/author/me/relationship/%s/' % follower1.profile.uuid
 
         # WHEN the request is made
         response = self.client.get(url)
@@ -404,7 +276,7 @@ class AuthenticatedUserRelationshipViewTestCase(APITestCase):
         follower1 = UserModelFactory()
         self.client.force_authenticate(user=authed_user)
 
-        url = '/api/author/me/relationship/%s/' % follower1.profile.uuid
+        url = 'http://127.0.0.1:8000/api/author/me/relationship/%s/' % follower1.profile.uuid
 
         # WHEN the request is made
         response = self.client.get(url)
@@ -418,10 +290,11 @@ class AuthenticatedUserRelationshipViewTestCase(APITestCase):
         authed_user = UserModelFactory()
         self.client.force_authenticate(user=authed_user)
 
-        url = '/api/author/me/relationship/%s/' % authed_user.profile.uuid
+        url = 'http://127.0.0.1:8000/api/author/me/relationship/%s/' % authed_user.profile.uuid
 
         # WHEN the request is made
         response = self.client.get(url)
+        print response
 
         # THEN a successful response is made
         self.assertEqual(response.status_code, status.HTTP_200_OK)

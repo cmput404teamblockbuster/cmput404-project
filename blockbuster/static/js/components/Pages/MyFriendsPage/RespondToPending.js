@@ -23,14 +23,14 @@ export default class RespondToPending extends React.Component{
     }
 
     handleAccept(){
-        //alert("want to befreind user: " + this.props.relation['initiator']['username']);
-        ChangeRelationRequest.update(this.props.relation['initiator'], this.props.relation['receiver'],
+        //alert("want to befreind user: " + this.props.relation['author']['username']);
+        ChangeRelationRequest.update(this.props.relation['author'], this.props.relation['friend'],
             "status_friends", this.remount);
     }
 
     handleIgnore(){
-        //alert("want to ignore user: " + this.props.relation['initiator']['username']);
-        ChangeRelationRequest.update(this.props.relation['initiator'], this.props.relation['receiver'],
+        //alert("want to ignore user: " + this.props.relation['author']['username']);
+        ChangeRelationRequest.update(this.props.relation['author'], this.props.relation['friend'],
             "status_following", this.remount);
     }
 

@@ -23,7 +23,7 @@ export default class PostContainer extends React.Component{
                     </CardText>
                     <Divider/>
                     <CardMedia>
-                        <CommentSection postid={this.props.object['uuid']} object={this.props.object['comments']} refresh={this.props.refresh}/>
+                        <CommentSection postid={this.props.object['id']} object={this.props.object['comments']} refresh={this.props.refresh}/>
                     </CardMedia>
                 </Card>
             </li>

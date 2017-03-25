@@ -17,20 +17,22 @@ class Main extends React.Component{
     }
 }
 
-const uuid = window.location.search.substring(1);
+const url = window.location;
 const cb =
     (res) => {
         // if url is '/profile/'
-        if (!uuid){
+        if (url.pathname === "/profile/"){
             ReactDom.render(<Main object={res}/>,
             document.getElementById('container'));
 
-        // if url is '/profile/<my_uuid>/'
-        } else if (res['uuid'] === uuid){
+        // if url is this user's url
+        } else if (res['url'] === url){
             window.location.assign('/profile/')
 
         // if it is other's uuid
         } else{
+            const array = url.pathname.split('/');
+            const uuid = array[array.length-1];
             GetAuthorRequest.getHim(uuid,
                 (object)=> {
                     ReactDom.render(<Main object={object}/>,

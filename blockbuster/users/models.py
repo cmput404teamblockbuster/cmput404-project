@@ -8,15 +8,31 @@ from posts.constants import PRIVACY_UNLISTED
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from blockbuster.settings import SITE_URL
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User,
-                                on_delete=models.CASCADE)  # http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
+                                on_delete=models.CASCADE, null=True, blank=True)  # http://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django
     username = models.CharField(max_length=30, blank=False, null=False, default=None,
                                 editable=False)  # This will be copied from user.username
     github = models.URLField(null=True, blank=True)  # github url can be null
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    host = models.CharField(max_length=100, default=SITE_URL)
+
+    @property
+    def url(self):
+        """
+        returns a link to the users profile on our website
+        """
+        return '%sprofile/%s' % (str(self.host), str(self.uuid))
+
+    @property
+    def api_id(self):
+        """
+        returns the url to the api to get the profile data
+        """
+        return '%sapi/author/%s' % (str(self.host), str(self.uuid))
 
     @property
     def friends(self):
@@ -61,6 +77,9 @@ class Profile(models.Model):
 
 
 class UserRelationship(models.Model):
+    """
+    we must create a user on our db for every friend outside our db
+    """
     RELATIONSHIP_STATUS_OPTIONS = django_choice_options(
         RELATIONSHIP_STATUS_TYPES, 'name')
     initiator = models.ForeignKey('users.Profile', null=False,

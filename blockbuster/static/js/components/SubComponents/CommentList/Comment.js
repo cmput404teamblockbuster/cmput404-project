@@ -7,10 +7,10 @@ import moment from 'moment';
 export default class Comment extends React.Component{
     // props: object: {author,body,created,uuid}
     render(){
-        var time = moment(this.props.object['created']).format("h:mm a dddd, MMMM Do YYYY");
+        var time = moment(this.props.object['published']).format("h:mm a dddd, MMMM Do YYYY");
         return(
           <CardText className="comment">
-            {this.props.object['body']}
+            {this.props.object['comment']}
             <p style={{color:'#9E9E9E'}}> - by
               <span > <NameLink object={this.props.object['author']}/></span>
               <span > at {time}</span>

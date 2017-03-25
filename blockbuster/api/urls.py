@@ -2,7 +2,7 @@ from django.conf.urls import url
 from posts.api.viewsets import PostViewSet
 from comments.api.viewsets import CommentViewSet
 from posts.api.views import ProfilePostsListView, ProfilePostDetailView
-from users.api.views import RegisterUserView, AuthenticatedUserProfileView, UserRelationshipCheckView, AuthenticatedUserRelationshipView
+from users.api.views import RegisterUserView, AuthenticatedUserProfileView, UserRelationshipCheckView, AuthenticatedUserRelationshipView, UserFriendsListView
 from users.api.viewsets import ProfileViewSet, UserRelationshipViewSet,UserRelationshipFriendRequestViewSet, MyFriendsProfilesViewSet
 
 """
@@ -56,7 +56,7 @@ urlpatterns = [
     url(r'^author/all/$', profile_list, name='all_users'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/$', profile_detail, name='profile-detail'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/posts/$', ProfilePostDetailView.as_view(), name='profile-post-detail'), # TODO DOCUMENT
-    url(r'^author/(?P<uuid>[^/]+)/friends/$', author_friends_list, name='author-friends-list'), # TODO DOCUMENT
+    url(r'^author/(?P<uuid>[^/]+)/friends/$',UserFriendsListView.as_view(), name='author-friends-list'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/friends/(?P<uuid_2>[^/]+)/$', UserRelationshipCheckView.as_view(), name='check_author_relationship'), # TODO DOCUMENT
 
 ]

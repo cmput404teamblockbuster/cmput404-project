@@ -8,7 +8,7 @@ export default class CommentSection extends React.Component{
     constructor(object,refresh,postid){
         super(object,refresh,postid);
         this.state = {comments: this.props.object.map((comment)=>
-            <Comment key={comment['uuid']} object={comment} /> )};
+            <Comment key={comment['id']} object={comment} /> )};
 
         this.refresh = this.refresh.bind(this);
     }
@@ -16,7 +16,7 @@ export default class CommentSection extends React.Component{
     refresh(){
         this.props.refresh(
             ()=>{this.setState({comments: this.props.object.map((comment)=>
-                <Comment key={comment['uuid']} object={comment} />)})
+                <Comment key={comment['id']} object={comment} />)})
 
         });
 

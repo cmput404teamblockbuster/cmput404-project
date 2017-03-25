@@ -71,6 +71,8 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'blockbuster.urls'
+# SITE_URL = 'http://warm-hollows-14698.herokuapp.com/' # LIVE server 1
+SITE_URL = 'http://127.0.0.1:8000/' # Dev server
 
 TEMPLATES = [
     {

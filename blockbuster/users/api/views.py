@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,8 +5,15 @@ from django.contrib.auth.models import User
 from users.api.serializers import UserSerializer, UserRelationshipSerializer
 from users.models import Profile, UserRelationship
 from users.api.serializers import ProfileSerializer
+from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDING, \
+    RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
+from collections import OrderedDict
 
+class custom(PageNumberPagination):
+    page_size_query_param = 'size'
+    page_query_param = 'page'
 
 class RegisterUserView(APIView):
     """
@@ -36,7 +42,7 @@ class AuthenticatedUserProfileView(APIView):
     def get(self, request):
         profile = Profile.objects.get(uuid=request.user.profile.uuid)
         serializer = ProfileSerializer(profile)
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AuthenticatedUserRelationshipView(APIView):
@@ -61,6 +67,47 @@ class AuthenticatedUserRelationshipView(APIView):
         else:
             return Response(data='No Relationship Found.', status=status.HTTP_200_OK)
 
+class UserFriendsListView(APIView):
+    """
+    returns a list of users that are friends with a specified user
+    """
+    #http://stackoverflow.com/questions/14190140/merge-querysets-in-django
+    def get(self, request,uuid):
+        friend_uuids = []
+        for r in UserRelationship.objects.select_related('initiator__uuid').filter(receiver__uuid=uuid,
+                                                                                 status=RELATIONSHIP_STATUS_FRIENDS):
+            friend_uuids.append(r.initiator.uuid)
+        for r in UserRelationship.objects.select_related('receiver__uuid').filter(initiator__uuid=uuid,
+                                                                                status=RELATIONSHIP_STATUS_FRIENDS):
+            friend_uuids.append(r.receiver.uuid)
+        
+        allmyfriends = Profile.objects.filter(uuid__in=friend_uuids)
+        serializer = ProfileSerializer(allmyfriends,many=True)
+        
+     
+
+
+        
+        mypaginator = custom()
+        results = mypaginator.paginate_queryset(allmyfriends, request)
+
+
+        page = self.request.GET.get('page', 1)
+        page_num = self.request.GET.get('size', 1000)
+
+
+        serializer = ProfileSerializer(results, many=True)  # TODO maybe a different serilizer for validating that permissions are met
+
+        return Response(OrderedDict([('count', mypaginator.page.paginator.count),
+                                     ('current', page),
+                                     ('next', mypaginator.get_next_link()),
+                                     ('previous', mypaginator.get_previous_link()),
+                                     ('size', page_num),
+                                     ('posts', serializer.data)]), status=status.HTTP_200_OK)
+
+            #return JsonResponse(serializer.data)
+
+    
 
 class UserRelationshipCheckView(APIView):
     """

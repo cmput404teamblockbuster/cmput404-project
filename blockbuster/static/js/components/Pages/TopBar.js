@@ -36,7 +36,8 @@ export default class TopBar extends React.Component{
 
     changePage(object){
         this.CloseSearch();
-        const path = "/profile?"+object['uuid'];
+        // const path = "/profile?"+object['uuid'];
+        const path = object.url;
         window.location.assign(path);
     }
 

@@ -4,17 +4,21 @@ const csrfToken = cookie.load('csrftoken');
 const userToken ="Token "+localStorage.token;
 
 module.exports = {
-    send: function (receiver, status, callback) {
-        this.getAuthor(receiver,status, this.sendPostRequest,callback);
+    send: function (friend, status, callback) {
+        //duct tape solution to change 'username' to 'displayName' !!!!!!!!! Fix me !!!!!!!!!!!!!1
+        if(friend['displayName'] == null){
+            friend['displayName'] = friend['username'];
+        }
+        this.getAuthor(friend,status, this.sendPostRequest,callback);
     },
 
-    update: function (initiator, receiver, status, cb) {
-        this.sendPostRequest(initiator, receiver, status, cb);
+    update: function (author, friend, status, cb) {
+        this.sendPostRequest(author, friend, status, cb);
     },
 
     sendPostRequest: function (p1,p2, p3, cb) {
         axios.post('/api/friendrequest/',
-            {"initiator":p1,"receiver":p2,"status":p3},
+            {"author":p1,"friend":p2,"status":p3},
             {headers:{'X-CSRFToken':csrfToken,'Content-Type':'application/json','Authorization':userToken}})
             .then((res)=>{
                 if(cb != null){

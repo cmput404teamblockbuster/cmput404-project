@@ -10,13 +10,14 @@ export default class NameLink extends React.Component{
     }
 
     handleClick(){
-        const path = '/profile?' + this.props.object['uuid'];
+        // const path = '/profile?' + this.props.object['id'];
+        const path = this.props.object.url
         window.location.assign(path)
     }
 
     render(){
         return(
-            <span onClick={this.handleClick} className="nameLink"> {this.props.object['username']}</span>
+            <span onClick={this.handleClick} className="nameLink"> {this.props.object['displayName']}</span>
         );
     }
 }
