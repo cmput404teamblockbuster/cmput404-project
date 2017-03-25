@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from urlparse import urlparse
-
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from nodes.models import Node
 
 
@@ -27,6 +27,7 @@ class MyFriendsProfilesViewSet(viewsets.ModelViewSet):
     returns the authenticated users friends list
     """
     serializer_class = CondensedProfileSerializer
+    authentication_classes = (BasicAuthentication,TokenAuthentication)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
