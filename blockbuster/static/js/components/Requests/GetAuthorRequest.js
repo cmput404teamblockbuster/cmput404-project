@@ -19,6 +19,17 @@ module.exports = {
     getHim: function (uuid, callback) {
 
         const url = '/api/author/'+uuid+'/';
+        //const url = id+'/'; 
+        axios.get(url,
+            {headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}})
+            .then((res)=>{
+               callback(res.data);
+            })
+    },
+
+    getThem: function (id, callback) {
+
+        const url = id+'/'; -
         axios.get(url,
             {headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}})
             .then((res)=>{

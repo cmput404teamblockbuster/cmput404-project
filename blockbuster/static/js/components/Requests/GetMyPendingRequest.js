@@ -8,7 +8,8 @@ module.exports = {
         axios.get('/api/friendrequest/',
             {headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}})
             .then((res)=>{
-               callback(res.data);
+                console.log("GetMyPendingRequest Res:", res.data.results);
+               callback(res.data.results);
             })
     }
 

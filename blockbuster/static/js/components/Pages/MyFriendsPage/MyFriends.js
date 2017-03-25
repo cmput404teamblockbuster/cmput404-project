@@ -4,6 +4,7 @@ import AppBar from 'material-ui/AppBar'
 import GetMyPendingRequest from '../../Requests/GetMyPendingRequest'
 import PendingContainer from './PendingContainer'
 import SendFollowCard from './SendFollowCard'
+import MyFriendsTable from './MyFriendsTable'
 
 export default class MyFriends extends React.Component{
 	constructor(object){
@@ -14,7 +15,7 @@ export default class MyFriends extends React.Component{
 
     componentWillMount(callback){
     	console.log("about to load");
-        GetMyPendingRequest.getPending(this.props.object['uuid'],
+        GetMyPendingRequest.getPending(this.props.object['id'],
             (PendingList)=>{
                 this.setState({pendings:PendingList.map(
                     (pending, index)=> <PendingContainer key={index++} object={pending} refresh={this.componentWillMount}/>)
@@ -39,6 +40,11 @@ export default class MyFriends extends React.Component{
                         	<h4 id="pendingHeader" style={{color:'#757575', textAlign:'center'}}> Received Friendship Requests Go Here: </h4>
                         </div>
                     	{this.state.pendings}
+                        <div>
+                        <h4 id="pendingHeader" style={{color:'#757575', textAlign:'center'}}> My Friends Go Here: </h4>
+                        </div>
+                        <MyFriendsTable object={this.props.object} refresh={this.props.refresh}/>
+
                 </ul>
             </Paper>
         );
