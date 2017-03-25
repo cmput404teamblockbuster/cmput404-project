@@ -3,6 +3,7 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 // import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar'
 import Divider from 'material-ui/Divider'
 import GetRelationshipWithMeRequest from '../../Requests/GetRelationshipWithMeRequest'
+import ExtractIdFromURL from '../../Requests/ExtractIdFromURL'
 import WithdrawPendingToolbar from '../../SubComponents/RelationshipToolbars/WithdrawPendingToolbar'
 import AcceptRejectToolbar from '../../SubComponents/RelationshipToolbars/AcceptRejectToolbar'
 import UnFriendToolbar from '../../SubComponents/RelationshipToolbars/UnFriendToolbar'
@@ -16,9 +17,12 @@ export default class ProfileCard extends React.Component {
         this.getRelationshipWithMe = this.getRelationshipWithMe.bind(this);
         this.changeButton = this.changeButton.bind(this);
 
-        this.state = {username:this.props.object['username'],
-            github:this.props.object['github'] ? this.props.object['github'] : "Don't have one yet" ,
-            uuid: this.props.object['uuid'], button:<div/>};
+        this.state = {
+            username: this.props.object['displayName'],
+            github: this.props.object['github'] ? this.props.object['github'] : "Don't have one yet",
+            host: this.props.object['host'],
+            url: this.props.object['url']
+        };
         this.getRelationshipWithMe();
     }
 
@@ -29,14 +33,14 @@ export default class ProfileCard extends React.Component {
             // your own
         } else if (res === "No Relationship Found."){
             // send Friend Request Button
-            this.setState({button: <BefriendToolbar receiver={this.props.object} refresh={this.changeButton}/>})
+            this.setState({button: <BefriendToolbar friend={this.props.object} refresh={this.changeButton}/>})
 
         } else if (res['status'] === "status_friends"){
             this.setState({button: <UnFriendToolbar object={res} refresh={this.changeButton}/>})
 
         } else if (res['status'] === "status_friendship_pending"){
             // Cancel Request(not in the requirements) or Reject/Accept Pending request
-            if (res['receiver']['username'] === this.props.object['username']){
+            if (res['friend']['displayName'] === this.props.object['username']){
                 this.setState({button:<WithdrawPendingToolbar object={res} refresh={this.changeButton}/>})
             } else {
                 this.setState({button:<AcceptRejectToolbar object={res} refresh={this.changeButton}/>})
@@ -44,19 +48,19 @@ export default class ProfileCard extends React.Component {
 
         } else if (res['status'] === "status_following"){
             // UnFollow
-            if (res['receiver']['username'] === this.props.object['username']){
-                // if I am the initiator
+            if (res['friend']['displayName'] === this.props.object['username']){
+                // if I am the author
                 this.setState({button:<UnfollowToolbar object={res} refresh={this.changeButton}/>})
             } else {
-                // if I am the receiver
-                this.setState({button:<BefriendToolbar receiver={this.props.object} refresh={this.changeButton}/>})
+                // if I am the friend
+                this.setState({button:<BefriendToolbar friend={this.props.object} refresh={this.changeButton}/>})
             }
             
         }
     }
 
     getRelationshipWithMe(){
-        GetRelationshipWithMeRequest.get(this.props.object['uuid'],this.changeButton)
+        GetRelationshipWithMeRequest.get(ExtractIdFromURL.extract(this.props.object['id']) ,this.changeButton)
     }
 
     render() {
@@ -66,7 +70,9 @@ export default class ProfileCard extends React.Component {
                 <Divider/>
                 <CardHeader title={"Github  : "+this.state.github}/>
                 <Divider/>
-                <CardHeader title={"UUID: "+this.state.uuid}/>
+                <CardHeader title={"Host: "+this.state.host}/>
+                <Divider/>
+                <CardHeader title={"URL: "+this.state.url}/>
                 <Divider/>
                 {this.state.button}
             </Card>

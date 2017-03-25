@@ -15,7 +15,7 @@ export default class SearchListItem extends React.Component{
 
     render(){
         return(
-            <ListItem primaryText={this.props.object['username']} onTouchTap={this.changePage}/>
+            <ListItem primaryText={this.props.object['displayName']} onTouchTap={this.changePage}/>
         );
     }
 }

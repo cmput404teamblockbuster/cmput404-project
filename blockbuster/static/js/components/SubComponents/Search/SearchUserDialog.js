@@ -20,8 +20,8 @@ export default class SearchUserDialog extends React.Component{
 
     getAllUsers(){
         const cb= (objectList) =>{
-            this.setState({items: objectList.map(
-                (object)=><SearchListItem key={object['username']} object={object} changePage={this.props.changePage}/>
+            this.setState({items: objectList.results.map(
+                (object)=><SearchListItem key={object['id']} object={object} changePage={this.props.changePage}/>
             )})
         };
 

@@ -2,16 +2,40 @@ from rest_framework import serializers
 from users.models import Profile
 from django.contrib.auth.models import User
 from users.models import UserRelationship
+from users.constants import RELATIONSHIP_STATUS_FRIENDS
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
-    username = serializers.CharField(read_only=False)
-    uuid = serializers.CharField(read_only=False)
+    displayName = serializers.CharField(source='username', read_only=False)
+    id = serializers.CharField(source='api_id')
 
     class Meta:
         model = Profile
-        fields = ('username', 'github', 'uuid')
+        fields = ('id', 'displayName', 'github', 'host', 'url')
+
+
+class CondensedProfileSerializer(serializers.ModelSerializer):
+    """
+    serializes less fields than the ProfileSerializer
+    """
+    id = serializers.CharField(source='uuid')
+    displayName = serializers.CharField(source='username')
+
+    class Meta:
+        model = Profile
+        fields = ('id', 'host', 'displayName', 'url')
+
+
+class FullProfileSerializer(serializers.ModelSerializer):
+    # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
+    displayName = serializers.CharField(source='username')
+    friends = CondensedProfileSerializer(many=True)
+    id = serializers.CharField(source='api_id')
+
+    class Meta:
+        model = Profile
+        fields = ('id', 'displayName', 'github', 'host', 'url', 'friends')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -35,12 +59,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserRelationshipSerializer(serializers.ModelSerializer):
-    initiator = ProfileSerializer(required=False, read_only=False)
-    receiver = ProfileSerializer(required=False, read_only=False)
+    author = CondensedProfileSerializer(source='initiator')
+    friend = CondensedProfileSerializer(source='receiver')
 
     class Meta:
         model = UserRelationship
-        fields = ('initiator', 'receiver', 'status', 'id')
+        fields = ('author', 'friend', 'status', 'id')
 
     def validate(self, data):
         data = super(UserRelationshipSerializer, self).validate(data)
@@ -57,13 +81,38 @@ class UserRelationshipSerializer(serializers.ModelSerializer):
         initiator_data = validated_data.pop('initiator', None)
         receiver_data = validated_data.pop('receiver', None)
         if initiator_data and receiver_data:
-            initiator = Profile.objects.get(uuid=initiator_data.get('uuid'))
-            receiver = Profile.objects.get(uuid=receiver_data.get('uuid'))
+            initiator = Profile.objects.get(username=initiator_data.get('username'))
+            receiver = Profile.objects.get(username=receiver_data.get('username'))
             validated_data['initiator'] = initiator
             validated_data['receiver'] = receiver
-        defaults = None
-        # status isn't required, and if not given then we are creating a relationship with the model defaults
-        if 'status' in validated_data:
-            defaults = {'status':validated_data.pop('status')}
-        relationship, created = UserRelationship.objects.update_or_create(defaults=defaults, **validated_data) # https://docs.djangoproject.com/en/1.9/ref/models/querysets/#update-or-create
+
+        existing_relationship, create_friendship = self.get_existing_relationship(validated_data)
+        if existing_relationship:
+            existing_relationship.initiator = validated_data.get('initiator')
+            existing_relationship.receiver = validated_data.get('receiver')
+            if create_friendship:
+                existing_relationship.status = RELATIONSHIP_STATUS_FRIENDS
+            else:
+                existing_relationship.status = validated_data.get('status')
+            relationship = existing_relationship
+            relationship.save()
+
+        else:
+            relationship = UserRelationship.objects.create(**validated_data)
+
         return relationship
+
+    def get_existing_relationship(self, data):
+        """
+        convenient function that looks for an existing relationship between
+        the two given profiles and returns it if found. Otherwise it returns None.
+
+        create_friendship = a boolean indicating a friendship should occur
+        """
+        create_friendship = False
+        qs1 = UserRelationship.objects.filter(initiator=data.get('initiator'),receiver=data.get('receiver'))
+        qs2 = UserRelationship.objects.filter(receiver=data.get('initiator'), initiator=data.get('receiver'))
+        if qs2: # This means that the author is trying to follow someone currently following them. They should become friends!
+            create_friendship = True
+        qs = qs1 | qs2
+        return qs[0] if qs else None, create_friendship

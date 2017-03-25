@@ -1,7 +1,7 @@
 
 module.exports = {
     send: function (content, uuid, Callback) {
-        this.getAuthor(content,uuid, this.sendPostRequest, Callback);
+        this.getMe(content,uuid, this.sendPostRequest, Callback);
     },
 
     sendPostRequest: function (p1,uuid, p3,cb) {
@@ -12,7 +12,7 @@ module.exports = {
 
         const url = '/api/posts/'+uuid+'/comments/';
         axios.post(url,
-            {"author":p3,body:p1},
+            {"author":p3,comment:p1},
             {headers:{
             'X-CSRFToken':csrfToken,
             'Content-Type':'application/json',

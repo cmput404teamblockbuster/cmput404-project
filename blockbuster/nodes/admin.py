@@ -1,9 +1,7 @@
 from django.contrib import admin
+from nodes.models import Node
 
 # Register your models here.
-from nodes.models import node
-
-# Register your models here.
-admin.site.register(node)
+admin.site.register(Node)
 
 
