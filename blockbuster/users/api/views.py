@@ -6,6 +6,7 @@ from users.api.serializers import UserSerializer, UserRelationshipSerializer
 from users.models import Profile, UserRelationship
 from users.api.serializers import ProfileSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 
 
 class RegisterUserView(APIView):
@@ -31,6 +32,7 @@ class AuthenticatedUserProfileView(APIView):
     Returns the currently authenticated users profile information
     """
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def get(self, request):
         profile = Profile.objects.get(uuid=request.user.profile.uuid)
@@ -43,6 +45,7 @@ class AuthenticatedUserRelationshipView(APIView):
     returns the UserRelationship object with the current user and a specified user
     """
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def get(self, request, uuid):
         auth_user = request.user.profile
@@ -66,6 +69,8 @@ class UserRelationshipCheckView(APIView):
     Returns a boolean checking if two Users are friends
     """
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
+
     def get(self, request, uuid, uuid_2):
         user1 = Profile.objects.get(uuid=uuid)
         user2 = Profile.objects.get(uuid=uuid_2)

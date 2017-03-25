@@ -2,6 +2,7 @@ from comments.models import Comment
 from rest_framework import viewsets, status
 from comments.api.serializers import CommentSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.response import Response
 from posts.models import Post
 
@@ -18,6 +19,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def create(self, request, uuid):
         data = request.data

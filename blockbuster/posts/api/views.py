@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from collections import OrderedDict
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 
 
 class custom(PageNumberPagination):
@@ -20,6 +21,7 @@ class ProfilePostsListView(APIView):
     List all posts available to currently authenticated user. This is their "stream".
     """
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def get(self, request):
         # http://www.django-rest-framework.org/tutorial/3-class-based-views/#rewriting-our-api-using-class-based-views
@@ -35,6 +37,8 @@ class ProfilePostDetailView(APIView):
     Lists posts by the specified author that are visible to the requesting user.
     """
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
+
 
     def get(self, request, uuid):
         result = []

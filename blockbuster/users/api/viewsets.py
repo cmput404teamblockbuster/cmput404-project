@@ -20,6 +20,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
     lookup_value_regex = '[^/]+'
     serializer_class = FullProfileSerializer
     queryset = Profile.objects.all()
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
 
 
 class MyFriendsProfilesViewSet(viewsets.ModelViewSet):
@@ -27,7 +29,7 @@ class MyFriendsProfilesViewSet(viewsets.ModelViewSet):
     returns the authenticated users friends list
     """
     serializer_class = CondensedProfileSerializer
-    authentication_classes = (BasicAuthentication,TokenAuthentication)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
@@ -43,6 +45,7 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
     serializer_class = UserRelationshipSerializer
     model = UserRelationship
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
     queryset = Profile.objects.all()
 
     def list(self, request, uuid):
@@ -63,6 +66,7 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
     model = UserRelationship
 
     # permission_classes = (IsAuthenticated,) # TODO implement basic auth
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def get_queryset(self):
         """
