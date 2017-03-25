@@ -6,6 +6,7 @@ import RespondToPending from './RespondToPending'
 import GetAuthorRequest from '../../Requests/GetAuthorRequest'
 import FlatButton from 'material-ui/FlatButton'
 import {TableRow, TableRowColumn} from 'material-ui/Table'
+import UnFriendToolbar from '../../SubComponents/RelationshipToolbars/UnFriendToolbar'
 
 export default class FriendContainer extends React.Component{
     constructor(object,refresh){
@@ -13,15 +14,11 @@ export default class FriendContainer extends React.Component{
         this.showRow = this.showRow.bind(this);
         console.log("Friend Container Object: ");
         console.log(this.props.object);
-        this.state = {friend:<li/>};
-
-
-
-        //this.friend = undefined;
+        this.state = {friend:<li/>,button:<li/>};
 
         var friendId = this.props.object.split("/profile/");
         friendId = friendId[0] + "/api/author/" + friendId[1];
-        console.log("Getting Author with id/url: " + friendId);
+        console.log("Getting Author with url: " + friendId);
         GetAuthorRequest.getHim(friendId, this.showRow);
 
     }
@@ -31,6 +28,7 @@ export default class FriendContainer extends React.Component{
         console.log(friend);
 
         this.setState({friend:<NameLink object={friend}/>});
+        this.setState({button:<UnFriendToolbar object={friend} refresh={this.props.refresh}/>});
 
     }
 
@@ -42,6 +40,7 @@ export default class FriendContainer extends React.Component{
         return(
             <TableRow key={this.props.key}>
             <TableRowColumn>{this.state.friend}</TableRowColumn>
+            <TableRowColumn>{this.state.button}</TableRowColumn>
             </TableRow>
         );
     }
