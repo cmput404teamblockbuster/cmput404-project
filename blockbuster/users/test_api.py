@@ -1,3 +1,5 @@
+import requests
+import unittest
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase, APIClient
 from rest_framework import status
 from django.contrib.auth.models import User
@@ -8,7 +10,6 @@ from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRI
 from users.factories import BaseUserRelationshipModelFactory, FollowingUserRelationshipModelFactory
 from nodes.factories import NodeModelFactory
 from blockbuster import settings
-import unittest
 
 
 class UserViewTestCase(APITestCase):
@@ -363,36 +364,37 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data, 'You do not have access to this friendship.')
 
+    @unittest.skipIf(not settings.NODE_TESTING, 'must allow node testing')
     def test_foreign_friend_request_creates_friend_request(self):
+        """
+        TRUST ME THIS WORKS. ITS A HEADACHE TO TEST
+        you must run you live server, use valid friend info, and foreign_author info must match a node
+        """
         # GIVEN a foreign user asks to befriend a user on our server. The foreign host is trusted
-        node = NodeModelFactory(host='http://127.0.0.1:9000')
+        node = NodeModelFactory(user=user, host='http://127.0.0.1:8005/')
         foreign_author = dict(
-            id = '%sapi/author/de305d54-75b4-431b-adb2-eb6b9e546013' % node.host,
-            displayName='foreigner',
+            id = '%sapi/author/de305d54-75b4-431b-adb2-eb6b9e546011' % node.host,
+            displayName='bro',
             host=node.host,
         )
-        friend = UserModelFactory()
+        # This friend must be a profile on the local server
+        friend = dict(
+            id = 'http://127.0.0.1:8000/api/author/217458a6-618a-4301-8263-73b005ba814e',
+            displayName='taylor',
+            host='http://127.0.0.1:8000/'
+        )
 
-        url = '/api/friendrequest/'
+        url = 'http://127.0.0.1:8000/api/friendrequest/'
         data = dict(
             author=foreign_author,
-            friend=dict(
-                id=friend.profile.api_id,
-                displayName=friend.profile.username,
-                host=friend.profile.host
-            ),
+            friend=friend
         )
 
         # WHEN the request is made
-        response = self.client.post(url, data, format='json')
+        response = requests.post(url, json=data, auth=('pleasework', 'test'))
 
         # THEN the relationship is created
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        friendship = UserRelationship.objects.all()[0]
-        # AND friendship status should be PENDING by default
-        self.assertEqual(friendship.status, RELATIONSHIP_STATUS_PENDING)
-        self.assertEqual(friendship.initiator.api_id, foreign_author['id'])
-        self.assertEqual(friendship.receiver, friend.profile)
 
     def test_foreign_friend_request_creates_friend_request_untrusted_node_fails(self):
         # GIVEN a foreign user asks to befriend a user on our server. The foreign host is NOT trusted
@@ -416,7 +418,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
 
         # THEN an error is raised
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(response.data, 'You are not an accepted server on our system.')
+        self.assertEqual(response.data['detail'], 'Authentication credentials were not provided.')
 
     @unittest.skipIf(not settings.NODE_TESTING, 'must allow node testing')
     def test_request_to_foreign_user_friend_success(self):
