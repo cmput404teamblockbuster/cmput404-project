@@ -65,6 +65,7 @@ class UserRelationshipCheckView(APIView):
     """
     Returns a boolean checking if two Users are friends
     """
+    permission_classes = (IsAuthenticated,)
     def get(self, request, uuid, uuid_2):
         user1 = Profile.objects.get(uuid=uuid)
         user2 = Profile.objects.get(uuid=uuid_2)
