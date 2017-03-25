@@ -34,6 +34,7 @@ class ProfilePostDetailView(APIView):
     """
     Lists posts by the specified author that are visible to the requesting user.
     """
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, uuid):
         result = []
