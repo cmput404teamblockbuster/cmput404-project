@@ -81,10 +81,10 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         """
         """
         TODO implement node friending as follows
-        if requestor is from another site then we parse the requestors host and see if they exist in our db
+        if requester is from another site then we parse the requestors host and see if they exist in our db
             if they do we create a profile of the requestor and set their uuid to ours
             if they dont then we raise a authentication error
-        if requestor is local and person friending is foregin:
+        if requester is local and person friending is foregin:
             confirm the foreign person is in our accepted node host
             make an api call to their friendrequest api
         if local we do this as normal.
@@ -117,8 +117,11 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
                 if not local_receiver: # then a local user is requesting a friendship for a user on another server
                     friend_request_url = '%sapi/friendrequest/' % node[0].host
                     headers = {'Content-type': 'application/json'}
-                    response = requests.post(friend_request_url, json=json.dumps(data), headers=headers)
-                    print response # TODO implement this
+                    print json.dumps(data)
+                    response = requests.post(friend_request_url, json=json.dumps(data), headers=headers) # TODO import the node auth credentials
+                    from pprint import pprint
+                    pprint (vars(response))# TODO implement this
+                    print response.json()
 
                 new_profile = Profile.objects.create(uuid=uuid, username=foreign_user.get('displayName'),
                                                      host=host)  # WARNING we will get errors because url will be our api endpoints
