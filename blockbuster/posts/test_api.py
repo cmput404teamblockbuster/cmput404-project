@@ -25,7 +25,8 @@ class PostViewSetTestCase(APITestCase):
                 displayName=author.profile.username,
             ),
             visibility=PRIVACY_PUBLIC,
-            content='TEST CONTENT'
+            content='TEST CONTENT',
+            contentType='text/plain',
         )
         url = '/api/posts/'
 
