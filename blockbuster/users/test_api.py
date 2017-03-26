@@ -11,6 +11,43 @@ from users.factories import BaseUserRelationshipModelFactory, FollowingUserRelat
 from nodes.factories import NodeModelFactory
 from blockbuster import settings
 
+from users.factories import ProfileModelFactory
+
+
+class ProfileViewTestCase(APITestCase):
+    def test_get_local_user_is_successful(self):
+        # Given an authed user tries to view a local users profile
+        authed_user = UserModelFactory()
+        stranger = UserModelFactory()
+        self.client.force_authenticate(user=authed_user)
+
+        url = '/api/author/%s/' % stranger.profile.uuid
+
+        # WHEN the request is made
+        response = self.client.get(url)
+
+        # THEN the appropriate profile is returned
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('displayName'), stranger.username)
+
+    @unittest.skipIf(not settings.NODE_TESTING, 'must allow node testing')
+    def test_get_remote_user_is_successful(self):
+        # Given an authed user tries to view a local users profile
+        authed_user = UserModelFactory()
+        stranger_uuid = '217458a6-618a-4301-8263-73b005ba814e' # This must be an actual user's id on a running server
+        stranger = ProfileModelFactory(username='taylor', user=None, host='http://127.0.0.1:9000/', uuid=stranger_uuid)
+        node = NodeModelFactory(host='http://127.0.0.1:9000/', username_for_node='pleasework', password_for_node='test')
+        self.client.force_authenticate(user=authed_user)
+
+        url = '/api/author/%s/' % (stranger.uuid)
+
+        # WHEN the request is made
+        response = self.client.get(url)
+
+        # THEN the appropriate profile is returned
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('displayName'), stranger.username)
+
 
 class UserViewTestCase(APITestCase):
     def test__create_user_is_successful(self):

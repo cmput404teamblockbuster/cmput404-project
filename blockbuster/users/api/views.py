@@ -92,7 +92,6 @@ class AuthenticatedUserFollowersListView(APIView):
     authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def get(self, request):
-        print 'get'
         auth_user = request.user.profile
         result = UserRelationship.objects.filter(receiver=auth_user, status__in=[RELATIONSHIP_STATUS_FOLLOWING, RELATIONSHIP_STATUS_PENDING])
         if result:
