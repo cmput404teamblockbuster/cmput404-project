@@ -4,13 +4,15 @@ import uuid
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from users.models import Profile, UserRelationship
-from users.api.serializers import FullProfileSerializer, UserRelationshipSerializer, CondensedProfileSerializer
+from users.api.serializers import FullProfileSerializer, UserRelationshipSerializer, CondensedProfileSerializer, ProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from urlparse import urlparse
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from nodes.models import Node
+
+from blockbuster import settings
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
@@ -24,13 +26,31 @@ class ProfileViewSet(viewsets.ModelViewSet):
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
 
-    # def retrieve(self, *args, **kwargs):
-    #     uuid =  kwargs.get('uuid')
-    #     try:
-    #         Profile.objects.get(uuid=uuid)
-    #     except Profile.DoesNotExist:
-    #         return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+    def retrieve(self, *args, **kwargs):
+        uuid =  kwargs.get('uuid')
+        profile = None
+        try:
+            profile = Profile.objects.get(uuid=uuid)
+        except Profile.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND, data='Profile with this uuid does not exist.')
 
+        host = profile.host
+        local = (host == settings.SITE_URL)
+        if not local:
+            node = Node.objects.filter(host=host)
+            if node and node[0].is_allowed:
+                node = node[0]
+                endpoint = 'api/author/'
+                api_url = host + endpoint + str(uuid) + '/'
+                response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
+                if response.status_code == 200:
+                    profile = response.json()
+                    return Response(status=status.HTTP_200_OK, data=profile)
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data='User is from an unaccepted server.')
+
+        serializer = ProfileSerializer(profile)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
 
 
 
