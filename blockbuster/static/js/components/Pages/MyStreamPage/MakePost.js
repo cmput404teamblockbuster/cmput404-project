@@ -47,7 +47,7 @@ export default class MakePost extends React.Component {
         if (this.state.visibility === "privacy_unlisted"){
             //TODO: Return user a url here
             const host = window.location.host;
-            const url = host+'/post/'+res['uuid'] ;
+            const url = host+'/post/'+res['id'] ;
             alert("your url is: " + url)
         }
         this.setState({content:"", visibility:"privacy_public", button: false});
