@@ -3,15 +3,56 @@ import unittest
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase, APIClient
 from rest_framework import status
 from django.contrib.auth.models import User
-from users.factories import UserModelFactory
-from users.factories import FriendsUserRelationshipModelFactory
 from users.models import UserRelationship
 from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
-from users.factories import BaseUserRelationshipModelFactory, FollowingUserRelationshipModelFactory
+from users.factories import UserModelFactory, BaseUserRelationshipModelFactory, FollowingUserRelationshipModelFactory, FriendsUserRelationshipModelFactory, ProfileModelFactory
 from nodes.factories import NodeModelFactory
 from blockbuster import settings
+from posts.factories import BasePostModelFactory
+from users.models import Profile
 
-from users.factories import ProfileModelFactory
+
+class ProfilePostsListView(APITestCase):
+    def test_get_stream_success_no_foreign_posts(self):
+        # Given a user is authenticated
+        authed_user = UserModelFactory()
+        local_friend = UserModelFactory()
+        friendship = FriendsUserRelationshipModelFactory(initiator=authed_user.profile, receiver=local_friend.profile)
+        post = BasePostModelFactory(author=local_friend.profile)
+        self.client.force_authenticate(user=authed_user)
+
+        url = '/api/author/posts/'
+
+        # WHEN the request is made
+        response = self.client.get(url)
+
+        # THEN posts are returned
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    @unittest.skipIf(not settings.NODE_TESTING, 'must allow node testing')
+    def test_get_stream_success_with_foreign_post(self):
+        """
+        WARNING must have local server running on port 9000 with a user in db with the credentials below!
+        """
+        # Given a user is authenticated
+        authed_user = UserModelFactory()
+        node = NodeModelFactory(host='http://127.0.0.1:9000/')
+        foreign_friend = Profile.objects.create(username='random', host=node.host, uuid='21d39f4d-0bd8-4602-be39-4d0534b3a02c')
+        local_friend = UserModelFactory()
+        friendship1 = FriendsUserRelationshipModelFactory(initiator=authed_user.profile, receiver=local_friend.profile)
+        post = BasePostModelFactory(author=local_friend.profile)
+        friendship2 = FriendsUserRelationshipModelFactory(initiator=authed_user.profile, receiver=foreign_friend)
+        self.client.force_authenticate(user=authed_user)
+
+        url = '/api/author/posts/'
+
+        # WHEN the request is made
+        response = self.client.get(url)
+
+        # THEN posts are returned
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
 
 
 class ProfileViewTestCase(APITestCase):
@@ -429,6 +470,38 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
 
         # WHEN the request is made
         response = requests.post(url, json=data, auth=('pleasework', 'test'))
+
+        # THEN the relationship is created
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @unittest.skipIf(not settings.NODE_TESTING, 'must allow node testing')
+    def test_live_site_friending(self):
+        """
+        TRUST ME THIS WORKS. ITS A HEADACHE TO TEST
+        you must run you live server, use valid friend info, and foreign_author info must match a node
+        """
+        # GIVEN a foreign user asks to befriend a user on our server. The foreign host is trusted
+        node = NodeModelFactory(host='http://warm-hollows-14698.herokuapp.com/')
+        server1 = dict(
+            id='%sapi/author/385cbe9b-e95c-4251-a2c1-9a6a08e5797e' % node.host,
+            displayName='aaron',
+            host=node.host,
+        )
+        # This friend must be a profile on the local server
+        server2 = dict(
+            id='http://radiant-beyond-17792.herokuapp.com/api/author/cc3c8875-49ca-4b65-8519-cce58e9ed919',
+            displayName='aaron2',
+            host='http://radiant-beyond-17792.herokuapp.com/'
+        )
+
+        url = 'http://radiant-beyond-17792.herokuapp.com/api/friendrequest/'
+        data = dict(
+            author=server1,
+            friend=server2
+        )
+
+        # WHEN the request is made
+        response = requests.post(url, json=data, auth=('aaron3', '123456'))
 
         # THEN the relationship is created
         self.assertEqual(response.status_code, status.HTTP_200_OK)

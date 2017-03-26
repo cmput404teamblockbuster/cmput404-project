@@ -25,7 +25,7 @@ class PostModelTestCase(TestCase):
 
         # THEN the post's viewable_to property should return the ID of the viewable user
         self.assertEqual(len(post.viewable_to), 1)  # it should only be viewable to one person
-        self.assertEqual(post.viewable_to[0], receiver.id)  # self.assert statements are what will pass or fail
+        self.assertEqual(post.viewable_to[0], receiver.profile.uuid)  # self.assert statements are what will pass or fail
 
     def test__viewable_to_all(self):
         user1 = UserModelFactory()
@@ -41,7 +41,7 @@ class PostModelTestCase(TestCase):
         post = BasePostModelFactory(author=author.profile, privacy=PRIVATE_TO_ME)
 
         self.assertEqual(len(post.viewable_to), 1)
-        self.assertEqual(post.viewable_to[0], author.id)
+        self.assertEqual(post.viewable_to[0], author.profile.uuid)
 
     def test__viewable_to_friends(self):
         friend1 = UserModelFactory()
@@ -60,9 +60,9 @@ class PostModelTestCase(TestCase):
                                                        status=RELATIONSHIP_STATUS_FRIENDS)
 
         self.assertEqual(len(post.viewable_to), 2)
-        self.assertTrue(friend1.id in post.viewable_to)
-        self.assertTrue(friend2.id in post.viewable_to)
-        self.assertFalse(notFriend.id in post.viewable_to)
+        self.assertTrue(friend1.profile.uuid in post.viewable_to)
+        self.assertTrue(friend2.profile.uuid in post.viewable_to)
+        self.assertFalse(notFriend.profile.uuid in post.viewable_to)
 
     # TODO: viewable_to_fof isn't working yet
     # def test__viewable_to_fof(self):

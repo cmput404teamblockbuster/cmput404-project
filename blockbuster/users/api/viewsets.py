@@ -152,7 +152,7 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
                     node = node[0]
                     friend_request_url = '%sapi/friendrequest/' % node.host
                     headers = {'Content-type': 'application/json'}
-                    response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node)) # TODO import the node auth credentials
+                    response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node))
                     print 'request sent to other server'
 
                 new_profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=foreign_user.get('displayName'),
