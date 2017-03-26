@@ -54,33 +54,12 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def list(self, *args, **kwargs):
         """
-        all public posts will be returned
+        all public posts will be returned for the current server
         """
-        """
-        for node in Node.objects.all():
-            make api call to get their public posts
-
-
-        """
-        result = []
-        # get posts from all nodes
-        for node in Node.objects.all():
-            if node.is_allowed:
-                host = node.host
-                url = host + 'api/posts/'
-                response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
-                if 199 < response.status_code < 300:
-                    result.extend(response.json())
-                else:
-                    print "can not get public posts from node:", host
-
-        # get all local public posts
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
         serializer = PostSerializer(data, many=True)
 
-        # combine
-        result.extend(serializer.data)
-        return Response(data=result)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     def retrieve(self, *args, **kwargs):
         """

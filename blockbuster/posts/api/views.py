@@ -108,3 +108,32 @@ class ProfilePostDetailView(APIView):
                                      ('size', page_num),
                                      ('posts', serializer.data)])
                         )
+
+
+class AllPublicPostsView(APIView):
+    """
+    This will get all public posts from all servers in our accepted nodes
+    """
+    def get(self, request):
+        result = []
+        # get posts from all nodes
+        for node in Node.objects.all():
+            if node.is_allowed:
+                host = node.host
+                url = host + 'api/posts/'
+                try:
+                    response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
+                except requests.ConnectionError:
+                    continue
+
+                if 199 < response.status_code < 300:
+                    result.extend(response.json())
+                else:
+                    print "can not get public posts from node:", host
+
+        # get all local public posts
+        data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
+        serializer = PostSerializer(data, many=True)
+        result.extend(serializer.data)
+
+        return Response(status=status.HTTP_200_OK, data=result)
