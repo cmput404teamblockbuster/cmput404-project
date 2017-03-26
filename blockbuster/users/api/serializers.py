@@ -2,7 +2,7 @@ from rest_framework import serializers
 from users.models import Profile
 from django.contrib.auth.models import User
 from users.models import UserRelationship
-from users.constants import RELATIONSHIP_STATUS_FRIENDS
+from users.constants import RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_PENDING
 
 
 class ProfileSerializer(serializers.ModelSerializer):

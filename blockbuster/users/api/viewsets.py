@@ -1,5 +1,6 @@
 import json
 import requests
+import uuid
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from users.models import Profile, UserRelationship
@@ -64,9 +65,8 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
 class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = UserRelationshipSerializer
     model = UserRelationship
-
-    # permission_classes = (IsAuthenticated,) # TODO implement basic auth
     authentication_classes = (BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         """
@@ -118,23 +118,23 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
             host = foreign_user.get('host', foreign_user.get('id')[:foreign_user.get('id').find(url_contents.path) + 1])
             node = Node.objects.filter(host=host)
             if node:  # then we trust their server
-                uuid = url_contents.path.split('/')[-1]
+                identifier = url_contents.path.split('/')[-1]
                 if not local_receiver: # then a local user is requesting a friendship for a user on another server
-                    friend_request_url = '%sapi/friendrequest/' % node[0].host
+                    node = node[0]
+                    friend_request_url = '%sapi/friendrequest/' % node.host
                     headers = {'Content-type': 'application/json'}
-                    print json.dumps(data)
-                    response = requests.post(friend_request_url, json=json.dumps(data), headers=headers) # TODO import the node auth credentials
-                    from pprint import pprint
-                    pprint (vars(response))# TODO implement this
-                    print response.json()
+                    response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node)) # TODO import the node auth credentials
+                    print 'request sent to other server'
 
-                new_profile = Profile.objects.create(uuid=uuid, username=foreign_user.get('displayName'),
+                new_profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=foreign_user.get('displayName'),
                                                      host=host)  # WARNING we will get errors because url will be our api endpoints
                 data[role] = CondensedProfileSerializer(new_profile).data
             else:
                 return Response(status=status.HTTP_401_UNAUTHORIZED,
                                 data='You are not an accepted server on our system.')
 
+        if not data.get('status', None):
+            data['status'] = RELATIONSHIP_STATUS_PENDING
         serializer = UserRelationshipSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
