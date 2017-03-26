@@ -32,17 +32,24 @@ class ProfileViewSet(viewsets.ModelViewSet):
         try:
             profile = Profile.objects.get(uuid=uuid)
         except Profile.DoesNotExist:
+
+            for node in Node.objects.all():
+                print "############### line 36"
+                if node.is_allowed:
+                    response = self.request_foreign_profile_data(node, uuid)
+                    if response.status_code == 200:
+                        profile = response.json()
+                        return Response(status=status.HTTP_200_OK, data=profile)
             return Response(status=status.HTTP_404_NOT_FOUND, data='Profile with this uuid does not exist.')
 
         host = profile.host
         local = (host == settings.SITE_URL)
         if not local:
+
             node = Node.objects.filter(host=host)
             if node and node[0].is_allowed:
                 node = node[0]
-                endpoint = 'api/author/'
-                api_url = host + endpoint + str(uuid) + '/'
-                response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
+                response = self.request_foreign_profile_data(node, uuid)
                 if response.status_code == 200:
                     profile = response.json()
                     return Response(status=status.HTTP_200_OK, data=profile)
@@ -52,6 +59,11 @@ class ProfileViewSet(viewsets.ModelViewSet):
         serializer = ProfileSerializer(profile)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
+    def request_foreign_profile_data(self, node, uuid):
+        endpoint = 'api/author/'
+        api_url = node.host + endpoint + str(uuid) + '/'
+        response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
+        return response
 
 
 class MyFriendsProfilesViewSet(viewsets.ModelViewSet):
