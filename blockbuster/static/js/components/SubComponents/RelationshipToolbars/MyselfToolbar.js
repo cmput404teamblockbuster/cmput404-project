@@ -6,9 +6,9 @@ export default class MyselfToolbar extends React.Component{
     //props: Object { author: Object, friend: Object, status: "status_friendship_pending" }
     render(){
         return(
-            <Toolbar >
+            <Toolbar style={{backgroundColor:'#424242', border:'solid 1px #4FC3F7'}} >
                 <ToolbarGroup>
-                    <ToolbarTitle text="Friend Request Received"/>
+                    <ToolbarTitle text="Friend Request Received" />
                 </ToolbarGroup>
                 <ToolbarGroup>
                     <RaisedButton label="Accept"/>

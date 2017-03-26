@@ -20,13 +20,14 @@ class Main extends React.Component{
 const url = window.location;
 const cb =
     (res) => {
+        const myURL = new URL(res.url);
         // if url is '/profile/'
         if (url.pathname === "/profile/"){
             ReactDom.render(<Main object={res}/>,
             document.getElementById('container'));
 
         // if url is this user's url
-        } else if (res['url'] === url){
+        } else if (url.pathname === myURL.pathname){
             window.location.assign('/profile/')
 
         // if it is other's uuid

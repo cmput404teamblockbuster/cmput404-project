@@ -17,7 +17,7 @@ export default class BefriendToolbar extends React.Component{
 
     render(){
         return(
-            <Toolbar >
+            <Toolbar style={{backgroundColor:'#424242' , border:'solid 1px #4FC3F7'}} >
                 <ToolbarGroup>
                     {/*<ToolbarTitle text="Not A Friend"/>*/}
                 </ToolbarGroup>

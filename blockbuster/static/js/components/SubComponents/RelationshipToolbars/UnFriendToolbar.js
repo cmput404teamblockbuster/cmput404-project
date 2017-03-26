@@ -17,8 +17,8 @@ export default class UnFriendToolbar extends React.Component{
 
     render(){
         return(
-            <Toolbar>
-                <ToolbarGroup>
+            <Toolbar style={{backgroundColor:'#424242',  border:'solid 1px #4FC3F7'}}>
+                <ToolbarGroup >
                     <ToolbarTitle text="Friends"/>
                 </ToolbarGroup>
                 <ToolbarGroup>
