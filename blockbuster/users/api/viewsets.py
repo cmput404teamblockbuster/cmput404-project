@@ -24,6 +24,15 @@ class ProfileViewSet(viewsets.ModelViewSet):
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
 
+    # def retrieve(self, *args, **kwargs):
+    #     uuid =  kwargs.get('uuid')
+    #     try:
+    #         Profile.objects.get(uuid=uuid)
+    #     except Profile.DoesNotExist:
+    #         return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+
+
+
 
 class MyFriendsProfilesViewSet(viewsets.ModelViewSet):
     """
