@@ -46,19 +46,25 @@ class Profile(models.Model):
 
         return Profile.objects.filter(uuid__in=friend_uuids)
 
-    def get_stream(self):
+    def get_local_stream_and_foreign_friend_list(self):
         """
-        Returns: the user's stream
+        Returns:
+            local_stream: an array of post objects from our server
+            foreign_friend_list: a list of friends from other server so we can get their posts
         """
-        # TODO this should be optimized eventually
-        stream = [post for post in Post.objects.filter(author=self).exclude(privacy=PRIVACY_UNLISTED)]
+        assert self.user, "There is no stream for a foreign profile."
+        local_stream = [post for post in Post.objects.filter(author=self).exclude(privacy=PRIVACY_UNLISTED)]
+        foreign_friend_list = []
         for friend in self.friends:
-            posts = Post.objects.filter(author=friend.id)
-            for post in posts:
-                if post.viewable_for_author(author=self):
-                    stream.append(post)
+            if friend.host == SITE_URL:
+                posts = Post.objects.filter(author=friend.id)
+                for post in posts:
+                    if post.viewable_for_author(author=self):
+                        local_stream.append(post)
+            else: # we have to get the posts from their server
+                foreign_friend_list.append(friend)
 
-        return stream
+        return local_stream, foreign_friend_list
 
     def __str__(self):
         return self.username  # TODO this should be the url of their profile

@@ -34,7 +34,6 @@ class ProfileViewSet(viewsets.ModelViewSet):
         except Profile.DoesNotExist:
 
             for node in Node.objects.all():
-                print "############### line 36"
                 if node.is_allowed:
                     response = self.request_foreign_profile_data(node, uuid)
                     if response.status_code == 200:
@@ -58,6 +57,30 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
         serializer = ProfileSerializer(profile)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+    def list(self, *args, **kwargs):
+        listofauthors = []
+        local = Profile.objects.all()
+        node = Node.objects.all()
+        localserializer = ProfileSerializer(local,many=True)
+        listofauthors.extend(localserializer.data)
+        for singlenode in node:
+            if singlenode.is_allowed == True:
+                endpoint = 'api/author/all/'
+                api_url = singlenode.host + endpoint
+                #testfor empty/wrong credentials
+                response = requests.get(api_url, auth=(singlenode.username_for_node, singlenode.password_for_node))
+                if response.status_code == 200:
+                    payload =  response.json()
+                    if len(payload)>0:
+                        #dict['trdt']
+                        #dict.get('trdt')
+                        listofauthors.extend(payload)
+                else:
+                    continue
+
+
+        return Response(status=status.HTTP_200_OK, data=listofauthors)
 
     def request_foreign_profile_data(self, node, uuid):
         endpoint = 'api/author/'
@@ -164,7 +187,7 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
                     node = node[0]
                     friend_request_url = '%sapi/friendrequest/' % node.host
                     headers = {'Content-type': 'application/json'}
-                    response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node)) # TODO import the node auth credentials
+                    response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node))
                     print 'request sent to other server'
 
                 new_profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=foreign_user.get('displayName'),

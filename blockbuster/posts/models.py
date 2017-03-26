@@ -31,10 +31,10 @@ class Post(models.Model):
         Returns: a qs of users that the post is viewable to
         """
         if self.privacy == PRIVATE_TO_ALL_FRIENDS:
-            return [friend.id for friend in self.author.friends]
+            return [friend.uuid for friend in self.author.friends]
 
         elif self.privacy == PRIVATE_TO_ONE_FRIEND:
-            return [self.private_to.id]
+            return [self.private_to.uuid]
 
         # doesn't work
         # elif self.privacy == PRIVATE_TO_FOF:
@@ -48,7 +48,7 @@ class Post(models.Model):
         #    return canView
 
         elif self.privacy == PRIVATE_TO_ME:
-            return [self.author.id]
+            return [self.author.uuid]
 
         return []
 
@@ -57,7 +57,7 @@ class Post(models.Model):
         will check to see if the given author can see the post
         Returns: boolean
         """
-        if self.privacy == PRIVACY_PUBLIC or author.id in self.viewable_to:
+        if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to:
             return True
 
         return False
