@@ -8,7 +8,14 @@ export default class PostContainer extends React.Component{
     constructor(object,refresh){
         super(object,refresh);
 
-
+        if (this.props.object['contentType']==="text/plain"){
+            this.body = <p className="postBody">{this.props.object['content']}</p>
+        } else if (this.props.object['contentType']==="text/markdown"){
+            this.body = <p>TODO: markdown display</p>
+        } else {
+            console.log("post container", this.props.object['contentType'])
+            this.body = <img className="image" src={this.props.object['content']}/>
+        }
     }
 
 
@@ -19,7 +26,7 @@ export default class PostContainer extends React.Component{
                     {/*<CardHeader title={this.props.object['author']['username']} titleColor={'#82B1FF'} /><Divider/>*/}
                     <CardHeader title={<NameLink object={this.props.object['author']}/>}/><Divider/>
                     <CardText >
-                        <p className="postBody">{this.props.object['content']}</p>
+                        {this.body}
                     </CardText>
                     <Divider/>
                     <CardMedia>

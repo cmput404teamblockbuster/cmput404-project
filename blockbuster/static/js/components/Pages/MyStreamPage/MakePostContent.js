@@ -22,14 +22,21 @@ export default class MakePostContent extends React.Component{
 
     handleTextChange(event){
         this.setState({contentText: event.target.value});
-        this.props.change(event.target.value);
+        this.props.change(event.target.value, "text/plain");
 
     }
 
     handleImageChange(event){
-        console.log(event.target.files[0]);
-        this.props.change(event.target.value);
-        this.setState({uploadText:event.target.value})
+        console.log("make post content",event.target.files[0]);
+        this.reader = new FileReader();
+        this.setState({uploadText:event.target.value});
+        this.type = event.target.files[0].type + ";base64";
+        this.reader.onloadend = ()=>{
+            this.props.change(this.reader.result, this.type);
+
+        };
+        this.reader.readAsDataURL(event.target.files[0])
+
     }
 
     render(){
@@ -41,7 +48,7 @@ export default class MakePostContent extends React.Component{
                 </Tab>
                 <Tab label="Image Post">
                     <FlatButton icon={<Upload/>} labelPosition='after' label={this.state.uploadText} containerElement="label" className="fullWidth">
-                        <input type="file" accept="image/*" className="uploadInput" onChange={this.handleImageChange}/>
+                        <input type="file" accept="image/jpeg, image/png" className="uploadInput" onChange={this.handleImageChange}/>
                     </FlatButton>
                 </Tab>
             </Tabs>

@@ -12,7 +12,7 @@ export default class MakePost extends React.Component {
         // props: refresh: callback function to re-render MyStream
         super(refresh);
 
-        this.state = {content:"", visibility:"privacy_public", button: false};
+        this.state = {content:"", contentType:"text/plain", visibility:"privacy_public", button: false};
         this.author = undefined;
 
         this.changeContent = this.changeContent.bind(this);
@@ -23,8 +23,8 @@ export default class MakePost extends React.Component {
     }
 
 
-    changeContent(data){
-        this.setState({content:data, button:false});
+    changeContent(data, type){
+        this.setState({content:data, contentType: type, button:false});
         this.author = undefined;
     }
 
@@ -60,9 +60,9 @@ export default class MakePost extends React.Component {
         if (this.state.content !== ""){
             if (this.state.visibility === "private_to_one_friend" && this.author){
                 // post to one single user TODO: make sure users on other server as well
-                CreatePostRequest.send(this.state.content,this.state.visibility, this.afterSubmit, this.author)
+                CreatePostRequest.send(this.state.content, this.state.contentType, this.state.visibility, this.afterSubmit, this.author)
             } else {
-                CreatePostRequest.send(this.state.content,this.state.visibility, this.afterSubmit)
+                CreatePostRequest.send(this.state.content, this.state.contentType, this.state.visibility, this.afterSubmit)
             }
 
         }
