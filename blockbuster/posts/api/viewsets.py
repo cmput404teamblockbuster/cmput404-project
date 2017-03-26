@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
 from posts.api.serializers import PostSerializer
 from posts.models import Post
+from nodes.models import Node
+import requests
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED
@@ -54,9 +56,31 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         all public posts will be returned
         """
+        """
+        for node in Node.objects.all():
+            make api call to get their public posts
+
+
+        """
+        result = []
+        # get posts from all nodes
+        for node in Node.objects.all():
+            if node.is_allowed:
+                host = node.host
+                url = host + 'api/posts/'
+                response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
+                if 199 < response.status_code < 300:
+                    result.extend(response.json())
+                else:
+                    print "can not get public posts from node:", host
+
+        # get all local public posts
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
         serializer = PostSerializer(data, many=True)
-        return Response(data=serializer.data)
+
+        # combine
+        result.extend(serializer.data)
+        return Response(data=result)
 
     def retrieve(self, *args, **kwargs):
         """
