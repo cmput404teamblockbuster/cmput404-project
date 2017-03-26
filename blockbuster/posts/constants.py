@@ -1,5 +1,6 @@
-(PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVACY_PUBLIC, PRIVATE_TO_FOF, PRIVATE_TO_ME, PRIVACY_UNLISTED) = (
-    'private_to_all_friends', 'private_to_one_friend', 'privacy_public', 'private_to_fof', 'private_to_me', 'privacy_unlisted')
+(PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVACY_PUBLIC, PRIVATE_TO_FOF, PRIVATE_TO_ME, PRIVACY_UNLISTED, PRIVACY_SERVER_ONLY) = (
+    'private_to_all_friends', 'private_to_one_friend', 'privacy_public', 'private_to_fof', 'private_to_me',
+    'privacy_unlisted', 'privacy_server_only')
 
 PRIVACY_TYPES = {
     PRIVATE_TO_ALL_FRIENDS: {
@@ -20,9 +21,10 @@ PRIVACY_TYPES = {
     PRIVACY_UNLISTED: {
         'name': 'Unlisted'
     },
+    PRIVACY_SERVER_ONLY: {
+        'name': 'Server Only'
+    },
 }
-
-
 
 text_markdown = "text/markdown"
 text_plain = "text/plain"
@@ -31,9 +33,9 @@ png = "image/png;base64"
 jpeg = "image/jpeg;base64"
 
 contentchoices = (
-        (text_markdown, 'text/markdown'),
-        (text_plain, 'text/plain'),
-        (binary,'application/base64'),
-        (png, 'image/png;base64'),
-        (jpeg, 'image/jpeg;base64'),
+    (text_markdown, 'text/markdown'),
+    (text_plain, 'text/plain'),
+    (binary, 'application/base64'),
+    (png, 'image/png;base64'),
+    (jpeg, 'image/jpeg;base64'),
 )
