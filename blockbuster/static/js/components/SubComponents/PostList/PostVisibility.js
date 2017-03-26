@@ -24,6 +24,7 @@ export default class PostVisibility extends React.Component{
                 <MenuItem value="privacy_public" primaryText="Share To Public"/>
                 <MenuItem value="private_to_me" primaryText="Share To Me Only"/>
                 <MenuItem value="private_to_all_friends" primaryText="Share To Friends"/>
+                <MenuItem value="privacy_server_only" primaryText="Share To local Friends"/>
                 <MenuItem value="private_to_fof" primaryText="Share To FoF"/>
 
                 {/* I mean here */}
