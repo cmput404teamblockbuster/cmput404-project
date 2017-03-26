@@ -2,7 +2,7 @@ from django.conf.urls import url
 from posts.api.viewsets import PostViewSet
 from comments.api.viewsets import CommentViewSet
 from posts.api.views import ProfilePostsListView, ProfilePostDetailView
-from users.api.views import RegisterUserView, AuthenticatedUserProfileView, UserRelationshipCheckView, AuthenticatedUserRelationshipView
+from users.api.views import RegisterUserView, AuthenticatedUserProfileView, UserRelationshipCheckView, AuthenticatedUserRelationshipView, AuthenticatedUserFollowingListView, AuthenticatedUserFollowersListView
 from users.api.viewsets import ProfileViewSet, UserRelationshipViewSet,UserRelationshipFriendRequestViewSet, MyFriendsProfilesViewSet
 
 """
@@ -53,6 +53,8 @@ urlpatterns = [
     url(r'^author/posts/$', ProfilePostsListView.as_view(), name='profile-post-list'), # TODO DOCUMENT
     url(r'^author/me/$', AuthenticatedUserProfileView.as_view(), name='auth_profile_detail'),
     url(r'^author/me/relationship/(?P<uuid>[^/]+)/$', AuthenticatedUserRelationshipView.as_view(), name='authenticated-user-relationship-detail'),
+    url(r'^author/me/followers/$', AuthenticatedUserFollowersListView.as_view(), name='authenticated-user-followers-list'),
+    url(r'^author/me/following/$', AuthenticatedUserFollowingListView.as_view(), name='authenticated-user-following-list'),
     url(r'^author/all/$', profile_list, name='all_users'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/$', profile_detail, name='profile-detail'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/posts/$', ProfilePostDetailView.as_view(), name='profile-post-detail'), # TODO DOCUMENT

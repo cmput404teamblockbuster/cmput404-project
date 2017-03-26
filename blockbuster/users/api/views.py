@@ -4,9 +4,10 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from users.api.serializers import UserSerializer, UserRelationshipSerializer
 from users.models import Profile, UserRelationship
-from users.api.serializers import ProfileSerializer
+from users.api.serializers import ProfileSerializer, CondensedProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
+from users.constants import RELATIONSHIP_STATUS_FOLLOWING, RELATIONSHIP_STATUS_PENDING
 
 
 class RegisterUserView(APIView):
@@ -63,6 +64,44 @@ class AuthenticatedUserRelationshipView(APIView):
         else:
             return Response(data='No Relationship Found.', status=status.HTTP_200_OK)
 
+
+class AuthenticatedUserFollowingListView(APIView):
+    """
+    returns a list of all the people the authenticated user is following but they arent friends
+    """
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
+
+    def get(self, request):
+        auth_user = request.user.profile
+        result = UserRelationship.objects.filter(initiator=auth_user, status__in=[RELATIONSHIP_STATUS_FOLLOWING, RELATIONSHIP_STATUS_PENDING])
+        if result:
+            serializer = CondensedProfileSerializer((r.receiver for r in result), many=True)
+            if serializer.is_valid:
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data=serializer.errors)
+        else:
+            return Response(data='Not following any users.', status=status.HTTP_200_OK)
+
+
+class AuthenticatedUserFollowersListView(APIView):
+    """
+    returns a list of all the authenticated user's followers
+    """
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
+
+    def get(self, request):
+        print 'get'
+        auth_user = request.user.profile
+        result = UserRelationship.objects.filter(receiver=auth_user, status__in=[RELATIONSHIP_STATUS_FOLLOWING, RELATIONSHIP_STATUS_PENDING])
+        if result:
+            serializer = CondensedProfileSerializer((r.initiator for r in result), many=True)
+            if serializer.is_valid:
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data=serializer.errors)
+        else:
+            return Response(data='User has no followers.', status=status.HTTP_200_OK)
 
 class UserRelationshipCheckView(APIView):
     """
