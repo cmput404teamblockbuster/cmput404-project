@@ -22,6 +22,7 @@ export default class ListItemContainer extends React.Component{
     render(){
         return(
             <li style={{backgroundColor:'#424242', textAlign:'center', border:'solid #4FC3F7'}}>
+                <span/>
                 {/*<Toolbar style={{backgroundColor:'#424242', textAlign:'center', border:'solid #4FC3F7'}}>*/}
                     {/*<ToolbarGroup>*/}
                         <NameLink object={this.props.object}/>
@@ -29,6 +30,7 @@ export default class ListItemContainer extends React.Component{
                     {/*/!*<ToolbarGroup>*!/*/}
                     {/*/!*</ToolbarGroup>*!/*/}
                 {/*</Toolbar>*/}
+                <span className="smallText">{this.props.object.host}</span>
             </li>
         );
     }

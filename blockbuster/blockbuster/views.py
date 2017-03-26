@@ -20,6 +20,9 @@ def profile(request):
 def singlePost(request):
     return render(request, 'singlePost.html')
 
+def public(request):
+    return render(request, 'publicPosts.html')
+
 
 # def login_view(request):
 #     """

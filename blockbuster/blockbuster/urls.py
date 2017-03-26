@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^friends/$', 'blockbuster.views.myFriends', name='myFriends'),
     url(r'^post/$', 'blockbuster.views.singlePost', name='singlePost'),
     url(r'^profile/', 'blockbuster.views.profile', name='profile'),
+    url(r'^public/', 'blockbuster.views.public', name='public'),
     url(r'^api/', include('api.urls')),
     url(r'^obtain-auth-token/$', obtain_auth_token),
     url(r'^docs/', include('rest_framework_docs.urls')),

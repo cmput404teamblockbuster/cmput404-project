@@ -1,0 +1,14 @@
+{% load render_bundle from webpack_loader %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>BlockBuster</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+
+<body>
+<div id="container"></div>
+{% render_bundle 'publicPosts' %}
+</body>
+</html>

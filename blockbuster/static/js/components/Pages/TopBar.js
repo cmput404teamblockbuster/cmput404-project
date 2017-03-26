@@ -9,6 +9,7 @@ export default class TopBar extends React.Component{
         super();
 
         this.state = { dialog:<div/>};
+        this.PublicPosts = this.PublicPosts.bind(this);
         this.Stream = this.Stream.bind(this);
         this.Friends = this.Friends.bind(this);
         this.Profile = this.Profile.bind(this);
@@ -16,6 +17,10 @@ export default class TopBar extends React.Component{
         this.OpenSearch = this.OpenSearch.bind(this);
         this.CloseSearch = this.CloseSearch.bind(this);
         this.changePage = this.changePage.bind(this);
+    }
+
+    PublicPosts(){
+        window.location.assign("/public/")
     }
 
     Stream(){
@@ -77,7 +82,9 @@ export default class TopBar extends React.Component{
                     <RaisedButton label="My Stream" style={styles.button} onTouchTap={this.Stream}/>
                     <RaisedButton label="My Friends" style={styles.button} onTouchTap={this.Friends}/>
                     <RaisedButton label="My Profile" style={styles.button} onTouchTap={this.Profile}/>
+                    <RaisedButton label="Public Posts" style={styles.button} onTouchTap={this.PublicPosts}/>
                     <RaisedButton label="Logout" style={styles.button} onTouchTap={this.Logout}/>
+
                 </ToolbarGroup>
             </Toolbar>
 

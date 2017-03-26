@@ -98,3 +98,8 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
     height: 100%;
     display: block;
 }
+
+.smallText{
+    font-size: 0.8em;
+    float:right
+}

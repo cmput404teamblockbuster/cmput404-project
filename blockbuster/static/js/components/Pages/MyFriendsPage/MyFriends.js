@@ -83,7 +83,7 @@ export default class MyFriends extends React.Component{
                         <h4 id="pendingHeader" style={{color:'#757575', textAlign:'center'}}> My Followings : </h4>
                     </div>
                     {this.state.followings}
-                    
+
                     <Divider/>
                     <div>
                         <h4 id="pendingHeader" style={{color:'#757575', textAlign:'center'}}> My Followers : </h4>
