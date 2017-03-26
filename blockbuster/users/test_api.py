@@ -423,10 +423,10 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
     @unittest.skipIf(not settings.NODE_TESTING, 'must allow node testing')
     def test_request_to_foreign_user_friend_success(self):
         # GIVEN a local authed user asks to befriend a user on another trusted server.
-        node = NodeModelFactory(host='http://127.0.0.1:9000/')
+        node = NodeModelFactory(host='http://127.0.0.1:9000/', username_for_node='pleasework', password_for_node='test')
         friend = dict(
-            id = '%sapi/author/de305d54-75b4-431b-adb2-eb6b9e546013' % node.host,
-            displayName='foreigner',
+            displayName='taylor',
+            id = '%s/api/author/217458a6-618a-4301-8263-73b005ba814e' % node.host,
             host=node.host
         )
         author = UserModelFactory()

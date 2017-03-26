@@ -120,13 +120,11 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
             if node:  # then we trust their server
                 identifier = url_contents.path.split('/')[-1]
                 if not local_receiver: # then a local user is requesting a friendship for a user on another server
-                    friend_request_url = '%sapi/friendrequest/' % node[0].host
+                    node = node[0]
+                    friend_request_url = '%sapi/friendrequest/' % node.host
                     headers = {'Content-type': 'application/json'}
-                    print json.dumps(data)
-                    response = requests.post(friend_request_url, json=json.dumps(data), headers=headers) # TODO import the node auth credentials
-                    from pprint import pprint
-                    pprint (vars(response))# TODO implement this
-                    print response.json()
+                    response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node)) # TODO import the node auth credentials
+                    print 'request sent to other server'
 
                 new_profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=foreign_user.get('displayName'),
                                                      host=host)  # WARNING we will get errors because url will be our api endpoints
