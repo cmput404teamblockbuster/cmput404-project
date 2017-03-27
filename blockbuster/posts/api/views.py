@@ -2,7 +2,7 @@ import requests
 from posts.api.serializers import PostSerializer
 from posts.models import Post
 from users.models import Profile
-from posts.constants import PRIVACY_PUBLIC
+from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -117,7 +117,7 @@ class ProfilePostDetailView(APIView):
                 if response.status_code == 200:
                     return Response(data=response.json())
 
-        users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
+        users_posts = Post.objects.filter(author=author).order_by('-created').exclude(privacy=PRIVACY_UNLISTED)  # get all posts by the specified user
         for post in users_posts:
             if post.privacy == PRIVACY_PUBLIC or request.data.get('requesting_user_uuid') in post.viewable_to:  # check if the post is visible to logged in user
                 result.append(post)
