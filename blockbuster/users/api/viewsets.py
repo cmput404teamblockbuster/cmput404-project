@@ -32,10 +32,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
         try:
             profile = Profile.objects.get(uuid=uuid)
         except Profile.DoesNotExist:
-
             for node in Node.objects.all():
                 if node.is_allowed:
-                    print("dhjkshdkjsahkhkfa line 38")
                     response = self.request_foreign_profile_data(node, uuid)
                     if response.status_code == 200:
                         profile = response.json()
@@ -45,7 +43,6 @@ class ProfileViewSet(viewsets.ModelViewSet):
         host = profile.host
         local = (host == settings.SITE_URL)
         if not local:
-
             node = Node.objects.filter(host=host)
             if node and node[0].is_allowed:
                 node = node[0]
