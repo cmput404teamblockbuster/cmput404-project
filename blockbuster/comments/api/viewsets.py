@@ -6,6 +6,9 @@ from rest_framework.authentication import BasicAuthentication, TokenAuthenticati
 from rest_framework.response import Response
 from posts.models import Post
 
+from nodes.models import Node
+import json
+import requests
 
 class CommentViewSet(viewsets.ModelViewSet):
     """
