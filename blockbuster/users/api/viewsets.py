@@ -32,10 +32,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
         try:
             profile = Profile.objects.get(uuid=uuid)
         except Profile.DoesNotExist:
-
             for node in Node.objects.all():
                 if node.is_allowed:
-                    print("dhjkshdkjsahkhkfa line 38")
                     response = self.request_foreign_profile_data(node, uuid)
                     if response.status_code == 200:
                         profile = response.json()
@@ -45,7 +43,6 @@ class ProfileViewSet(viewsets.ModelViewSet):
         host = profile.host
         local = (host == settings.SITE_URL)
         if not local:
-
             node = Node.objects.filter(host=host)
             if node and node[0].is_allowed:
                 node = node[0]
@@ -59,25 +56,32 @@ class ProfileViewSet(viewsets.ModelViewSet):
         serializer = ProfileSerializer(profile)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
+    def list_local(self, *args, **kwargs):
+        listofauthors = []
+        local = Profile.objects.all()
+        node = Node.objects.all()
+        localserializer = ProfileSerializer(local, many=True)
+        listofauthors.extend(localserializer.data)
+        return Response(status=status.HTTP_200_OK, data=listofauthors)
+
     def list(self, *args, **kwargs):
         listofauthors = []
         local = Profile.objects.all()
         node = Node.objects.all()
         localserializer = ProfileSerializer(local, many=True)
         listofauthors.extend(localserializer.data)
-        if(self.request.get_host != settings.SITE_URL):
-            for singlenode in node:
-                if singlenode.is_allowed == True:
-                    endpoint = 'api/author/all/'
-                    api_url = singlenode.host + endpoint
-                    try:
-                        response = requests.get(api_url, auth=(singlenode.username_for_node, singlenode.password_for_node))
-                    except requests.ConnectionError:
-                        continue
-                    if response.status_code == 200:
-                        payload = response.json()
-                        if len(payload) > 0:
-                            listofauthors.extend(payload)
+        for singlenode in node:
+            if singlenode.is_allowed == True:
+                endpoint = 'api/author/local/'
+                api_url = singlenode.host + endpoint
+                try:
+                    response = requests.get(api_url, auth=(singlenode.username_for_node, singlenode.password_for_node))
+                except requests.ConnectionError:
+                    continue
+                if response.status_code == 200:
+                    payload = response.json()
+                    if len(payload) > 0:
+                        listofauthors.extend(payload)
 
 
         return Response(status=status.HTTP_200_OK, data=listofauthors)

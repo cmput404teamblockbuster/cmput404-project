@@ -24,6 +24,9 @@ my_friends_list = MyFriendsProfilesViewSet.as_view({
 profile_list = ProfileViewSet.as_view({
     'get': 'list'
 })
+profile_list_local = ProfileViewSet.as_view({
+    'get': 'list_local'
+})
 profile_detail = ProfileViewSet.as_view({
     'get': 'retrieve'
 })
@@ -57,6 +60,7 @@ urlpatterns = [
     url(r'^author/me/relationship/(?P<uuid>[^/]+)/$', AuthenticatedUserRelationshipView.as_view(), name='authenticated-user-relationship-detail'),
     url(r'^author/me/followers/$', AuthenticatedUserFollowersListView.as_view(), name='authenticated-user-followers-list'),
     url(r'^author/me/following/$', AuthenticatedUserFollowingListView.as_view(), name='authenticated-user-following-list'),
+    url(r'^author/local/$', profile_list_local, name='all_users_local'), 
     url(r'^author/all/$', profile_list, name='all_users'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/$', profile_detail, name='profile-detail'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/posts/$', ProfilePostDetailView.as_view(), name='profile-post-detail'), # TODO DOCUMENT

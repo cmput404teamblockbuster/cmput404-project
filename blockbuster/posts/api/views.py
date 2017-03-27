@@ -89,10 +89,22 @@ class ProfilePostDetailView(APIView):
         exact same as the get request except we return posts visible to the given uuid in the post body
         """
         result = []
-        author = Profile.objects.get(uuid=uuid)
+        try:
+            author = Profile.objects.get(uuid=uuid)
+        except Profile.DoesNotExist:
+            for node in Node.objects.all():
+                api_url = '%sapi/author/%s/posts/' % (node.host, uuid)
+                try:
+                    data = dict(requesting_user_uuid=request.data.get('requesting_user_uuid'))
+                    response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
+                except requests.ConnectionError:
+                    continue
+                if response.status_code == 200:
+                    return Response(data=response.json())
+
         users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
         for post in users_posts:
-            if post.privacy == PRIVACY_PUBLIC or request.data.get('uuid') in post.viewable_to:  # check if the post is visible to logged in user
+            if post.privacy == PRIVACY_PUBLIC or request.data.get('requesting_user_uuid') in post.viewable_to:  # check if the post is visible to logged in user
                 result.append(post)
 
         mypaginator = custom()
