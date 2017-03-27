@@ -3,6 +3,7 @@ import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import RaisedButton from 'material-ui/RaisedButton';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import auth from '../Requests/auth';
+import ExtractIdFromURL from '../Requests/ExtractIdFromURL';
 import SearchUserDialog from '../SubComponents/Search/SearchUserDialog';
 export default class TopBar extends React.Component{
     constructor(){
@@ -41,8 +42,8 @@ export default class TopBar extends React.Component{
 
     changePage(object){
         this.CloseSearch();
-        // const path = "/profile?"+object['uuid'];
-        const path = object.url;
+        const path = "/profile/"+ ExtractIdFromURL.extract(object['id']);
+        // const path = object.url;
         window.location.assign(path);
     }
 
