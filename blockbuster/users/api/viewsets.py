@@ -174,6 +174,7 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
                 local_initiator = True
             else:
                 must_create_profile = False
+                foreign_user = data.get('author')
         except Profile.DoesNotExist:
             foreign_user = data.get('author')
             role = 'author'
@@ -184,6 +185,7 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
                 local_receiver = True
             else:
                 must_create_profile = False
+                foreign_user = data.get('friend')
         except Profile.DoesNotExist:
             foreign_user = data.get('friend')
             role = 'friend'
