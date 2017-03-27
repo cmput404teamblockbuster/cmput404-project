@@ -27,6 +27,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def create(self, request, uuid):
         data = request.data
         serializer = CommentSerializer(data=data)
+        host = request.pop('host')
         if serializer.is_valid():
             try:
                 post = Post.objects.get(uuid=uuid)  # Get the post the comment is for
