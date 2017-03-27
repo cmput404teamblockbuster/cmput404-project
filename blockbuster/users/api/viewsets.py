@@ -189,14 +189,15 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         except Profile.DoesNotExist:
             foreign_user = data.get('friend')
             role = 'friend'
-
+        
         if not local_initiator or not local_receiver: # one of the users is from another server
             url_contents = urlparse(foreign_user.get('id'))
             host = foreign_user.get('host', foreign_user.get('id')[:foreign_user.get('id').find(url_contents.path) + 1])
             node = Node.objects.filter(host=host)
             if node:  # then we trust their server
                 identifier = url_contents.path.split('/')[-1]
-                if not local_receiver: # then a local user is requesting a friendship for a user on another server
+                requesting_node = Node.objects.filter(user=self.request.user) # we want to know if node is requesting for an update
+                if not requesting_node: # then a local user is requesting a friendship for a user on another server
                     node = node[0]
                     friend_request_url = '%sapi/friendrequest/' % node.host
                     headers = {'Content-type': 'application/json'}
