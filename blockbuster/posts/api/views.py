@@ -89,8 +89,6 @@ class ProfilePostDetailView(APIView):
         exact same as the get request except we return posts visible to the given uuid in the post body
         """
         result = []
-        print request.data.get('requesting_user_uuid')
-
         try:
             author = Profile.objects.get(uuid=uuid)
         except Profile.DoesNotExist:
