@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.response import Response
 from posts.models import Post
-
+from users.models import Profile
 from nodes.models import Node
 import json
 import requests
@@ -58,8 +58,14 @@ class CommentViewSet(viewsets.ModelViewSet):
             #         message='Comment not allowed'
             #     )
             # else:
+            try:
+                uuid = data.get('author').get('id').split('/')[-1]
+                profile = Profile.objects.get(uuid=uuid)
+            except Profile.DoesNotExist:
+                profile = Profile.objects.create(**data.get('author'))
+
             Comment.objects.create(
-                author=data.get('author'),
+                author=profile,
                 body=serializer.data['comment'],
                 post=post,
             )
