@@ -46,20 +46,37 @@ class Profile(models.Model):
 
         return Profile.objects.filter(uuid__in=friend_uuids)
 
-    def get_stream(self):
+    def get_local_stream_and_foreign_friend_list(self):
         """
-        Returns: the user's stream
+        Returns:
+            local_stream: an array of post objects from our server
+            foreign_friend_list: a list of friends from other server so we can get their posts
         """
-        # TODO this should be optimized eventually
-        stream = [post for post in Post.objects.filter(author=self).exclude(privacy=PRIVACY_UNLISTED)]
-        for friend in self.friends:
-            posts = Post.objects.filter(author=friend.id)
-            for post in posts:
-                if post.viewable_for_author(author=self):
-                    stream.append(post)
+        assert self.user, "There is no stream for a foreign profile."
+        local_stream = [post for post in Post.objects.filter(author=self).exclude(privacy=PRIVACY_UNLISTED)]
+        foreign_friend_list = []
+        friends_qs = self.friends
+        following_ids = (r.receiver.id for r in UserRelationship.objects.filter(initiator=self,
+                                                                                status__in=[
+                                                                                    RELATIONSHIP_STATUS_FOLLOWING,
+                                                                                    RELATIONSHIP_STATUS_PENDING]))
+        following_qs = Profile.objects.filter(id__in=following_ids)
+        authors = friends_qs | following_qs
+        for author in authors:
+            if author.host == SITE_URL:
+                posts = Post.objects.filter(author=author.id)
+                for post in posts:
+                    if post.viewable_for_author(author=self):
+                        local_stream.append(post)
+            else: # we have to get the posts from their server
+                foreign_friend_list.append(author)
 
-        return stream
+        return local_stream, foreign_friend_list
 
+    def delete_this(self):
+        friends_qs = self.friends
+        following_qs = (r.receiver for r in UserRelationship.objects.filter(initiator=self, status__in=[RELATIONSHIP_STATUS_FOLLOWING, RELATIONSHIP_STATUS_PENDING]))
+        authors = friends_qs | following_qs
     def __str__(self):
         return self.username  # TODO this should be the url of their profile
 

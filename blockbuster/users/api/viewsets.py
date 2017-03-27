@@ -32,17 +32,24 @@ class ProfileViewSet(viewsets.ModelViewSet):
         try:
             profile = Profile.objects.get(uuid=uuid)
         except Profile.DoesNotExist:
+
+            for node in Node.objects.all():
+                if node.is_allowed:
+                    print("dhjkshdkjsahkhkfa line 38")
+                    response = self.request_foreign_profile_data(node, uuid)
+                    if response.status_code == 200:
+                        profile = response.json()
+                        return Response(status=status.HTTP_200_OK, data=profile)
             return Response(status=status.HTTP_404_NOT_FOUND, data='Profile with this uuid does not exist.')
 
         host = profile.host
         local = (host == settings.SITE_URL)
         if not local:
+
             node = Node.objects.filter(host=host)
             if node and node[0].is_allowed:
                 node = node[0]
-                endpoint = 'api/author/'
-                api_url = host + endpoint + str(uuid) + '/'
-                response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
+                response = self.request_foreign_profile_data(node, uuid)
                 if response.status_code == 200:
                     profile = response.json()
                     return Response(status=status.HTTP_200_OK, data=profile)
@@ -52,6 +59,34 @@ class ProfileViewSet(viewsets.ModelViewSet):
         serializer = ProfileSerializer(profile)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
+    def list(self, *args, **kwargs):
+        listofauthors = []
+        local = Profile.objects.all()
+        node = Node.objects.all()
+        localserializer = ProfileSerializer(local, many=True)
+        listofauthors.extend(localserializer.data)
+        if(self.request.get_host != settings.SITE_URL):
+            for singlenode in node:
+                if singlenode.is_allowed == True:
+                    endpoint = 'api/author/all/'
+                    api_url = singlenode.host + endpoint
+                    try:
+                        response = requests.get(api_url, auth=(singlenode.username_for_node, singlenode.password_for_node))
+                    except requests.ConnectionError:
+                        continue
+                    if response.status_code == 200:
+                        payload = response.json()
+                        if len(payload) > 0:
+                            listofauthors.extend(payload)
+
+
+        return Response(status=status.HTTP_200_OK, data=listofauthors)
+
+    def request_foreign_profile_data(self, node, uuid):
+        endpoint = 'api/author/'
+        api_url = node.host + endpoint + str(uuid) + '/'
+        response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
+        return response
 
 
 class MyFriendsProfilesViewSet(viewsets.ModelViewSet):
@@ -152,7 +187,7 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
                     node = node[0]
                     friend_request_url = '%sapi/friendrequest/' % node.host
                     headers = {'Content-type': 'application/json'}
-                    response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node)) # TODO import the node auth credentials
+                    response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node))
                     print 'request sent to other server'
 
                 new_profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=foreign_user.get('displayName'),

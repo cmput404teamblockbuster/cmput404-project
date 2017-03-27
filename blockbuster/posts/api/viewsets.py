@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
 from posts.api.serializers import PostSerializer
 from posts.models import Post
+from nodes.models import Node
+import requests
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED
@@ -52,11 +54,12 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def list(self, *args, **kwargs):
         """
-        all public posts will be returned
+        all public posts will be returned for the current server
         """
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
         serializer = PostSerializer(data, many=True)
-        return Response(data=serializer.data)
+
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     def retrieve(self, *args, **kwargs):
         """

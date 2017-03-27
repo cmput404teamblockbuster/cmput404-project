@@ -52,7 +52,11 @@ class AuthenticatedUserRelationshipView(APIView):
         auth_user = request.user.profile
         if str(auth_user.uuid) == uuid:
             return Response(data='The profile with the given UUID is your own.', status=status.HTTP_200_OK)
-        other_user = Profile.objects.get(uuid=uuid)
+        try:
+            other_user = Profile.objects.get(uuid=uuid)
+        except Profile.DoesNotExist:
+            return Response(data='No Relationship Found.', status=status.HTTP_200_OK)
+
         qs1 = UserRelationship.objects.filter(initiator=auth_user, receiver=other_user)
         qs2 = UserRelationship.objects.filter(initiator=other_user, receiver=auth_user)
         result = qs1 | qs2

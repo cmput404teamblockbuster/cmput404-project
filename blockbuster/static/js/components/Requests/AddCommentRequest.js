@@ -1,10 +1,10 @@
 
 module.exports = {
-    send: function (content, uuid, Callback) {
-        this.getMe(content,uuid, this.sendPostRequest, Callback);
+    send: function (host, content, uuid, Callback) {
+        this.getMe(host, content,uuid, this.sendPostRequest, Callback);
     },
 
-    sendPostRequest: function (p1,uuid, p3,cb) {
+    sendPostRequest: function (h, p1,uuid, p3,cb) {
         var cookie = require('react-cookie');
         var axios = require('axios');
         const csrfToken = cookie.load('csrftoken');
@@ -12,7 +12,7 @@ module.exports = {
 
         const url = '/api/posts/'+uuid+'/comments/';
         axios.post(url,
-            {"author":p3,comment:p1},
+            {"author":p3,comment:p1, host:h},
             {headers:{
             'X-CSRFToken':csrfToken,
             'Content-Type':'application/json',
@@ -23,7 +23,7 @@ module.exports = {
             })
     },
 
-    getMe:function (p1, uuid, cb, cb2) {
+    getMe:function (host, p1, uuid, cb, cb2) {
         var cookie = require('react-cookie');
         var axios = require('axios');
         const csrfToken = cookie.load('csrftoken');
@@ -32,7 +32,7 @@ module.exports = {
         axios.get('/api/author/me/',
             {headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}})
             .then((res)=>{
-               cb(p1, uuid, res.data, cb2);
+               cb(host, p1, uuid, res.data, cb2);
             })
     }
 };

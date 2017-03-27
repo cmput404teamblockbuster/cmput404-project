@@ -6,8 +6,8 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import AddCommentRequest from '../../Requests/AddCommentRequest'
 export default class AddComment extends React.Component{
     //props: refresh: callback function, postid: uuid of the post
-    constructor(refresh,postid){
-        super(refresh,postid);
+    constructor(refresh,postid,host){
+        super(refresh,postid,host);
 
         this.state = {text:""};
         this.sendComment = this.sendComment.bind(this);
@@ -27,7 +27,7 @@ export default class AddComment extends React.Component{
 
     sendComment(){
         if (this.state.text !== ""){
-            AddCommentRequest.send(this.state.text,this.props.postid,this.remount);
+            AddCommentRequest.send(this.props.host,this.state.text,this.props.postid,this.remount);
         }
 
 
