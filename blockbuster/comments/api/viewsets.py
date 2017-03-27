@@ -25,7 +25,20 @@ class CommentViewSet(viewsets.ModelViewSet):
         data = request.data
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
-            post = Post.objects.get(uuid=uuid)  # Get the post the comment is for
+            try:
+                post = Post.objects.get(uuid=uuid)  # Get the post the comment is for
+            except Post.DoesNotExist:
+                node = Node.objects.filter(host=host)
+                if node and node[0].is_allowed:
+                    node = node[0]
+                    api_url = 'api/posts/' + uuid + '/comments'
+                    response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
+                    if response.status_code == 200:
+                        comment = response.json()
+                        return Response(status = status.HTTP_200_OK, data = comment)
+                else:
+                    return Response(status = status.HTTP_401_UNAUTHORIZED, data = 'Comment from an unaccepted server')  
+
             author = request.user.profile
             if not post.viewable_for_author(author):
                 status_code = status.HTTP_403_FORBIDDEN
