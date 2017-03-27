@@ -9,6 +9,7 @@ from users.models import Profile
 from nodes.models import Node
 import json
 import requests
+import uuid
 
 class CommentViewSet(viewsets.ModelViewSet):
     """
@@ -24,19 +25,20 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
 
-    def create(self, request, uuid):
+    def create(self, request, uuid_input):
         data = request.data
         serializer = CommentSerializer(data=data)
         print data
         host = data.get('host')
+
         if serializer.is_valid():
             try:
-                post = Post.objects.get(uuid=uuid)  # Get the post the comment is for
+                post = Post.objects.get(uuid=uuid_input)  # Get the post the comment is for
             except Post.DoesNotExist:
                 node = Node.objects.filter(host=host)
                 if node and node[0].is_allowed:
                     node = node[0]
-                    api_url = host + 'api/posts/' + uuid + '/comments/'
+                    api_url = host + 'api/posts/' + uuid_input + '/comments/'
                     response = requests.post(api_url, json = data, auth=(node.username_for_node, node.password_for_node))
                     if 199< response.status_code <300:
                         comment = response.json()
@@ -47,7 +49,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
                     return Response(status = status.HTTP_400_BAD_REQUEST, data = response)
                 else:
-                    return Response(status = status.HTTP_401_UNAUTHORIZED, data = 'Comment from an unaccepted server')  
+                    return Response(status = status.HTTP_401_UNAUTHORIZED, data = 'Comment from an unaccepted server')
 
             # author = request.user.profile
             # if not post.viewable_for_author(author):
@@ -58,11 +60,14 @@ class CommentViewSet(viewsets.ModelViewSet):
             #         message='Comment not allowed'
             #     )
             # else:
+
             try:
-                uuid = data.get('author').get('id').split('/')[-1]
-                profile = Profile.objects.get(uuid=uuid)
+                identifier = data.get('author').get('id').split('/')[-1]
+                profile = Profile.objects.get(uuid=identifier)
             except Profile.DoesNotExist:
-                profile = Profile.objects.create(**data.get('author'))
+
+                author = data.get('author')
+                profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=author.get('displayName'), host=author.get('host'))
 
             Comment.objects.create(
                 author=profile,
