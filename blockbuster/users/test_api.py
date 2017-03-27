@@ -25,10 +25,9 @@ class ProfilePostsListView(APITestCase):
 
         # WHEN the request is made
         response = self.client.get(url)
-
         # THEN posts are returned
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data.get('count'), 1)
 
     @unittest.skipIf(not settings.NODE_TESTING, 'must allow node testing')
     def test_get_stream_success_with_foreign_post(self):
