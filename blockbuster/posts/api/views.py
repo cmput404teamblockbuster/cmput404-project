@@ -11,6 +11,7 @@ from rest_framework.pagination import PageNumberPagination
 from collections import OrderedDict
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from nodes.models import Node
+from blockbuster import settings
 
 
 class custom(PageNumberPagination):
@@ -106,6 +107,8 @@ class ProfilePostDetailView(APIView):
         result = []
         try:
             author = Profile.objects.get(uuid=uuid)
+            if author.host != settings.SITE_URL: # if this is a foreign user
+                raise Profile.DoesNotExist
         except Profile.DoesNotExist:
             for node in Node.objects.all():
                 api_url = '%sapi/author/%s/posts/' % (node.host, uuid)
