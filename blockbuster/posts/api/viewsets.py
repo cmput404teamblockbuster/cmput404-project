@@ -4,7 +4,7 @@ from posts.models import Post
 from nodes.models import Node
 import requests
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 
@@ -35,7 +35,7 @@ class PostViewSet(viewsets.ModelViewSet):
     # Permissions:
     # http://www.django-rest-framework.org/api-guide/permissions/#api-reference
 
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     lookup_field = 'uuid'
     lookup_value_regex = '[^/]+'

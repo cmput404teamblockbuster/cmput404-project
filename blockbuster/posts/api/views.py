@@ -146,6 +146,9 @@ class AllPublicPostsView(APIView):
     """
     This will get all public posts from all servers in our accepted nodes
     """
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         result = []
         # get posts from all nodes
