@@ -50,7 +50,6 @@ export default class MakePost extends React.Component {
             alert("your url is: " + url)
         }
         this.setState({content:""});
-        this.author = undefined;
         this.child.changeTab();
         this.props.refresh();
     }
