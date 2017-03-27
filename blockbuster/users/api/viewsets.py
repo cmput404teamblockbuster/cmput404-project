@@ -35,10 +35,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
             for node in Node.objects.all():
                 if node.is_allowed:
                     response = self.request_foreign_profile_data(node, uuid)
-                    if response.status_code == 200:
+                    if response and response.status_code == 200:
                         profile = response.json()
                         return Response(status=status.HTTP_200_OK, data=profile)
-            return Response(status=status.HTTP_404_NOT_FOUND, data='Profile with this uuid does not exist.')
+            return Response(status=status.HTTP_404_NOT_FOUND, data='There are no profiles matching the given UUID')
 
         host = profile.host
         local = (host == settings.SITE_URL)
@@ -47,7 +47,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
             if node and node[0].is_allowed:
                 node = node[0]
                 response = self.request_foreign_profile_data(node, uuid)
-                if response.status_code == 200:
+                if response and response.status_code == 200:
                     profile = response.json()
                     return Response(status=status.HTTP_200_OK, data=profile)
             else:
@@ -83,13 +83,16 @@ class ProfileViewSet(viewsets.ModelViewSet):
                     if len(payload) > 0:
                         listofauthors.extend(payload)
 
-
         return Response(status=status.HTTP_200_OK, data=listofauthors)
 
     def request_foreign_profile_data(self, node, uuid):
         endpoint = 'api/author/'
         api_url = node.host + endpoint + str(uuid) + '/'
-        response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
+        try:
+            response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
+        except requests.ConnectionError:
+            response = None
+
         return response
 
 
@@ -121,7 +124,12 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
         """
         lists a given users friends
         """
-        requested_profile = Profile.objects.get(uuid=uuid)
+        try:
+            requested_profile = Profile.objects.get(uuid=uuid)
+        except Profile.DoesNotExist:
+            # TODO maybe make a request to nodes for the profile's friendslist?
+            return Response(status=status.HTTP_404_NOT_FOUND, data="No profile with the given UUID is found on this server.")
+
         friends = requested_profile.friends
         data = dict(
             query='friends',
