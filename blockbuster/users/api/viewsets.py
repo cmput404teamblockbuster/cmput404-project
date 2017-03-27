@@ -165,9 +165,13 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         data = self.request.data
         foreign_user = None
         role = None
+        must_create_profile = True
         try:
             local_author = Profile.objects.get(username=data.get('author').get('displayName'))
-            local_initiator = True
+            if local_author.host == settings.SITE_URL:
+                local_initiator = True
+            else:
+                must_create_profile = False
         except Profile.DoesNotExist:
             local_initiator = False
             foreign_user = data.get('author')
@@ -175,7 +179,10 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
 
         try:
             local_receiver = Profile.objects.get(username=data.get('friend').get('displayName'))
-            local_receiver = True
+            if local_receiver.host == settings.SITE_URL:
+                local_receiver = True
+            else:
+                must_create_profile = False
         except Profile.DoesNotExist:
             local_receiver = False
             foreign_user = data.get('friend')
@@ -194,9 +201,10 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
                     response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node))
                     print 'request sent to other server'
 
-                new_profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=foreign_user.get('displayName'),
+                if must_create_profile:
+                    new_profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=foreign_user.get('displayName'),
                                                      host=host)  # WARNING we will get errors because url will be our api endpoints
-                data[role] = CondensedProfileSerializer(new_profile).data
+                    data[role] = CondensedProfileSerializer(new_profile).data
             else:
                 return Response(status=status.HTTP_401_UNAUTHORIZED,
                                 data='You are not an accepted server on our system.')
