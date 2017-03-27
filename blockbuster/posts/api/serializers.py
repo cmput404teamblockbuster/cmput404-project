@@ -15,8 +15,8 @@ class PostSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='uuid', required=False)
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices)
-    published = serializers.CharField(source='created')
-    
+    published = serializers.CharField(source='created', required=False)
+
     def validate(self, data):
         data = super(PostSerializer, self).validate(data)
         """
