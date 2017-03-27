@@ -35,7 +35,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                 node = Node.objects.filter(host=host)
                 if node and node[0].is_allowed:
                     node = node[0]
-                    api_url = 'api/posts/' + uuid + '/comments'
+                    api_url = host + 'api/posts/' + uuid + '/comments'
                     response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
                     if response.status_code == 200:
                         comment = response.json()
