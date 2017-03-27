@@ -52,7 +52,27 @@ class ProfilePostsListView(APIView):
 
         serializer = PostSerializer(local_stream, many=True)
         all_posts.extend(serializer.data)
-        return Response(all_posts, status=status.HTTP_200_OK)
+
+        mypaginator = custom()
+        results = mypaginator.paginate_queryset(local_stream, request)
+        page = self.request.GET.get('page', 1)
+        page_num = self.request.GET.get('size', 1000)
+
+        return Response(OrderedDict([('count', mypaginator.page.paginator.count),
+                                     ('current', page),
+                                     ('next', mypaginator.get_next_link()),
+                                     ('previous', mypaginator.get_previous_link()),
+                                     ('size', page_num),
+                                     ('posts', all_posts)]), status=status.HTTP_200_OK
+                        )
+
+
+
+
+
+
+
+        #return Response(all_posts, status=status.HTTP_200_OK)
 
 
 class ProfilePostDetailView(APIView):
