@@ -35,6 +35,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
             for node in Node.objects.all():
                 if node.is_allowed:
+                    print("dhjkshdkjsahkhkfa line 38")
                     response = self.request_foreign_profile_data(node, uuid)
                     if response.status_code == 200:
                         profile = response.json()
