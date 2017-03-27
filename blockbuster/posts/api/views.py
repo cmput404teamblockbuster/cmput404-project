@@ -37,7 +37,8 @@ class ProfilePostsListView(APIView):
                 node = Node.objects.filter(host=friend.host)
                 if node and node[0].is_allowed:
                     node = node[0]
-                    api_url = '%sapi/author/%s/posts/' % (friend.host, friend.uuid) # TODO change this endpoint eventually to handle group api's
+
+                    api_url = '%sauthor/%s/posts/' % (friend.host, friend.uuid) # TODO change this endpoint eventually to handle group api's
                     # We send a post request to the other server with the requesting users uuid so they know who is wanting info
                     data = dict(
                         requesting_user_uuid = str(self.request.user.profile.uuid)
@@ -111,15 +112,15 @@ class ProfilePostDetailView(APIView):
                 raise Profile.DoesNotExist
         except Profile.DoesNotExist:
             for node in Node.objects.all():
-                api_url = '%sapi/author/%s/posts/' % (node.host, uuid)
+                api_url = '%sauthor/%s/posts/' % (node.host, uuid)
                 try:
                     data = dict(requesting_user_uuid=request.data.get('requesting_user_uuid'))
                     response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
                 except requests.ConnectionError:
                     continue
-                if response.status_code == 200:
+                if 199 < response.status_code < 300:
                     return Response(data=response.json())
-
+                continue
         users_posts = Post.objects.filter(author=author).order_by('-created').exclude(privacy=PRIVACY_UNLISTED)  # get all posts by the specified user
         for post in users_posts:
             if post.privacy == PRIVACY_PUBLIC or request.data.get('requesting_user_uuid') in post.viewable_to:  # check if the post is visible to logged in user
@@ -153,16 +154,19 @@ class AllPublicPostsView(APIView):
         for node in Node.objects.all():
             if node.is_allowed:
                 host = node.host
-                url = host + 'api/posts/'
+                url = host + 'posts/'
                 try:
                     response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
                 except requests.ConnectionError:
                     continue
 
                 if 199 < response.status_code < 300:
-                    result.extend(response.json())
+                    try:
+                        result.extend(response.json().get('posts'))
+                    except AttributeError:
+                        result.extend(response.json())
                 else:
-                    print "can not get public posts from node:", host
+                    print response.status_code,"can not get public posts from node:", host, "with url:", url
 
         # get all local public posts
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)

@@ -86,7 +86,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_200_OK, data=listofauthors)
 
     def request_foreign_profile_data(self, node, uuid):
-        endpoint = 'api/author/'
+        endpoint = 'author/'
         api_url = node.host + endpoint + str(uuid) + '/'
         try:
             response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
@@ -202,11 +202,11 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
             host = foreign_user.get('host', foreign_user.get('id')[:foreign_user.get('id').find(url_contents.path) + 1])
             node = Node.objects.filter(host=host)
             if node:  # then we trust their server
-                identifier = url_contents.path.split('/')[-1]
+                identifier = url_contents.path.split('/')[-2]
                 requesting_node = Node.objects.filter(user=self.request.user) # we want to know if node is requesting for an update
                 if not requesting_node: # then a local user is requesting a friendship for a user on another server
                     node = node[0]
-                    friend_request_url = '%sapi/friendrequest/' % node.host
+                    friend_request_url = '%sfriendrequest/' % node.host
                     headers = {'Content-type': 'application/json'}
                     response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node))
                     print 'request sent to other server'

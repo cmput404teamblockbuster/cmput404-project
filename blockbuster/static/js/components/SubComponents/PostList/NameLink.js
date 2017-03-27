@@ -12,7 +12,8 @@ export default class NameLink extends React.Component{
     handleClick(){
         //
         const array = this.props.object.url.split('/');
-        const uuid = array[array.length-1];
+        const index = array[array.length-1] === ""? array.length-2:array.length-1
+        const uuid = array[index];
         const path = '/profile/' + uuid;
         window.location.assign(path)
     }
