@@ -37,10 +37,11 @@ class CommentViewSet(viewsets.ModelViewSet):
                     node = node[0]
                     api_url = host + 'api/posts/' + uuid + '/comments'
                     response = requests.post(api_url, json = data, auth=(node.username_for_node, node.password_for_node))
-                    if response.status_code == 200:
+                    if 199< response.status_code <300:
                         comment = response.json()
                         return Response(status = status.HTTP_200_OK, data = comment)
-                    return Response(status = status.HTTP_400_BAD_REQUEST, data = response.text)
+                    print response.text
+                    return Response(status = status.HTTP_400_BAD_REQUEST, data = response)
                 else:
                     return Response(status = status.HTTP_401_UNAUTHORIZED, data = 'Comment from an unaccepted server')  
 
