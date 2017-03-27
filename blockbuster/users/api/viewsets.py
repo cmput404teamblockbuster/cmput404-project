@@ -180,8 +180,8 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
             role = 'author'
 
         try:
-            local_receiver = Profile.objects.get(username=data.get('friend').get('displayName'))
-            if local_receiver.host == settings.SITE_URL:
+            local_friend = Profile.objects.get(username=data.get('friend').get('displayName'))
+            if local_friend.host == settings.SITE_URL:
                 local_receiver = True
             else:
                 must_create_profile = False
@@ -189,7 +189,6 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         except Profile.DoesNotExist:
             foreign_user = data.get('friend')
             role = 'friend'
-        
         if not local_initiator or not local_receiver: # one of the users is from another server
             url_contents = urlparse(foreign_user.get('id'))
             host = foreign_user.get('host', foreign_user.get('id')[:foreign_user.get('id').find(url_contents.path) + 1])
