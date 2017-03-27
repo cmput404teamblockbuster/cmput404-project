@@ -1,3 +1,5 @@
+import requests
+import uuid
 from comments.models import Comment
 from rest_framework import viewsets, status
 from comments.api.serializers import CommentSerializer
@@ -7,9 +9,7 @@ from rest_framework.response import Response
 from posts.models import Post
 from users.models import Profile
 from nodes.models import Node
-import json
-import requests
-import uuid
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     """
@@ -28,7 +28,6 @@ class CommentViewSet(viewsets.ModelViewSet):
     def create(self, request, uuid_input):
         data = request.data
         serializer = CommentSerializer(data=data)
-        print data
         host = data.get('host')
 
         if serializer.is_valid():
@@ -39,35 +38,25 @@ class CommentViewSet(viewsets.ModelViewSet):
                 if node and node[0].is_allowed:
                     node = node[0]
                     api_url = host + 'api/posts/' + uuid_input + '/comments/'
-                    response = requests.post(api_url, json = data, auth=(node.username_for_node, node.password_for_node))
-                    if 199< response.status_code <300:
+                    response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
+                    if 199 < response.status_code < 300:
                         comment = response.json()
-                        return Response(status = status.HTTP_200_OK, data = comment)
-                    file = open('out.txt','w')
+                        return Response(status=status.HTTP_200_OK, data=comment)
+                    file = open('out.txt', 'w')
                     file.write(response.text)
                     file.close()
 
-                    return Response(status = status.HTTP_400_BAD_REQUEST, data = response)
+                    return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
                 else:
-                    return Response(status = status.HTTP_401_UNAUTHORIZED, data = 'Comment from an unaccepted server')
-
-            # author = request.user.profile
-            # if not post.viewable_for_author(author):
-            #     status_code = status.HTTP_403_FORBIDDEN
-            #     response_msg = dict(
-            #         query='addComent',
-            #         success=False,
-            #         message='Comment not allowed'
-            #     )
-            # else:
+                    return Response(status=status.HTTP_401_UNAUTHORIZED, data='Comment from an unaccepted server')
 
             try:
                 identifier = data.get('author').get('id').split('/')[-1]
                 profile = Profile.objects.get(uuid=identifier)
             except Profile.DoesNotExist:
-
                 author = data.get('author')
-                profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=author.get('displayName'), host=author.get('host'))
+                profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=author.get('displayName'),
+                                                 host=author.get('host'))
 
             Comment.objects.create(
                 author=profile,
