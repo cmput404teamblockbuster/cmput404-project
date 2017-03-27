@@ -69,7 +69,7 @@ class Post(models.Model):
         return super(Post, self).save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.id)
+        return 'post by %s (type: %s, ID: %s) %s' % (self.author.username, self.contentType, self.id, self.content if self.contentType==text_plain else '')
 
     class Meta:
         ordering = ('created',)
