@@ -12,7 +12,8 @@ module.exports = {
         const url = '/api/posts/'+id+'/';
 
         axios.get(url,
-            {headers:{'X-CSRFToken':csrfToken}})
+            {headers:{'X-CSRFToken':csrfToken},
+            auth: {username: 'team2', password: 'team2'}})
             .then((res)=>{
                 cb(res.data);
                 console.log("get single post", res.data);
