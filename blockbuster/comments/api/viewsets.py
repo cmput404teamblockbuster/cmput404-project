@@ -40,6 +40,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                     if response.status_code == 200:
                         comment = response.json()
                         return Response(status = status.HTTP_200_OK, data = comment)
+                    return Response(status = status.HTTP_400_BAD_REQUEST, data = response.text)
                 else:
                     return Response(status = status.HTTP_401_UNAUTHORIZED, data = 'Comment from an unaccepted server')  
 
