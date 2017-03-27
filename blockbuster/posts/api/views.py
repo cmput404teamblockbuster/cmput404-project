@@ -41,14 +41,17 @@ class ProfilePostsListView(APIView):
                     data = dict(
                         requesting_user_uuid = str(self.request.user.profile.uuid)
                     )
-                    response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
-                    result = response.json() if 199<response.status_code<300 else None
+                    try:
+                        response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
+                    except requests.ConnectionError:
+                        response = None
+                    result = response.json() if response and 199<response.status_code<300 else None
                     if not result:
-                        return Response('%d Error: Could not communicate with server %s. (%s)' % (response.status_code, node.host, response.text), status=status.HTTP_400_BAD_REQUEST)
+                        continue
+                        # return Response('%d Error: Could not communicate with server %s. (%s)' % (response.status_code, node.host, response.text), status=status.HTTP_400_BAD_REQUEST)
                     all_posts.extend(result.get('posts'))
                 else:
-                    return Response(status=status.HTTP_401_UNAUTHORIZED,
-                                    data='You are not an accepted server on our system.')
+                    continue
 
         serializer = PostSerializer(local_stream, many=True)
         all_posts.extend(serializer.data)
@@ -65,14 +68,6 @@ class ProfilePostsListView(APIView):
                                      ('size', page_num),
                                      ('posts', all_posts)]), status=status.HTTP_200_OK
                         )
-
-
-
-
-
-
-
-        #return Response(all_posts, status=status.HTTP_200_OK)
 
 
 class ProfilePostDetailView(APIView):
