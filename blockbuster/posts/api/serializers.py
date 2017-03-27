@@ -15,6 +15,8 @@ class PostSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='uuid', required=False)
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices)
+    published = serializers.CharField(source='created')
+    
     def validate(self, data):
         data = super(PostSerializer, self).validate(data)
         """
@@ -39,4 +41,4 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('author', 'comments','contentType', 'content', 'id', 'visibility')  # These fields will be available to the front end
+        fields = ('author', 'comments','contentType', 'content', 'id', 'visibility', 'published')  # These fields will be available to the front end
