@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from posts.models import Post
 from comments.api.serializers import CommentSerializer
-from users.api.serializers import ProfileSerializer
+from users.api.serializers import ProfileSerializer, CondensedProfileSerializer
 from users.models import Profile
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,contentchoices,text_markdown,text_plain,binary,png,jpeg
@@ -16,6 +16,7 @@ class PostSerializer(serializers.ModelSerializer):
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices)
     published = serializers.CharField(source='created', required=False)
+    visibleTo = CondensedProfileSerializer(source='private_to', required=False)
 
     def validate(self, data):
         data = super(PostSerializer, self).validate(data)
@@ -41,4 +42,4 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('author', 'comments','contentType', 'content', 'id', 'visibility', 'published')  # These fields will be available to the front end
+        fields = ('author', 'comments','contentType', 'content', 'id', 'visibility', 'published', 'visibleTo')  # These fields will be available to the front end
