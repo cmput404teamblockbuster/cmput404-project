@@ -25,7 +25,7 @@ export default class SelectAuthorButton extends React.Component{
     }
 
     getAuthor(object){
-        this.setState({labelText:object.displayname, dialog:false});
+        this.setState({labelText:object.displayName, dialog:false});
         this.props.changeAuthor(object)
     }
 

@@ -24,18 +24,17 @@ export default class MakePost extends React.Component {
 
 
     changeContent(data, type){
-        this.setState({content:data, contentType: type, button:false});
-        this.author = undefined;
+        this.setState({content:data, contentType: type});
     }
 
     changeAuthor(data){
         this.author = data;
-        console.log("makePost: ", data)
     }
+
     changeVisibility(data){
         if (data === "private_to_one_friend"){
-            // TODO: add props to the button
-            this.setState({button: <SelectAuthorButton changeAuthor={this.changeAuthor}/>})
+
+            this.setState({visibility:data, button: <SelectAuthorButton changeAuthor={this.changeAuthor}/>})
         } else {
             this.setState({visibility:data, button:false});
         }
@@ -50,7 +49,7 @@ export default class MakePost extends React.Component {
             const url = host+'/post/'+res['id'] ;
             alert("your url is: " + url)
         }
-        this.setState({content:"", visibility:"privacy_public", button: false});
+        this.setState({content:""});
         this.author = undefined;
         this.child.changeTab();
         this.props.refresh();

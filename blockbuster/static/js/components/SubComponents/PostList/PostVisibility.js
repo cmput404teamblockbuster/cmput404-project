@@ -13,6 +13,7 @@ export default class PostVisibility extends React.Component{
     }
 
     handleChange(event,key,value){
+        console.log("post visibility", value)
         this.setState({visibility:value});
         this.props.change(value);
     }
