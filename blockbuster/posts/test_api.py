@@ -38,7 +38,10 @@ class PostViewSetTestCase(APITestCase):
     def test_retrieve_private_post_anon_user_fails(self):
         # GIVEN an unauthed user
         user = UserModelFactory()
+        user2 = UserModelFactory()
         post = BasePostModelFactory(privacy=PRIVATE_TO_ME, author=user.profile)
+        self.client.force_authenticate(user=user2)
+
 
         # WHEN they try to view details of the post
         url = '/api/posts/%s/' % post.uuid
@@ -82,6 +85,7 @@ class PostViewSetTestCase(APITestCase):
         # GIVEN an unauthed user requests a post that an author made to be unlisted
         user = UserModelFactory()
         post = BasePostModelFactory(privacy=PRIVACY_UNLISTED, author=user.profile)
+        self.client.force_authenticate(user=user)
 
         # WHEN they try to view details of the post
         url = '/api/posts/%s/' % post.uuid
@@ -96,6 +100,7 @@ class PostViewSetTestCase(APITestCase):
         user = UserModelFactory()
         unlisted_post = BasePostModelFactory(privacy=PRIVACY_UNLISTED, author=user.profile)
         public_post = BasePostModelFactory(author=user.profile)
+        self.client.force_authenticate(user=user)
 
 
         # WHEN they try to view a list of posts
