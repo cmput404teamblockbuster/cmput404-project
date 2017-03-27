@@ -20,6 +20,7 @@ export default class PostContainer extends React.Component{
 
 
     render(){
+        console.log("post container",this.props.object)
         return(
             <li>
                 <Card className="textField">
@@ -30,7 +31,7 @@ export default class PostContainer extends React.Component{
                     </CardText>
                     <Divider/>
                     <CardMedia>
-                        <CommentSection postid={this.props.object['id']} object={this.props.object['comments']} refresh={this.props.refresh}/>
+                        <CommentSection host={this.props.object.author.host} postid={this.props.object['id']} object={this.props.object['comments']} refresh={this.props.refresh}/>
                     </CardMedia>
                 </Card>
             </li>
