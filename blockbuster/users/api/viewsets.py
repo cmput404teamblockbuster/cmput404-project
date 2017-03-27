@@ -166,6 +166,8 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         foreign_user = None
         role = None
         must_create_profile = True
+        local_initiator = False
+        local_receiver = False
         try:
             local_author = Profile.objects.get(username=data.get('author').get('displayName'))
             if local_author.host == settings.SITE_URL:
@@ -173,7 +175,6 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
             else:
                 must_create_profile = False
         except Profile.DoesNotExist:
-            local_initiator = False
             foreign_user = data.get('author')
             role = 'author'
 
@@ -184,7 +185,6 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
             else:
                 must_create_profile = False
         except Profile.DoesNotExist:
-            local_receiver = False
             foreign_user = data.get('friend')
             role = 'friend'
 
