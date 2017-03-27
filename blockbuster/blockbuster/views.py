@@ -17,7 +17,7 @@ def myFriends(request):
 def profile(request):
     return render(request, 'profile.html')
 
-def singlePost(request):
+def singlePost(request, uuid):
     return render(request, 'singlePost.html')
 
 def public(request):
