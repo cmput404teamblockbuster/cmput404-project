@@ -3,6 +3,7 @@ import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
 import ProfileCard from './ProfileCard'
 import GetHisPostsRequest from '../../Requests/GetHisPostsRequest'
+import GetAuthorRequest from '../../Requests/GetAuthorRequest'
 import ExtractIdFromURL from '../../Requests/ExtractIdFromURL'
 import PostContainer from '../../SubComponents/PostList/PostContainer'
 
@@ -19,16 +20,21 @@ export default class ProfilePage extends React.Component{
         this.title = this.props.object['displayName'] + "'s Profile";
         this.state = {posts:<li/>};
         this.componentWillMount = this.componentWillMount.bind(this);
-        GetHisPostsRequest.get(ExtractIdFromURL.extract(this.props.object['id']) ,
-            (PostList)=>{
-                this.setState({posts:PostList.posts.map(
-                    (post)=> <PostContainer key={post['id']} object={post} refresh={this.componentWillMount} />)
-                });
-                if (callback){
-                    callback()
+        GetAuthorRequest.getMe((me)=>{
+            GetHisPostsRequest.get(
+                ExtractIdFromURL.extract(me.id),
+                ExtractIdFromURL.extract(this.props.object['id']) ,
+                (PostList)=>{
+                    this.setState({posts:PostList.posts.map(
+                        (post)=> <PostContainer key={post['id']} object={post} refresh={this.componentWillMount} />)
+                    });
+                    if (callback){
+                        callback()
+                    }
                 }
-            }
         )
+        });
+
     }
 
 
