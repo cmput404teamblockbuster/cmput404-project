@@ -47,4 +47,5 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('author', 'comments','contentType', 'content', 'id', 'visibility', 'published', 'visibleTo')  # These fields will be available to the front end
+        fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'comments', 'published', 'id', 'visibility', 'visibleTo')  # These fields will be available to the front end
+        # fields = ('author', 'comments', 'contentType', 'content', 'id', 'visibility', 'published', 'visibleTo')
