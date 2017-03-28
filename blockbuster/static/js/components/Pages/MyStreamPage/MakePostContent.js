@@ -9,21 +9,27 @@ export default class MakePostContent extends React.Component{
         // props: { change: (function),message}
         super(props);
 
-        this.state = {uploadText:"Upload Image",contentText:this.props.message};
+        this.state = {uploadText:"Upload Image",contentText:"",markdownText:"" };
 
         this.changeTab = this.changeTab.bind(this);
         this.handleTextChange=this.handleTextChange.bind(this);
+        this.handleMarkdownChange = this.handleMarkdownChange(this);
         this.handleImageChange=this.handleImageChange.bind(this);
     }
 
     changeTab(){
-        this.setState({uploadText:"Upload Image",contentText:""});
+        this.setState({uploadText:"Upload Image",contentText:"", markdownText:""});
     };
 
     handleTextChange(event){
         this.setState({contentText: event.target.value});
         this.props.change(event.target.value, "text/plain");
 
+    }
+
+    handleMarkdownChange(event){
+        this.setState({contentText: event.target.value});
+        this.props.change(event.target.value, "text/markdown");
     }
 
     handleImageChange(event){
@@ -45,6 +51,10 @@ export default class MakePostContent extends React.Component{
                 <Tab label="Text Post" value="text">
                     <TextField id="post-content" hintStyle={{paddingLeft:'20px'}} textareaStyle={{padding:'0px 20px 0px 20px'}}
                                fullWidth={true} multiLine={true} onChange={this.handleTextChange} hintText="Content" value={this.state.contentText}/>
+                </Tab>
+                <Tab label="Markdown Post" value="text">
+                    <TextField id="post-content" hintStyle={{paddingLeft:'20px'}} textareaStyle={{padding:'0px 20px 0px 20px'}}
+                               fullWidth={true} multiLine={true} onChange={this.handleMarkdownChange} hintText="Content" value={this.state.markdownText}/>
                 </Tab>
                 <Tab label="Image Post">
                     <FlatButton icon={<Upload/>} labelPosition='after' label={this.state.uploadText} containerElement="label" className="fullWidth">
