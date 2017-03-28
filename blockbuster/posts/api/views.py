@@ -37,7 +37,6 @@ class ProfilePostsListView(APIView):
                 node = Node.objects.filter(host=friend.host)
                 if node and node[0].is_allowed:
                     node = node[0]
-
                     api_url = '%s%sauthor/%s/posts/' % (friend.host, node.api_endpoint, friend.uuid)
                     # We send a post request to the other server with the requesting users uuid so they know who is wanting info
                     data = dict(
@@ -114,12 +113,13 @@ class ProfilePostDetailView(APIView):
             for node in Node.objects.all():
                 api_url = '%sauthor/%s/posts/' % (node.host, uuid)
                 try:
-                    data = dict(requesting_user_uuid=request.data.get('requesting_user_uuid'))
+                    data = dict(requesting_user_uuid=request.data.get('requesting_user_uuid')) # TODO change from post to get
                     response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
                 except requests.ConnectionError:
                     continue
                 if 199 < response.status_code < 300:
                     return Response(data=response.json())
+                print response.text
                 continue
         users_posts = Post.objects.filter(author=author).order_by('-created').exclude(privacy=PRIVACY_UNLISTED)  # get all posts by the specified user
         for post in users_posts:
@@ -154,7 +154,7 @@ class AllPublicPostsView(APIView):
         for node in Node.objects.all():
             if node.is_allowed:
                 host = node.host
-                url = host + 'posts/'
+                url = host + node.api_endpoint + 'posts/'
                 try:
                     response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
                 except requests.ConnectionError:
