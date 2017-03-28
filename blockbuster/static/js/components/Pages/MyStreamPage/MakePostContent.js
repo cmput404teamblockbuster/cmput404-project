@@ -6,10 +6,10 @@ import FlatButton from 'material-ui/FlatButton'
 
 export default class MakePostContent extends React.Component{
     constructor(props){
-        // props: { change: (function),message}
+        // props: { change: (function)}
         super(props);
 
-        this.state = {uploadText:"Upload Image",contentText:this.props.message};
+        this.state = {uploadText:"Upload Image",textContent:"", markDownContent:""};
 
         this.changeTab = this.changeTab.bind(this);
         this.handleTextChange=this.handleTextChange.bind(this);
@@ -17,17 +17,16 @@ export default class MakePostContent extends React.Component{
     }
 
     changeTab(){
-        this.setState({uploadText:"Upload Image",contentText:""});
+        this.setState({uploadText:"Upload Image",textContent:"",markDownContent:""});
     };
 
     handleTextChange(event){
-        this.setState({contentText: event.target.value});
+        this.setState({textContent: event.target.value});
         this.props.change(event.target.value, "text/plain");
 
     }
 
     handleImageChange(event){
-        console.log("make post content",event.target.files[0]);
         this.reader = new FileReader();
         this.setState({uploadText:event.target.value});
         this.type = event.target.files[0].type + ";base64";
@@ -41,12 +40,13 @@ export default class MakePostContent extends React.Component{
 
     render(){
         return(
-            <Tabs ref="hello" onChange={this.changeTab}>
-                <Tab label="Text Post" value="text">
+            <Tabs ref="hello" onChange={this.changeTab} >
+                <Tab label="Text Post" value={0}>
                     <TextField id="post-content" hintStyle={{paddingLeft:'20px'}} textareaStyle={{padding:'0px 20px 0px 20px'}}
-                               fullWidth={true} multiLine={true} onChange={this.handleTextChange} hintText="Content" value={this.state.contentText}/>
+                               fullWidth={true} multiLine={true} onChange={this.handleTextChange}
+                               hintText="Content" value={this.state.textContent}/>
                 </Tab>
-                <Tab label="Image Post">
+                <Tab label="Image Post" value={2}>
                     <FlatButton icon={<Upload/>} labelPosition='after' label={this.state.uploadText} containerElement="label" className="fullWidth">
                         <input type="file" accept="image/jpeg, image/png" className="uploadInput" onChange={this.handleImageChange}/>
                     </FlatButton>
@@ -55,3 +55,8 @@ export default class MakePostContent extends React.Component{
         );
     }
 }
+
+MakePostContent.propTypes = {
+    // call back function to change the content in parent
+    change: React.PropTypes.func.isRequired,
+};
