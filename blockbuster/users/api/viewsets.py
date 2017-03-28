@@ -43,6 +43,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
         host = profile.host
         local = (host == settings.SITE_URL)
         if not local:
+            if host in ['http://warm-hollows-14698.herokuapp.com/', 'http://radiant-beyond-17792.herokuapp.com/']:
+                host += 'api/'
             node = Node.objects.filter(host=host)
             if node and node[0].is_allowed:
                 node = node[0]
