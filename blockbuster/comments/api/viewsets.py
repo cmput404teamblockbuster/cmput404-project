@@ -32,7 +32,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer = CommentSerializer(data=our_data)
         host = data.get('host')
         if host in ['http://warm-hollows-14698.herokuapp.com/', 'http://radiant-beyond-17792.herokuapp.com/']:
-            host += "api/"
+            # host += "api/"
             data = our_data
         if serializer.is_valid():
             try:
@@ -41,14 +41,11 @@ class CommentViewSet(viewsets.ModelViewSet):
                 node = Node.objects.filter(host=host)
                 if node and node[0].is_allowed:
                     node = node[0]
-                    api_url = host + 'posts/' + uuid_input + '/comments/'
+                    api_url = host + node.api_endpoint + 'posts/' + uuid_input + '/comments/'
                     response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
                     if 199 < response.status_code < 300:
                         comment = response.json()
                         return Response(status=status.HTTP_200_OK, data=comment)
-                    # file = open('out.txt', 'w')
-                    # file.write(response.text)
-                    # file.close()
 
                     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
                 else:

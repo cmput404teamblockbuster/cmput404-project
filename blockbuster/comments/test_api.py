@@ -33,6 +33,7 @@ class CommentViewSetTestCase(APITestCase):
 
         # WHEN the comment is posted
         response = self.client.post(url, data, format='json')
+        print response
 
         # THEN the comment should be created, and a successful response message returned
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
