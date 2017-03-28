@@ -47,23 +47,26 @@ author_friend_requests_detail = UserRelationshipFriendRequestViewSet.as_view({
 })
 
 urlpatterns = [
-    url(r'^register/$', RegisterUserView.as_view(), name='register_user'),
+    # These are the
     url(r'^friendrequest/$', author_friend_requests_list, name='friend-request'), # TODO DOCUMENT
-    url(r'^friendrequest/(?P<pk>[0-9]+)/$', author_friend_requests_detail, name='friend-request'),
     url(r'^posts/$', post_list, name='post-list'), # TODO DOCUMENT
-    url(r'^posts/all/$', AllPublicPostsView.as_view(), name='all-public-post-list'), # TODO DOCUMENT
     url(r'^posts/(?P<uuid>[^/]+)/$', post_detail, name='post-detail'), # TODO DOCUMENT
     url(r'^posts/(?P<uuid_input>[^/]+)/comments/$', post_detail_comments, name='post-detail-comments'), # TODO DOCUMENT
     url(r'^author/$', my_friends_list, name='my-friends-list'), # TODO DOCUMENT
     url(r'^author/posts/$', ProfilePostsListView.as_view(), name='profile-post-list'), # TODO DOCUMENT
-    url(r'^author/me/$', AuthenticatedUserProfileView.as_view(), name='auth_profile_detail'),
-    url(r'^author/me/relationship/(?P<uuid>[^/]+)/$', AuthenticatedUserRelationshipView.as_view(), name='authenticated-user-relationship-detail'),
-    url(r'^author/me/followers/$', AuthenticatedUserFollowersListView.as_view(), name='authenticated-user-followers-list'),
-    url(r'^author/me/following/$', AuthenticatedUserFollowingListView.as_view(), name='authenticated-user-following-list'),
-    url(r'^author/local/$', profile_list_local, name='all_users_local'), 
-    url(r'^author/all/$', profile_list, name='all_users'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/$', profile_detail, name='profile-detail'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/posts/$', ProfilePostDetailView.as_view(), name='profile-post-detail'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/friends/$', author_friends_list, name='author-friends-list'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/friends/(?P<uuid_2>[^/]+)/$', UserRelationshipCheckView.as_view(), name='check_author_relationship'), # TODO DOCUMENT
+
+    # These are the APIs for our own frontend
+    url(r'^register/$', RegisterUserView.as_view(), name='register_user'),
+    url(r'^friendrequest/(?P<pk>[0-9]+)/$', author_friend_requests_detail, name='friend-request'),
+    url(r'^posts/all/$', AllPublicPostsView.as_view(), name='all-public-post-list'),
+    url(r'^author/all/$', profile_list, name='all_users'),
+    url(r'^author/me/$', AuthenticatedUserProfileView.as_view(), name='auth_profile_detail'),
+    url(r'^author/me/relationship/(?P<uuid>[^/]+)/$', AuthenticatedUserRelationshipView.as_view(), name='authenticated-user-relationship-detail'),
+    url(r'^author/me/followers/$', AuthenticatedUserFollowersListView.as_view(), name='authenticated-user-followers-list'),
+    url(r'^author/me/following/$', AuthenticatedUserFollowingListView.as_view(), name='authenticated-user-following-list'),
+    url(r'^author/local/$', profile_list_local, name='all_users_local'),
 ]
