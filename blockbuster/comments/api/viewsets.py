@@ -46,9 +46,9 @@ class CommentViewSet(viewsets.ModelViewSet):
                     if 199 < response.status_code < 300:
                         comment = response.json()
                         return Response(status=status.HTTP_200_OK, data=comment)
-                    file = open('out.txt', 'w')
-                    file.write(response.text)
-                    file.close()
+                    # file = open('out.txt', 'w')
+                    # file.write(response.text)
+                    # file.close()
 
                     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
                 else:
