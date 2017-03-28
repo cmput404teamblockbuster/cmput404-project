@@ -89,7 +89,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     def request_foreign_profile_data(self, node, uuid):
         endpoint = 'author/'
-        api_url = node.host + endpoint + str(uuid) + '/'
+        api_url = node.host + node.api_endpoint + endpoint + str(uuid) + '/'
         try:
             response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
         except requests.ConnectionError:
