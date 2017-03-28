@@ -15,7 +15,6 @@ export default class PostContainer extends React.Component{
         } else if (this.props.object['contentType']==="text/markdown"){
             this.body = <ReactMarkdown source={this.props.object['content']}/>
         } else {
-            console.log("post container", this.props.object['contentType'])
             this.body = <img className="image" src={this.props.object['content']}/>
         }
     }
