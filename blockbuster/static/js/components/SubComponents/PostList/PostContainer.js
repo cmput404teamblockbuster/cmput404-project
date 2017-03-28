@@ -1,8 +1,10 @@
 import React from 'react';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
+import ReactMarkdown from 'react-markdown'
 import CommentSection from '../CommentList/CommentSection'
 import NameLink from './NameLink'
+
 
 export default class PostContainer extends React.Component{
     constructor(object,refresh){
@@ -11,7 +13,7 @@ export default class PostContainer extends React.Component{
         if (this.props.object['contentType']==="text/plain"){
             this.body = <p className="postBody">{this.props.object['content']}</p>
         } else if (this.props.object['contentType']==="text/markdown"){
-            this.body = <p>TODO: markdown display</p>
+            this.body = <ReactMarkdown source={this.props.object['content']}/>
         } else {
             console.log("post container", this.props.object['contentType'])
             this.body = <img className="image" src={this.props.object['content']}/>
