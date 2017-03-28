@@ -8,6 +8,7 @@ class Node(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     username_for_node = models.CharField(max_length=60, null=True, blank=True)
     password_for_node = models.CharField(max_length=60, null=True, blank=True)
+    api_endpoint = models.CharField(max_length=30, blank=True, help_text="the root for their api access.")
 
     def save(self, *args, **kwargs):
         try:

@@ -1,5 +1,4 @@
 import uuid
-from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from core.utils import django_choice_options
 from django.utils import timezone
@@ -10,7 +9,10 @@ from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ON
 class Post(models.Model):
     PRIVACY_TYPE_OPTIONS = django_choice_options(
         PRIVACY_TYPES, 'name')
-
+    title = models.CharField(max_length=100, null=True, blank=True)
+    source = models.URLField(max_length=100, null=True, blank=True, help_text='Where the post was last from')
+    origin = models.URLField(max_length=100, null=True, blank=True, help_text='Where the post originated')
+    description = models.URLField(max_length=150, null=True, blank=True)
     created = models.DateTimeField(null=True, editable=False)
     author = models.ForeignKey('users.Profile', related_name='posts')
     private_to = models.ForeignKey('users.Profile', blank=True, null=True,
