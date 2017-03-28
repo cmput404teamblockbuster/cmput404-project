@@ -27,9 +27,13 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def create(self, request, uuid_input):
         data = request.data
-        serializer = CommentSerializer(data=data)
-        host = data.get('host')
+        our_data = request.data.get('comment')
 
+        serializer = CommentSerializer(data=our_data)
+        host = data.get('host')
+        if host in ['http://warm-hollows-14698.herokuapp.com/', 'http://radiant-beyond-17792.herokuapp.com/']:
+            host += "api/"
+            data = our_data
         if serializer.is_valid():
             try:
                 post = Post.objects.get(uuid=uuid_input)  # Get the post the comment is for
