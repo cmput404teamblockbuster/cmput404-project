@@ -202,8 +202,6 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         if not local_initiator or not local_receiver: # one of the users is from another server
             url_contents = urlparse(foreign_user.get('id'))
             host = foreign_user.get('host', foreign_user.get('id')[:foreign_user.get('id').find(url_contents.path) + 1])
-            if host in ['http://warm-hollows-14698.herokuapp.com/', 'http://radiant-beyond-17792.herokuapp.com/']:
-                host += 'api/'
             node = Node.objects.filter(host=host)
             if node:  # then we trust their server
                 identifier = url_contents.path.split('/')[-1]
@@ -212,16 +210,13 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
                 requesting_node = Node.objects.filter(user=self.request.user) # we want to know if node is requesting for an update
                 if not requesting_node: # then a local user is requesting a friendship for a user on another server
                     node = node[0]
-                    friend_request_url = '%sfriendrequest/' % node.host
+                    friend_request_url = '%s%sfriendrequest/' % (node.host, node.api_endpoint)
                     headers = {'Content-type': 'application/json'}
                     response = requests.post(friend_request_url, json=data, headers=headers, auth=(node.username_for_node, node.password_for_node))
                     print 'request sent to other server'
                     if response.status_code>=300:
-                        # file=open('out.txt','w')
-                        # file.write(response.text)
-                        # file.close()
                         return Response(status=response.status_code,
-                                        data='Your request is rejected by %s'%host)
+                                        data='Your request is rejected by %s' % host)
 
                 if must_create_profile:
                     new_profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=foreign_user.get('displayName'),

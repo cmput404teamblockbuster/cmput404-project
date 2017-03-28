@@ -106,6 +106,7 @@ class AuthenticatedUserFollowersListView(APIView):
         else:
             return Response(data='User has no followers.', status=status.HTTP_200_OK)
 
+
 class UserRelationshipCheckView(APIView):
     """
     Returns a boolean checking if two Users are friends

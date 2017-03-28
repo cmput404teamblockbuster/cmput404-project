@@ -38,7 +38,7 @@ class ProfilePostsListView(APIView):
                 if node and node[0].is_allowed:
                     node = node[0]
 
-                    api_url = '%sauthor/%s/posts/' % (friend.host, friend.uuid) # TODO change this endpoint eventually to handle group api's
+                    api_url = '%s%sauthor/%s/posts/' % (friend.host, node.api_endpoint, friend.uuid)
                     # We send a post request to the other server with the requesting users uuid so they know who is wanting info
                     data = dict(
                         requesting_user_uuid = str(self.request.user.profile.uuid)
