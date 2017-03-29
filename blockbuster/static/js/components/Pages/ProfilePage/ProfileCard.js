@@ -31,7 +31,7 @@ export default class ProfileCard extends React.Component {
         console.log("profile card, object:",this.props.object);
         console.log(res);
         if (res === "The profile with the given UUID is your own."){
-            this.setState({button: <MyselfToolbar friend={this.props.object.author} refresh={this.props.refresh}/>})
+            this.setState({button: <MyselfToolbar friend={this.props.object} refresh={this.props.refresh}/>})
         } else if (res === "No Relationship Found."){
             // send Friend Request Button
             this.setState({button: <BefriendToolbar friend={this.props.object} refresh={this.changeButton}/>})

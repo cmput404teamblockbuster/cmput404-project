@@ -21,6 +21,7 @@ module.exports = {
     
     logout: function() {
         delete localStorage.token
+        delete localStorage.etag
     },
 
     loggedIn: function() {

@@ -15,7 +15,7 @@ export default class MyStream extends React.Component{
         GetStreamRequest.get(
             (PostList)=>{
                 this.setState({posts:PostList.posts.map(
-                    (post)=> <PostContainer key={post['id']} object={post} refresh={this.componentWillMount}/>)
+                    (post)=> <PostContainer me={post.author.id===this.props.me.id} key={post['id']} object={post} refresh={this.componentWillMount}/>)
                 });
                 if (callback){
                     callback()
@@ -38,4 +38,8 @@ export default class MyStream extends React.Component{
             </Paper>
         );
     }
+}
+
+MyStream.propTypes = {
+    me: React.PropTypes.object
 }

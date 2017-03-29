@@ -15,8 +15,7 @@ export default class ProfilePage extends React.Component{
     }
 
     componentWillMount(callback){
-        console.log("Profile Page");
-        console.log(this.props.object);
+        console.log("Profile Page:",this.props.object);
         this.title = this.props.object['displayName'] + "'s Profile";
         this.state = {posts:<li/>};
         this.componentWillMount = this.componentWillMount.bind(this);
@@ -26,7 +25,7 @@ export default class ProfilePage extends React.Component{
                 ExtractIdFromURL.extract(this.props.object['id']) ,
                 (PostList)=>{
                     this.setState({posts:PostList.posts.map(
-                        (post)=> <PostContainer key={post['id']} object={post} refresh={this.componentWillMount} />)
+                        (post)=> <PostContainer me={me.id===post.author.id} key={post['id']} object={post} refresh={this.componentWillMount} />)
                     });
                     if (callback){
                         callback()
@@ -44,7 +43,7 @@ export default class ProfilePage extends React.Component{
                 <AppBar className="title" title={this.title} iconElementLeft={<div/>}/>
                 <ul className="mainList">
                     <li>
-                       <ProfileCard object={this.props.object}/>
+                       <ProfileCard object={this.props.object} refresh={this.componentWillMount}/>
                     </li>
                     {this.state.posts}
                 </ul>

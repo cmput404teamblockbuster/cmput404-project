@@ -25,10 +25,11 @@ export default class PostContainer extends React.Component{
         this.editAction = this.editAction.bind(this);
 
         this.buttons = undefined;
-        if (true){
+        // console.log("Profile Container:")
+        if (this.props.me){
             this.buttons = [
-                <IconButton style={{float:'right'}} tooltip="edit" onTouchTap={this.editAction}><EditIcon/></IconButton>,
-                <IconButton style={{float:'right'}} tooltip="delete" onTouchTap={this.deleteAction}><DeleteIcon/></IconButton>
+                <IconButton key={0} style={{float:'right'}} tooltip="edit" onTouchTap={this.editAction}><EditIcon/></IconButton>,
+                <IconButton key={1} style={{float:'right'}} tooltip="delete" onTouchTap={this.deleteAction}><DeleteIcon/></IconButton>
             ]
         }
     }

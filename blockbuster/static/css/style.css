@@ -17,6 +17,14 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
     padding-bottom: 30px;
 }
 
+.GitHubList{
+    position: fixed;
+    right:0;
+    top:8%;
+    margin-right: 5%;
+    width: 15%;
+}
+
 .mainList{
     list-style-type: none;
     padding-left: 20px;

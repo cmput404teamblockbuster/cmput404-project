@@ -4,6 +4,7 @@ import AppWrapper from '../AppWrapper'
 import ProfilePage from './ProfilePage'
 import GetAuthorRequest from '../../Requests/GetAuthorRequest'
 import TopBar from '../TopBar'
+import ActivityList from '../../SubComponents/GitHubActivityList/ActivityList'
 
 class Main extends React.Component{
 
@@ -12,6 +13,7 @@ class Main extends React.Component{
             <AppWrapper>
                 <TopBar />
                 <ProfilePage object={this.props.object} />
+                <ActivityList me={this.props.object}/>
             </AppWrapper>
         );
     }

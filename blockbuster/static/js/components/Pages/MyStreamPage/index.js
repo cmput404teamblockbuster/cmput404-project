@@ -3,6 +3,8 @@ import ReactDom from 'react-dom'
 import AppWrapper from '../AppWrapper'
 import MyStream from './MyStream'
 import TopBar from '../TopBar'
+import ActivityList from '../../SubComponents/GitHubActivityList/ActivityList'
+import GetAuthorRequest from '../../Requests/GetAuthorRequest'
 
 class Main extends React.Component{
     
@@ -10,11 +12,14 @@ class Main extends React.Component{
         return (
             <AppWrapper>
                 <TopBar />
-                <MyStream />
+                <MyStream me={this.props.me}/>
+                <ActivityList me={this.props.me}/>
             </AppWrapper>
         );
     }
 }
 
-ReactDom.render(<Main />,
-document.getElementById('container'));
+GetAuthorRequest.getMe((Me)=>{
+    ReactDom.render(<Main me={Me}/>,
+        document.getElementById('container'));
+});
