@@ -30,7 +30,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         try:
             profile = Profile.objects.get(uuid=uuid)
         except Profile.DoesNotExist:
-            for node in Node.objects.all(is_allowed=True):
+            for node in Node.objects.filter(is_allowed=True):
                 response = self.request_foreign_profile_data(node, uuid)
                 if response and response.status_code == 200:
                     profile = response.json()
@@ -67,7 +67,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def list(self, *args, **kwargs):
         listofauthors = []
         local = Profile.objects.all()
-        node = Node.objects.all(is_allowed=True)
+        node = Node.objects.filter(is_allowed=True)
         localserializer = ProfileSerializer(local, many=True)
         listofauthors.extend(localserializer.data)
         for singlenode in node:
