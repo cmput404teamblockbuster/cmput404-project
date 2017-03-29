@@ -22,6 +22,7 @@ module.exports = {
     logout: function() {
         delete localStorage.token
         delete localStorage.etag
+        delete localStorage.github
     },
 
     loggedIn: function() {
@@ -48,6 +49,9 @@ module.exports = {
                     authenticated: true,
                     token: res.data.token
                 })
+            })
+            .catch((err)=>{
+                cb({authenticated: false})
             });
     },
 }

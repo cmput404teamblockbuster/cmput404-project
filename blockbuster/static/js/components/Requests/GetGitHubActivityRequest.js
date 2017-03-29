@@ -9,13 +9,13 @@ module.exports = {
             axios.get(path,{headers:header})
                 .then((response)=>{
                     localStorage.etag= response.headers.etag;
-                    localStorage.github = response.data;
+                    localStorage.github =JSON.stringify(response.data);
                     callback(response.data)
 
                 })
                 .catch((err)=>{
                     if (err.response.status===304){
-                        callback(localStorage.github)
+                        callback(JSON.parse(localStorage.github))
                     } else {
                         console.log("github request: failed with", err);
                         callback("Try Again Later")

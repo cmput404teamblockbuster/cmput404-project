@@ -1,8 +1,8 @@
 import React from 'react'
-import {Card, CardHeader, CardActions, CardMedia} from 'material-ui/Card'
+import {Card, CardHeader, CardActions, CardMedia, CardText} from 'material-ui/Card'
 import AppBar from 'material-ui/AppBar'
 import GetGitHubActivityRequest from '../../Requests/GetGitHubActivityRequest'
-import PostContainer from '../../SubComponents/PostList/PostContainer'
+
 export default class ActivityList extends React.Component{
     constructor(props){
         super(props);
@@ -20,11 +20,14 @@ export default class ActivityList extends React.Component{
         if (this.gitHub){
             GetGitHubActivityRequest.get(this.gitHub,page,(response)=>{
             if (response){
+                console.log(response, "in activity list")
                 if (response==="Try Again Later"){
 
                 } else {
 
                 }
+            } else {
+                this.setState
             }
             })
         }
@@ -44,12 +47,11 @@ export default class ActivityList extends React.Component{
     render(){
         return(
             <div className="GitHubList">
-                <AppBar className="title" title="GitHub Activity" iconElementLeft={<div/>}/>
-                <ul className="mainList">
-                    <li>
-                    </li>
-                    {this.state.posts}
-                </ul>
+                <Card>
+                    <CardHeader actAsExpander={true} showExpandableButton={true} title={"GitHub Activities"}/>
+                    <CardHeader expandable={true} title="title??"/>
+                    <CardText expandable={true}>this is text</CardText>
+                </Card>
             </div>
         );
     }

@@ -64,8 +64,8 @@ export default class RegistrationDialog extends React.Component{
         }
     }
 
-    cancel(){
-        this.props.closeAction();
+    cancel(success){
+        this.props.closeAction(success);
     }
 
     submit(){
@@ -73,7 +73,7 @@ export default class RegistrationDialog extends React.Component{
             this.state.pass!=="" &&
             this.state.email!=="" &&
             this.state.matchError==""){
-            CreateUserRequest.send(this.state.username, this.state.pass, this.state.email, this.cancel)
+            CreateUserRequest.send(this.state.username, this.state.pass, this.state.email, ()=>{this.cancel(true)})
         }
     }
 

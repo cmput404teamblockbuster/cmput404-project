@@ -20,9 +20,9 @@ html,body{ margin:0; padding:0; height:100%; width:100%; background-color: #4242
 .GitHubList{
     position: fixed;
     right:0;
-    top:8%;
-    margin-right: 5%;
-    width: 15%;
+    top:70px;
+    margin-right: 3%;
+    width: 19%;
 }
 
 .mainList{

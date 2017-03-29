@@ -2,17 +2,19 @@ import React from 'react'
 import TextField from 'material-ui/TextField'
 import {Card,CardMedia,CardActions } from 'material-ui/Card'
 import RaisedButton from 'material-ui/RaisedButton'
+import Snackbar from 'material-ui/Snackbar'
 import auth from '../../Requests/auth'
 
 export default class LoginForm extends React.Component{
     constructor(props){
         // props: finishLogin: call back function to finish login
         super(props);
-        this.state = {username:'', password:''};
+        this.state = {username:'', password:'', errorPopup:false, errorMessage:"Cannot login with provided credentials"};
 
         this.username = this.username.bind(this);
         this.password = this.password.bind(this);
         this.login = this.login.bind(this);
+        this.closePopup = this.closePopup.bind(this);
     }
 
     username(event){
@@ -23,11 +25,16 @@ export default class LoginForm extends React.Component{
         this.setState({password:event.target.value})
     }
 
+    closePopup(){
+        this.setState({errorPopup:false})
+    }
     login(){
         auth.login(this.state.username,this.state.password,(success)=>{
             if (success){
                 console.log(localStorage.token)
                 this.props.finishLogin()
+            } else {
+                this.setState({errorPopup:true})
             }
         })
     }
@@ -52,6 +59,8 @@ export default class LoginForm extends React.Component{
                 <CardActions>
                     <RaisedButton label="Login" labelStyle={styles.button} onTouchTap={this.login}/>
                 </CardActions>
+                <Snackbar message={this.state.errorMessage} open={this.state.errorPopup}
+                          autoHideDuration={4000} onRequestClose={this.closePopup}/>
             </Card>
         );
     }

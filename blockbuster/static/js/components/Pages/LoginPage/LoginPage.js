@@ -4,19 +4,28 @@ import Paper from 'material-ui/Paper'
 import LoginForm from './LoginForm'
 import FlatButton from 'material-ui/FlatButton'
 import RegistrationDialog from './RegistrationDialog'
+import Snackbar from 'material-ui/Snackbar'
 
 export default class LoginPage extends React.Component{
     // props: finishLogIn: call back function to finish login
     constructor(props){
         super(props);
-        this.state = {dialogOpen:false};
+        this.state = {dialogOpen:false, approvePopup:false};
 
         this.closeDialog = this.closeDialog.bind(this);
+        this.closePopup = this.closePopup.bind(this);
         this.openDialog = this.openDialog.bind(this);
     }
 
-    closeDialog(){
+    closeDialog(success){
+        if(success){
+            this.setState({approvePopup:true})
+        }
         this.setState({dialogOpen:false})
+    }
+
+    closePopup(){
+        this.setState({approvePopup:false})
     }
 
     openDialog(){
@@ -57,6 +66,7 @@ export default class LoginPage extends React.Component{
                     <FlatButton label="Register Here" primary={true} onTouchTap={this.openDialog}/>
                     <RegistrationDialog open={this.state.dialogOpen} closeAction={this.closeDialog}/>
                 </Paper>
+                <Snackbar message="Wait For Approval" open={this.state.approvePopup} autoHideDuration={4000} onRequestClose={this.closePopup}/>
             </div>
         );
     }
