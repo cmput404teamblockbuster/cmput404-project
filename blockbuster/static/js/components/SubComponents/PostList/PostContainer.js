@@ -7,6 +7,7 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete'
 import ReactMarkdown from 'react-markdown'
 import CommentSection from '../CommentList/CommentSection'
 import NameLink from './NameLink'
+import GetSinglePostRequest from '../../Requests/GetSinglePostRequest'
 
 
 export default class PostContainer extends React.Component{
@@ -39,7 +40,10 @@ export default class PostContainer extends React.Component{
     }
 
     deleteAction(){
-        alert("TODO: Delete")
+        GetSinglePostRequest.delete(this.props.object.id,(response)=>{
+            console.log("in post container, delete:", response)
+            this.props.refresh()
+        })
     }
 
     editAction(){
