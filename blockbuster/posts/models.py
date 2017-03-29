@@ -74,4 +74,4 @@ class Post(models.Model):
         return 'post by %s (type: %s, ID: %s) %s' % (self.author.username, self.contentType, self.id, self.content if self.contentType==text_plain else '')
 
     class Meta:
-        ordering = ('created',)
+        ordering = ('-created',)

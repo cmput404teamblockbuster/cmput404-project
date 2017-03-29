@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from core.utils import django_choice_options
+from django.utils import timezone
 from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDING, \
     RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from posts.models import Post
@@ -10,6 +11,34 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from blockbuster.settings import SITE_URL
 
+class NewUser(models.Model):
+    """
+    A new user is an intermediate user object that is created when a user wants to be apart of the system.
+    If the admin chooses to accept the user then it will create a user object with their same attributes.
+    """
+    created = models.DateTimeField(editable=False)
+    username = models.CharField(max_length=30, unique=True)
+    email = models.EmailField(max_length=50, blank=True)
+    password = models.CharField(max_length=128)
+    is_accepted = models.BooleanField(default=False, help_text='Let this user join blockbuster?')
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        super(NewUser, self).save(*args, **kwargs)
+        # if they are accepted and not already created, then we create a new profile for them
+        if self.is_accepted and not User.objects.filter(username=self.username):
+            User.objects.create_user(
+                email=self.email,
+                username=self.username,
+                password=self.password,
+            )
+
+    def __str__(self):
+        return '%s %s' % (self.username, '(ACCEPTED)' if self.is_accepted else '')
+
+    class Meta:
+        ordering = ('-created',)
 
 class Profile(models.Model):
     user = models.OneToOneField(User,
