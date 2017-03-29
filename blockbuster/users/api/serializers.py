@@ -35,7 +35,7 @@ class FullProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('id', 'displayName', 'github', 'host', 'url', 'friends')
+        fields = ('id', 'displayName', 'github', 'host', 'url', 'friends', 'bio')
 
 
 class UserSerializer(serializers.ModelSerializer):

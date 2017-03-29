@@ -2,7 +2,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate, APITestCa
 from users.factories import ProfileModelFactory, UserModelFactory, FriendsUserRelationshipModelFactory
 from rest_framework import status
 from posts.models import Post
-from posts.constants import PRIVACY_PUBLIC, PRIVATE_TO_ME, PRIVATE_TO_ALL_FRIENDS, PRIVACY_UNLISTED
+from posts.constants import PRIVACY_PUBLIC, PRIVATE_TO_ME, PRIVATE_TO_ALL_FRIENDS, PRIVACY_UNLISTED, PRIVATE_TO_ONE_FRIEND
 from posts.factories import BasePostModelFactory
 
 
@@ -142,7 +142,36 @@ class PostViewSetTestCase(APITestCase):
         url = '/api/posts/%s/' % post.uuid
         response = self.client.put(url, format='json', data=data)
 
-        # THEN the post should be deleted
+        # THEN the post should be updated
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Post.objects.all().count(), 1)
         self.assertEqual(Post.objects.all()[0].privacy, PRIVATE_TO_ME)
+
+    # def test__update_post_to_private_to_success(self):
+    #     # GIVEN a post
+    #     author = UserModelFactory()
+    #     author2 = UserModelFactory()
+    #     self.client.force_authenticate(user=author)
+    #     post = BasePostModelFactory(author=author.profile, privacy=PRIVACY_PUBLIC)
+    #     self.assertEquals(Post.objects.all().count(), 1)
+    #     self.assertEquals(Post.objects.all()[0].privacy, PRIVACY_PUBLIC)
+    #
+    #     data = dict(
+    #         visibility=PRIVATE_TO_ONE_FRIEND,
+    #         visibleTo=dict(
+    #             id=str(author2.profile.api_id),
+    #             github='http://www.test.github.com',
+    #             host='http://otherserver.com',
+    #             displayName=author2.profile.username,
+    #         ),
+    #     )
+    #     # WHEN we try to update the post with a new status
+    #     url = '/api/posts/%s/' % post.uuid
+    #     response = self.client.put(url, format='json', data=data)
+    #
+    #     # THEN the post should be updated
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(Post.objects.all().count(), 1)
+    #     self.assertEqual(Post.objects.all()[0].privacy, PRIVATE_TO_ONE_FRIEND)
+    #     self.assertEqual(Post.objects.all()[0].private_to, author2.profile)
+
