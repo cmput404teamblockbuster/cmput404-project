@@ -19,6 +19,7 @@ class Profile(models.Model):
     github = models.URLField(null=True, blank=True)  # github url can be null
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     host = models.CharField(max_length=100, default=SITE_URL)
+    bio = models.CharField(max_length=150, null=True, blank=True)
 
     @property
     def url(self):
