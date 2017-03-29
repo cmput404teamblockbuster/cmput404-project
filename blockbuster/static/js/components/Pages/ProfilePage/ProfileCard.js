@@ -9,11 +9,12 @@ import AcceptRejectToolbar from '../../SubComponents/RelationshipToolbars/Accept
 import UnFriendToolbar from '../../SubComponents/RelationshipToolbars/UnFriendToolbar'
 import BefriendToolbar from '../../SubComponents/RelationshipToolbars/BefriendToolbar'
 import UnfollowToolbar from '../../SubComponents/RelationshipToolbars/UnfollowToolbar'
+import MyselfToolbar from '../../SubComponents/RelationshipToolbars/MyselfToolbar'
 
 export default class ProfileCard extends React.Component {
-    constructor(object) {
-        // props: refresh: callback function to re-render MyStream
-        super(object);
+    constructor(object, refresh) {
+        // props: refresh: callback function to re-render profile page
+        super(object, refresh);
         this.getRelationshipWithMe = this.getRelationshipWithMe.bind(this);
         this.changeButton = this.changeButton.bind(this);
 
@@ -30,7 +31,7 @@ export default class ProfileCard extends React.Component {
         console.log("profile card, object:",this.props.object);
         console.log(res);
         if (res === "The profile with the given UUID is your own."){
-            // your own
+            this.setState({button: <MyselfToolbar friend={this.props.object.author} refresh={this.props.refresh}/>})
         } else if (res === "No Relationship Found."){
             // send Friend Request Button
             this.setState({button: <BefriendToolbar friend={this.props.object} refresh={this.changeButton}/>})
@@ -79,3 +80,11 @@ export default class ProfileCard extends React.Component {
         );
     }
 }
+
+ProfileCard.propTypes = {
+    // the target author
+    object: React.PropTypes.object.isRequired,
+
+    // refresh callback function to re-render profile page
+    refresh: React.PropTypes.func.isRequired,
+};

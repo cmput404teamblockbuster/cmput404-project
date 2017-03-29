@@ -1,14 +1,17 @@
 import React from 'react';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
+import IconButton from 'material-ui/IconButton'
+import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
+import DeleteIcon from 'material-ui/svg-icons/action/delete'
 import ReactMarkdown from 'react-markdown'
 import CommentSection from '../CommentList/CommentSection'
 import NameLink from './NameLink'
 
 
 export default class PostContainer extends React.Component{
-    constructor(object,refresh){
-        super(object,refresh);
+    constructor(object,refresh, me){
+        super(object,refresh, me);
 
         if (this.props.object['contentType']==="text/plain"){
             this.body = <p className="postBody">{this.props.object['content']}</p>
@@ -17,15 +20,37 @@ export default class PostContainer extends React.Component{
         } else {
             this.body = <img className="image" src={this.props.object['content']}/>
         }
+
+        this.deleteAction = this.deleteAction.bind(this);
+        this.editAction = this.editAction.bind(this);
+
+        this.buttons = undefined;
+        if (true){
+            this.buttons = [
+                <IconButton style={{float:'right'}} tooltip="edit" onTouchTap={this.editAction}><EditIcon/></IconButton>,
+                <IconButton style={{float:'right'}} tooltip="delete" onTouchTap={this.deleteAction}><DeleteIcon/></IconButton>
+            ]
+        }
     }
 
+    deleteAction(){
+        alert("TODO: Delete")
+    }
+
+    editAction(){
+        alert("TODO: Edit")
+    }
 
     render(){
         console.log("post container, the post is:",this.props.object);
         return(
             <li>
                 <Card className="textField">
-                    <CardHeader title={<NameLink object={this.props.object['author']}/>}/><Divider/>
+                    <CardHeader title={<NameLink object={this.props.object['author']}/>} >
+                        {this.buttons}
+                    </CardHeader>
+                    <Divider/>
+                    <CardActions> </CardActions>
                     <CardText >
                         {this.body}
                     </CardText>
@@ -46,5 +71,6 @@ PostContainer.propTypes = {
     // to refresh the parent
     refresh: React.PropTypes.func.isRequired,
 
-    // the current loggedIn author
+    // a boolean if this is my post
+    me: React.PropTypes.bool
 };
