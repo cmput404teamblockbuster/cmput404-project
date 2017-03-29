@@ -154,7 +154,7 @@ class AllPublicPostsView(APIView):
     def get(self, request):
         result = []
         # get posts from all nodes
-        for node in Node.objects.all(is_allowed=True):
+        for node in Node.objects.filter(is_allowed=True):
             host = node.host
             url = host + node.api_endpoint + 'posts/'
             try:
