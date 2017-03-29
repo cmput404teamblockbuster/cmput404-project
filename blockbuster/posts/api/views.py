@@ -34,22 +34,23 @@ class ProfilePostsListView(APIView):
         all_posts = []
         if foreign_friend_list:
             for friend in foreign_friend_list:
-                node = Node.objects.filter(host=friend.host)
-                if node and node[0].is_allowed:
+                node = Node.objects.filter(host=friend.host, is_allowed=True)
+                if node:
                     node = node[0]
                     api_url = '%s%sauthor/%s/posts/' % (friend.host, node.api_endpoint, friend.uuid)
                     # We send a post request to the other server with the requesting users uuid so they know who is wanting info
                     data = dict(
-                        requesting_user_uuid = str(self.request.user.profile.uuid)
+                        requesting_user_uuid=str(self.request.user.profile.uuid)
                     )
                     try:
-                        response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
+                        response = requests.post(api_url, json=data, auth=(
+                        node.username_for_node, node.password_for_node))  # TODO change this back to request.get
                     except requests.ConnectionError:
                         response = None
-                    result = response.json() if response and 199<response.status_code<300 else None
+                    result = response.json() if response and 199 < response.status_code < 300 else None
                     if not result:
                         continue
-                        # return Response('%d Error: Could not communicate with server %s. (%s)' % (response.status_code, node.host, response.text), status=status.HTTP_400_BAD_REQUEST)
+
                     all_posts.extend(result.get('posts'))
                 else:
                     continue
@@ -74,6 +75,7 @@ class ProfilePostsListView(APIView):
 class ProfilePostDetailView(APIView):
     """
     Lists posts by the specified author that are visible to the requesting user.
+    TODO i think here we want ot return all posts by the specified author, except for server_only posts, if the request is foreign (check SITE_URL)
     """
     permission_classes = (IsAuthenticated,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
@@ -100,6 +102,7 @@ class ProfilePostDetailView(APIView):
                                      ('posts', serializer.data)])
                         )
 
+    # TODO likely remove this post
     def post(self, request, uuid):
         """
         exact same as the get request except we return posts visible to the given uuid in the post body
@@ -151,22 +154,22 @@ class AllPublicPostsView(APIView):
     def get(self, request):
         result = []
         # get posts from all nodes
-        for node in Node.objects.all():
-            if node.is_allowed:
-                host = node.host
-                url = host + node.api_endpoint + 'posts/'
-                try:
-                    response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
-                except requests.ConnectionError:
-                    continue
+        for node in Node.objects.all(is_allowed=True):
+            host = node.host
+            url = host + node.api_endpoint + 'posts/'
+            try:
+                response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
+            except requests.ConnectionError:
+                continue
 
-                if 199 < response.status_code < 300:
-                    try:
-                        result.extend(response.json().get('posts'))
-                    except AttributeError:
-                        result.extend(response.json())
-                else:
-                    print response.status_code,"can not get public posts from node:", host, "with url:", url
+            # Check for successful response
+            if 199 < response.status_code < 300:
+                try:
+                    result.extend(response.json().get('posts'))
+                except AttributeError:
+                    result.extend(response.json())
+            else:
+                print response.status_code,"can not get public posts from node:", host, "with url:", url
 
         # get all local public posts
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
