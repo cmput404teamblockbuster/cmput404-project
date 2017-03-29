@@ -21,16 +21,10 @@ export default class ListItemContainer extends React.Component{
     }
     render(){
         return(
-            <li style={{backgroundColor:'#424242', textAlign:'center', border:'solid #4FC3F7'}}>
-                <span/>
-                {/*<Toolbar style={{backgroundColor:'#424242', textAlign:'center', border:'solid #4FC3F7'}}>*/}
-                    {/*<ToolbarGroup>*/}
-                        <NameLink object={this.props.object}/>
-                    {/*</ToolbarGroup>*/}
-                    {/*/!*<ToolbarGroup>*!/*/}
-                    {/*/!*</ToolbarGroup>*!/*/}
-                {/*</Toolbar>*/}
-                <span className="smallText">{this.props.object.host}</span>
+            <li style={{backgroundColor:'#424242', padding:"8px 0 8px 0", textAlign:'center', border:'solid #4FC3F7'}}>
+                <NameLink object={this.props.object}/>
+
+                <span className="smallText">      from {this.props.object.host}</span>
             </li>
         );
     }

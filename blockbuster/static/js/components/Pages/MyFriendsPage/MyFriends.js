@@ -3,11 +3,8 @@ import Paper from 'material-ui/Paper'
 import AppBar from 'material-ui/AppBar'
 import Divider from 'material-ui/Divider'
 import GetMyPendingRequest from '../../Requests/GetMyPendingRequest'
-import GetTheirFriendsRequest from '../../Requests/GetTheirFriendsRequest'
 import GetMyRelationshipsRequest from '../../Requests/GetMyRelationshipsRequest'
 import PendingContainer from './PendingContainer'
-import SendFollowCard from './SendFollowCard'
-import MyFriendsTable from './MyFriendsTable'
 import ListItemContainer from './ListItemContainer'
 
 
@@ -80,7 +77,7 @@ export default class MyFriends extends React.Component{
 
                     <Divider/>
                     <div>
-                        <h4 id="pendingHeader" style={{color:'#757575', textAlign:'center'}}> My Followings : </h4>
+                        <h4 id="pendingHeader" style={{color:'#757575', textAlign:'center'}}> Users I Follow : </h4>
                     </div>
                     {this.state.followings}
 

@@ -69,6 +69,4 @@ urlpatterns = [
     url(r'^author/(?P<uuid>[^/]+)/posts/$', ProfilePostDetailView.as_view(), name='profile-post-detail'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/friends/$', author_friends_list, name='author-friends-list'), # TODO DOCUMENT
     url(r'^author/(?P<uuid>[^/]+)/friends/(?P<uuid_2>[^/]+)/$', UserRelationshipCheckView.as_view(), name='check_author_relationship'), # TODO DOCUMENT
-
-
 ]

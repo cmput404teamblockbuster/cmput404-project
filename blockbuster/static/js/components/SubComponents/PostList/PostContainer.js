@@ -21,11 +21,10 @@ export default class PostContainer extends React.Component{
 
 
     render(){
-        console.log("post container",this.props.object)
+        console.log("post container, the post is:",this.props.object);
         return(
             <li>
                 <Card className="textField">
-                    {/*<CardHeader title={this.props.object['author']['username']} titleColor={'#82B1FF'} /><Divider/>*/}
                     <CardHeader title={<NameLink object={this.props.object['author']}/>}/><Divider/>
                     <CardText >
                         {this.body}
@@ -39,3 +38,13 @@ export default class PostContainer extends React.Component{
         );
     }
 }
+
+PostContainer.propTypes = {
+    // the post object
+    object: React.PropTypes.object.isRequired,
+
+    // to refresh the parent
+    refresh: React.PropTypes.func.isRequired,
+
+    // the current loggedIn author
+};
