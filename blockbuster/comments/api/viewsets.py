@@ -34,12 +34,13 @@ class CommentViewSet(viewsets.ModelViewSet):
         if host in ['http://warm-hollows-14698.herokuapp.com/', 'http://radiant-beyond-17792.herokuapp.com/']:
             # host += "api/"
             data = our_data
+
         if serializer.is_valid():
             try:
                 post = Post.objects.get(uuid=uuid_input)  # Get the post the comment is for
             except Post.DoesNotExist:
-                node = Node.objects.filter(host=host)
-                if node and node[0].is_allowed:
+                node = Node.objects.filter(host=host, is_allowed=True)
+                if node:
                     node = node[0]
                     api_url = host + node.api_endpoint + 'posts/' + uuid_input + '/comments/'
                     response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))

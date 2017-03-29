@@ -32,19 +32,18 @@ class ProfileViewSet(viewsets.ModelViewSet):
         try:
             profile = Profile.objects.get(uuid=uuid)
         except Profile.DoesNotExist:
-            for node in Node.objects.all():
-                if node.is_allowed:
-                    response = self.request_foreign_profile_data(node, uuid)
-                    if response and response.status_code == 200:
-                        profile = response.json()
-                        return Response(status=status.HTTP_200_OK, data=profile)
+            for node in Node.objects.all(is_allowed=True):
+                response = self.request_foreign_profile_data(node, uuid)
+                if response and response.status_code == 200:
+                    profile = response.json()
+                    return Response(status=status.HTTP_200_OK, data=profile)
             return Response(status=status.HTTP_404_NOT_FOUND, data='There are no profiles matching the given UUID')
 
         host = profile.host
         local = (host == settings.SITE_URL)
         if not local:
-            if host in ['http://warm-hollows-14698.herokuapp.com/', 'http://radiant-beyond-17792.herokuapp.com/']:
-                host += 'api/'
+            # if host in ['http://warm-hollows-14698.herokuapp.com/', 'http://radiant-beyond-17792.herokuapp.com/']:
+            #     host += 'api/'
             node = Node.objects.filter(host=host)
             if node and node[0].is_allowed:
                 node = node[0]
@@ -52,6 +51,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
                 if response and response.status_code == 200:
                     profile = response.json()
                     return Response(status=status.HTTP_200_OK, data=profile)
+                return Response(status=status.HTTP_400_BAD_REQUEST, data='Could not contact server.')
             else:
                 return Response(status=status.HTTP_401_UNAUTHORIZED, data='User is from an unaccepted server.')
 
@@ -69,21 +69,20 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def list(self, *args, **kwargs):
         listofauthors = []
         local = Profile.objects.all()
-        node = Node.objects.all()
+        node = Node.objects.all(is_allowed=True)
         localserializer = ProfileSerializer(local, many=True)
         listofauthors.extend(localserializer.data)
         for singlenode in node:
-            if singlenode.is_allowed == True:
-                endpoint = 'api/author/local/'
-                api_url = singlenode.host + endpoint
-                try:
-                    response = requests.get(api_url, auth=(singlenode.username_for_node, singlenode.password_for_node))
-                except requests.ConnectionError:
-                    continue
-                if response.status_code == 200:
-                    payload = response.json()
-                    if len(payload) > 0:
-                        listofauthors.extend(payload)
+            endpoint = node.api_endpoint + 'author/local/'
+            api_url = singlenode.host + endpoint
+            try:
+                response = requests.get(api_url, auth=(singlenode.username_for_node, singlenode.password_for_node))
+            except requests.ConnectionError:
+                continue
+            if response.status_code == 200:
+                payload = response.json()
+                if len(payload) > 0:
+                    listofauthors.extend(payload)
 
         return Response(status=status.HTTP_200_OK, data=listofauthors)
 
