@@ -1,18 +1,39 @@
 import React from 'react'
-import Paper from 'material-ui/Paper'
+import {Card, CardHeader, CardActions, CardMedia} from 'material-ui/Card'
 import AppBar from 'material-ui/AppBar'
 import GetGitHubActivityRequest from '../../Requests/GetGitHubActivityRequest'
 import PostContainer from '../../SubComponents/PostList/PostContainer'
 export default class ActivityList extends React.Component{
     constructor(){
         super();
-        this.state = {posts:<li/>};
-        this.componentWillMount = this.componentWillMount.bind(this);
+        this.state = {activities:<li/>};
+        this.gitHub = this.props.me.github;
+        this.page = 1;
+
+        this.getData = this.getData.bind(this);
+        this.changePage = this.changePage.bind(this);
+
+        this.getData(1)
     }
 
-    componentWillMount(callback){
-        this.gitHub = this.props.me.github;
-        GetGitHubActivityRequest.get(this.gitHub,()=>{})
+    getData(page){
+        GetGitHubActivityRequest.get(this.gitHub,page,(response)=>{
+            if (response){
+                if (response==="Try Again Later"){
+
+                } else {
+
+                }
+            }
+        })
+    }
+
+    changePage(up){
+        this.page = up? this.page+1 : this.page-1;
+        if (this.page === 0){
+            this.page = 1;
+        }
+        this.getData(this.page);
 
     }
 
@@ -32,5 +53,5 @@ export default class ActivityList extends React.Component{
 }
 
 ActivityList.propTypes = {
-    me: React.PropTypes.object
-}
+    me: React.PropTypes.object.isRequired,
+};

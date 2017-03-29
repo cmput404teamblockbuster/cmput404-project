@@ -28,8 +28,12 @@ export default class PostContainer extends React.Component{
         // console.log("Profile Container:")
         if (this.props.me){
             this.buttons = [
-                <IconButton key={0} style={{float:'right'}} tooltip="edit" onTouchTap={this.editAction}><EditIcon/></IconButton>,
-                <IconButton key={1} style={{float:'right'}} tooltip="delete" onTouchTap={this.deleteAction}><DeleteIcon/></IconButton>
+                <IconButton key={0} style={{float:'right'}} tooltip="edit" onTouchTap={this.editAction}>
+                    <EditIcon/>
+                </IconButton>,
+                <IconButton key={1} style={{float:'right'}} tooltip="delete" onTouchTap={this.deleteAction}>
+                    <DeleteIcon/>
+                </IconButton>
             ]
         }
     }

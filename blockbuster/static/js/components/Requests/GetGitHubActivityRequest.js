@@ -18,7 +18,7 @@ module.exports = {
                         callback(localStorage.github)
                     } else {
                         console.log("github request: failed with", err);
-                        callback("try again later")
+                        callback("Try Again Later")
                     }
                 })
         } else {
