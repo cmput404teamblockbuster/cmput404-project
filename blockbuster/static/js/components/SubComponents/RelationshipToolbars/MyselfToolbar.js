@@ -1,16 +1,23 @@
 import React from 'react';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import RaisedButton from 'material-ui/RaisedButton';
+import EditProfileDialog from './EditProfileDialog';
 
 export default class MyselfToolbar extends React.Component{
     constructor(props){
         super(props);
 
         this.handleEdit = this.handleEdit.bind(this);
+        this.closeDialog = this.closeDialog.bind(this);
+        this.state = {dialog:false};
+    }
+
+    closeDialog(){
+        this.setState({dialog:false})
     }
 
     handleEdit(){
-        alert("TODO: edit profile")
+        this.setState({dialog:<EditProfileDialog refresh={this.props.refresh} closeAction={this.closeDialog} object={this.props.object}/>})
     }
 
     render(){
@@ -23,6 +30,7 @@ export default class MyselfToolbar extends React.Component{
                 </ToolbarGroup>
                 <ToolbarGroup>
                 </ToolbarGroup>
+                {this.state.dialog}
             </Toolbar>
         );
     }

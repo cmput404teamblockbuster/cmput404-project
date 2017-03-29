@@ -71,7 +71,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         localserializer = ProfileSerializer(local, many=True)
         listofauthors.extend(localserializer.data)
         for singlenode in node:
-            endpoint = node.api_endpoint + 'author/local/'
+            endpoint = singlenode.api_endpoint + 'author/local/'
             api_url = singlenode.host + endpoint
             try:
                 response = requests.get(api_url, auth=(singlenode.username_for_node, singlenode.password_for_node))

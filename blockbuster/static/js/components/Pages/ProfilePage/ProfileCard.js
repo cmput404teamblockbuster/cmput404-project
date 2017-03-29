@@ -21,6 +21,7 @@ export default class ProfileCard extends React.Component {
         this.state = {
             username: this.props.object['displayName'],
             github: this.props.object['github'] ? this.props.object['github'] : "Don't have one yet",
+            bio: this.props.object['bio'] ? this.props.object['bio'] : "Don't have one yet",
             host: this.props.object['host'],
             url: this.props.object['url']
         };
@@ -31,7 +32,7 @@ export default class ProfileCard extends React.Component {
         console.log("profile card, object:",this.props.object);
         console.log(res);
         if (res === "The profile with the given UUID is your own."){
-            this.setState({button: <MyselfToolbar friend={this.props.object} refresh={this.props.refresh}/>})
+            this.setState({button: <MyselfToolbar object={this.props.object} refresh={this.props.refresh}/>})
         } else if (res === "No Relationship Found."){
             // send Friend Request Button
             this.setState({button: <BefriendToolbar friend={this.props.object} refresh={this.changeButton}/>})
@@ -74,6 +75,8 @@ export default class ProfileCard extends React.Component {
                 <CardHeader title={"Host: "+this.state.host}/>
                 <Divider/>
                 <CardHeader title={"URL: "+this.state.url}/>
+                <Divider/>
+                <CardHeader title={"Bio: "+this.state.bio}/>
                 <Divider/>
                 {this.state.button}
             </Card>

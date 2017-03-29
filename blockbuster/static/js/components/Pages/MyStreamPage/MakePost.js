@@ -42,9 +42,9 @@ export default class MakePost extends React.Component {
 
     changeVisibility(data){
         if (data === "private_to_one_friend"){
-
             this.setState({visibility:data, button: <SelectAuthorButton changeAuthor={this.changeAuthor}/>})
         } else {
+            this.author = undefined;
             this.setState({visibility:data, button:false});
         }
 
