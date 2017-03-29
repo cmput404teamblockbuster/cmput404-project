@@ -20,4 +20,27 @@ module.exports = {
             })
     },
 
+    delete: function (id, callback) {
+        const path = "api/posts/"+id+"/";
+
+        axios.delete(path, {headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}})
+            .then((response)=>{
+                callback(response.data)
+            })
+    },
+
+    edit: function (id, visibility, callback, visibleTo) {
+        const path = "api/posts/"+id+"/";
+        const data = visibleTo? {visibility:visibility,visibleTo:visibleTo} : {visibility:visibility};
+        axios.put(path, data,
+            {headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}})
+            .then((response)=>{
+                callback(response.data)
+            })
+    }
+
+
+
+
+
 };

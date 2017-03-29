@@ -12,9 +12,11 @@ export default class MakePost extends React.Component {
         // props: refresh: callback function to re-render MyStream
         super(refresh);
 
-        this.state = {content:"", contentType:"text/plain", visibility:"privacy_public", button: false};
+        this.state = {content:"", contentType:"text/plain", visibility:"privacy_public", button: false, title:"", description:""};
         this.author = undefined;
 
+        this.changeTitle = this.changeTitle.bind(this);
+        this.changeDescription = this.changeDescription.bind(this);
         this.changeContent = this.changeContent.bind(this);
         this.changeAuthor = this.changeAuthor.bind(this);
         this.changeVisibility = this.changeVisibility.bind(this);
@@ -22,6 +24,13 @@ export default class MakePost extends React.Component {
         this.afterSubmit = this.afterSubmit.bind(this);
     }
 
+    changeTitle(data){
+        this.setState({title:data})
+    }
+
+    changeDescription(data){
+        this.setState({description:data})
+    }
 
     changeContent(data, type){
         this.setState({content:data, contentType: type});
@@ -49,7 +58,7 @@ export default class MakePost extends React.Component {
             const url = host+'/post/'+res['id'] ;
             alert("your url is: " + url)
         }
-        this.setState({content:""});
+        this.setState({content:"", title:"", description:""});
         this.child.changeTab();
         this.props.refresh();
     }
@@ -58,9 +67,11 @@ export default class MakePost extends React.Component {
         if (this.state.content !== ""){
             if (this.state.visibility === "private_to_one_friend" && this.author){
                 // post to one single user TODO: make sure users on other server as well
-                CreatePostRequest.send(this.state.content, this.state.contentType, this.state.visibility, this.afterSubmit, this.author)
+                CreatePostRequest.send(this.state.content, this.state.title, this.state.description,
+                    this.state.contentType, this.state.visibility, this.afterSubmit, this.author)
             } else {
-                CreatePostRequest.send(this.state.content, this.state.contentType, this.state.visibility, this.afterSubmit)
+                CreatePostRequest.send(this.state.content, this.state.title, this.state.description,
+                    this.state.contentType, this.state.visibility, this.afterSubmit)
             }
 
         }
@@ -72,7 +83,8 @@ export default class MakePost extends React.Component {
                 <CardHeader title="Make a new post"/>
 
                 <CardMedia>
-                    <MakePostContent ref={(input)=>{this.child=input}} change={this.changeContent}/>
+                    <MakePostContent ref={(input)=>{this.child=input}} change={this.changeContent}
+                                     title={this.changeTitle} description={this.changeDescription}/>
                     <Toolbar style={{backgroundColor: '#424242'}}>
                         <ToolbarGroup>
                             {this.state.button}

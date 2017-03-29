@@ -4,8 +4,8 @@ import AppBar from 'material-ui/AppBar'
 import GetGitHubActivityRequest from '../../Requests/GetGitHubActivityRequest'
 import PostContainer from '../../SubComponents/PostList/PostContainer'
 export default class ActivityList extends React.Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {activities:<li/>};
         this.gitHub = this.props.me.github;
         this.page = 1;
@@ -17,7 +17,8 @@ export default class ActivityList extends React.Component{
     }
 
     getData(page){
-        GetGitHubActivityRequest.get(this.gitHub,page,(response)=>{
+        if (this.gitHub){
+            GetGitHubActivityRequest.get(this.gitHub,page,(response)=>{
             if (response){
                 if (response==="Try Again Later"){
 
@@ -25,7 +26,9 @@ export default class ActivityList extends React.Component{
 
                 }
             }
-        })
+            })
+        }
+
     }
 
     changePage(up){

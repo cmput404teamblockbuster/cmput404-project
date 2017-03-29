@@ -2,13 +2,13 @@ import React from 'react';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton'
-import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
+import ShareIcon from 'material-ui/svg-icons/social/people'
 import DeleteIcon from 'material-ui/svg-icons/action/delete'
 import ReactMarkdown from 'react-markdown'
 import CommentSection from '../CommentList/CommentSection'
 import NameLink from './NameLink'
 import GetSinglePostRequest from '../../Requests/GetSinglePostRequest'
-
+import EditPostDialog from './EditPostDialog'
 
 export default class PostContainer extends React.Component{
     constructor(object,refresh, me){
@@ -24,34 +24,45 @@ export default class PostContainer extends React.Component{
 
         this.deleteAction = this.deleteAction.bind(this);
         this.editAction = this.editAction.bind(this);
+        this.closeDialog = this.closeDialog.bind(this);
 
         this.buttons = undefined;
-        // console.log("Profile Container:")
+        this.state = {dialog:false};
         if (this.props.me){
             this.buttons = [
-                <IconButton key={0} style={{float:'right'}} tooltip="edit" onTouchTap={this.editAction}>
-                    <EditIcon/>
-                </IconButton>,
                 <IconButton key={1} style={{float:'right'}} tooltip="delete" onTouchTap={this.deleteAction}>
                     <DeleteIcon/>
-                </IconButton>
+                </IconButton>,
+                <IconButton key={0} style={{float:'right'}} tooltip="edit" onTouchTap={this.editAction}>
+                    <ShareIcon/>
+                </IconButton>,
+
             ]
         }
     }
 
     deleteAction(){
         GetSinglePostRequest.delete(this.props.object.id,(response)=>{
-            console.log("in post container, delete:", response)
+            console.log("in post container, delete:", response);
             this.props.refresh()
         })
     }
 
     editAction(){
-        alert("TODO: Edit")
+        this.setState({dialog: <EditPostDialog closeAction={this.closeDialog} refresh={this.props.refresh} postId={this.props.object.id}/>})
     }
 
+    closeDialog(){
+        this.setState({dialog:false})
+    }
     render(){
         console.log("post container, the post is:",this.props.object);
+        const t_and_d = ((this.props.object.title) && (this.props.object.description)) ?
+            <div>
+                <CardHeader title={this.props.object.title}
+                                subtitle={this.props.object.description}/>
+                <Divider/>
+            </div>: null;
         return(
             <li>
                 <Card className="textField">
@@ -59,7 +70,7 @@ export default class PostContainer extends React.Component{
                         {this.buttons}
                     </CardHeader>
                     <Divider/>
-                    <CardActions> </CardActions>
+                    {t_and_d}
                     <CardText >
                         {this.body}
                     </CardText>
@@ -67,6 +78,7 @@ export default class PostContainer extends React.Component{
                     <CardMedia>
                         <CommentSection host={this.props.object.author.host} postid={this.props.object['id']} object={this.props.object['comments']} refresh={this.props.refresh}/>
                     </CardMedia>
+                    {this.state.dialog}
                 </Card>
             </li>
         );
