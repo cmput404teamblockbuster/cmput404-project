@@ -111,3 +111,38 @@ class PostViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0].get('id'), str(public_post.uuid))
+
+    def test__delete_post_success(self):
+        # GIVEN a post is in the db
+        author = UserModelFactory()
+        self.client.force_authenticate(user=author)
+        post = BasePostModelFactory(author=author.profile)
+        self.assertEquals(Post.objects.all().count(), 1)
+
+        # WHEN we try to delete the post
+        url = '/api/posts/%s/' % post.uuid
+        response = self.client.delete(url)
+
+        # THEN the post should be deleted
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Post.objects.all().count(), 0)
+
+    def test__update_post_success(self):
+        # GIVEN a post
+        author = UserModelFactory()
+        self.client.force_authenticate(user=author)
+        post = BasePostModelFactory(author=author.profile, privacy=PRIVACY_PUBLIC)
+        self.assertEquals(Post.objects.all().count(), 1)
+        self.assertEquals(Post.objects.all()[0].privacy, PRIVACY_PUBLIC)
+
+        data = dict(
+            visibility = PRIVATE_TO_ME
+        )
+        # WHEN we try to update the post with a new status
+        url = '/api/posts/%s/' % post.uuid
+        response = self.client.put(url, format='json', data=data)
+
+        # THEN the post should be deleted
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Post.objects.all().count(), 1)
+        self.assertEqual(Post.objects.all()[0].privacy, PRIVATE_TO_ME)

@@ -12,7 +12,7 @@ class Post(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
     source = models.URLField(max_length=100, null=True, blank=True, help_text='Where the post was last from')
     origin = models.URLField(max_length=100, null=True, blank=True, help_text='Where the post originated')
-    description = models.URLField(max_length=150, null=True, blank=True)
+    description = models.CharField(max_length=150, null=True, blank=True)
     created = models.DateTimeField(null=True, editable=False)
     author = models.ForeignKey('users.Profile', related_name='posts')
     private_to = models.ForeignKey('users.Profile', blank=True, null=True,

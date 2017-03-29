@@ -10,11 +10,11 @@ from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ON
 
 class PostSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
-    author = ProfileSerializer()
+    author = ProfileSerializer(required=False)
     comments = CommentSerializer(many=True, read_only=True)
     id = serializers.CharField(source='uuid', required=False)
     visibility = serializers.CharField(source='privacy')
-    contentType = serializers.ChoiceField(choices=contentchoices)
+    contentType = serializers.ChoiceField(choices=contentchoices, required=False)
     published = serializers.CharField(source='created', required=False)
     visibleTo = CondensedProfileSerializer(source='private_to', required=False)
 
@@ -23,9 +23,6 @@ class PostSerializer(serializers.ModelSerializer):
         """
         validate data here
         """
-        if len(data.get('content')) == 0:
-            raise serializers.ValidationError('The post has no body.')
-
         return data
 
     def create(self, validated_data):

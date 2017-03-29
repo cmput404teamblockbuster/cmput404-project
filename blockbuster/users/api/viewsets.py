@@ -1,4 +1,3 @@
-import json
 import requests
 import uuid
 from django.shortcuts import get_object_or_404
@@ -11,7 +10,6 @@ from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRI
 from urlparse import urlparse
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from nodes.models import Node
-
 from blockbuster import settings
 
 

@@ -1,13 +1,10 @@
 from rest_framework import viewsets, status
 from posts.api.serializers import PostSerializer
 from posts.models import Post
-from nodes.models import Node
-import requests
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
-
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -76,4 +73,3 @@ class PostViewSet(viewsets.ModelViewSet):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
 
         return Response('You do not have permission to see this post.', status=status.HTTP_403_FORBIDDEN)
-
