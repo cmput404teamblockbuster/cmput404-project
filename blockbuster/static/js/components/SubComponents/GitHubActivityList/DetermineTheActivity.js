@@ -1,4 +1,4 @@
-import Activities from './Activities'
+var Activities=require('./Activities');
 const ActivityArray = ['CommitCommentEvent', 'CreateEvent','DeleteEvent','DeploymentEvent',
     'DeploymentStatusEvent','DownloadEvent','FollowEvent','ForkEvent','ForkApplyEvent','GistEvent','GollumEvent',
     'IssueCommentEvent','IssuesEvent','LabelEvent','MemberEvent','MembershipEvent','MilestoneEvent',
@@ -8,7 +8,8 @@ const ActivityArray = ['CommitCommentEvent', 'CreateEvent','DeleteEvent','Deploy
 ];
 
 module.exports = {
-    GetMarkDown:function (evetType, data) {
+    getMarkDown:function (evetType, data) {
+        // make sure eventType is in the array
         return Activities.mapEventToFunction(ActivityArray.indexOf(evetType))(data)
     }
 };

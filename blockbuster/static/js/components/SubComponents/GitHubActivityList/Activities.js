@@ -8,6 +8,10 @@ module.exports = {
             this.PublicEvent,this.PullRequestEvent, this.PullRequestReviewEvent,this.PullRequestReviewCommentEvent,this.PushEvent,
             this.ReleaseEvent,this.RepositoryEvent,this.StatusEvent, this.TeamEvent,this.TeamAddEvent,this.WatchEvent
         ];
+        if (index === -1){
+            // if the event type is not defined
+            return null
+        }
         return ActivityArray[index]
     },
 
@@ -93,7 +97,7 @@ module.exports = {
 
     },
     PushEvent: function (data) {
-
+        return "pushed to ["+data.repo.name+"]("+data.repo.url+")"
     },
     ReleaseEvent: function (data) {
 
