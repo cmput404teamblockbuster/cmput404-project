@@ -3,8 +3,11 @@ from django.contrib.auth import authenticate, login
 
 
 def myStream(request):
-    return render(request, 'myStream.html')
-
+    username = request.user.get_username()
+    if username !="":
+        return render(request, 'myStream.html')
+    else:
+        return login(request)
 
 def login(request):
     return render(request, 'login.html')
