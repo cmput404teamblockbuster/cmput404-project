@@ -5,6 +5,7 @@ import MyStream from './MyStream'
 import TopBar from '../TopBar'
 import ActivityList from '../../SubComponents/GitHubActivityList/ActivityList'
 import GetAuthorRequest from '../../Requests/GetAuthorRequest'
+import auth from '../../Requests/auth'
 
 class Main extends React.Component{
     
@@ -19,6 +20,7 @@ class Main extends React.Component{
     }
 }
 
+auth.checkLogin();
 GetAuthorRequest.getMe((Me)=>{
     ReactDom.render(<Main me={Me}/>,
         document.getElementById('container'));

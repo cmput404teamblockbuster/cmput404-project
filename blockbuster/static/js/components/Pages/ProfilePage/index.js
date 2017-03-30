@@ -3,6 +3,7 @@ import ReactDom from 'react-dom'
 import AppWrapper from '../AppWrapper'
 import ProfilePage from './ProfilePage'
 import GetAuthorRequest from '../../Requests/GetAuthorRequest'
+import auth from '../../Requests/auth'
 import TopBar from '../TopBar'
 import ActivityList from '../../SubComponents/GitHubActivityList/ActivityList'
 
@@ -19,6 +20,7 @@ class Main extends React.Component{
     }
 }
 
+auth.checkLogin();
 const url = window.location;
 const cb =
     (res) => {

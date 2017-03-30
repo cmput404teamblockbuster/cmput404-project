@@ -3,6 +3,7 @@ import ReactDom from 'react-dom'
 import AppWrapper from '../AppWrapper'
 import MyFriends from './MyFriends'
 import GetAuthorRequest from '../../Requests/GetAuthorRequest'
+import auth from '../../Requests/auth'
 import TopBar from '../TopBar'
 
 class Main extends React.Component{
@@ -16,7 +17,7 @@ class Main extends React.Component{
     }
 }
 
-
+auth.checkLogin();
 GetAuthorRequest.getMe(
     (author)=> {
         ReactDom.render(<Main object={author}/>,

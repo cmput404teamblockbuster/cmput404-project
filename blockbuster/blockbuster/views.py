@@ -1,17 +1,11 @@
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login
 
 
 def myStream(request):
-    username = request.user.get_username()
-    if username !="":
-        return render(request, 'myStream.html')
-    else:
-        return login(request)
+    return render(request, 'myStream.html')
 
 def login(request):
     return render(request, 'login.html')
-
 
 def myFriends(request):
     return render(request, 'myFriends.html')
