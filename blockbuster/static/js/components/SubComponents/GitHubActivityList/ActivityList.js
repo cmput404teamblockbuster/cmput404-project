@@ -54,14 +54,9 @@ export default class ActivityList extends React.Component{
             <div className="GitHubList">
                 <Card containerStyle={this.styles}>
                     <CardHeader actAsExpander={true} showExpandableButton={true} title={"GitHub Activities"}/>
-                    <CardMedia expandable={true} mediaStyle={{height:'300px'}}>
+                    <CardMedia expandable={true}>
                         {this.state.activities}
                     </CardMedia>
-                    <CardActions expandable={true}>
-                        <FlatButton icon={<Last/>} label="Previous" className="previousButton"/>
-                        <span style={{padding:'0 11px 0 11px'}} >{this.page}</span>
-                        <FlatButton icon={<Next/>} label="Next" labelPosition='before' className="nextButton"/>
-                    </CardActions>
                 </Card>
             </div>
         );

@@ -13,10 +13,16 @@ export default class ListBody extends React.Component{
     render(){
         const body = this.props.listOfObjects.map((activity,index)=><li key={index}><ReactMarkdown source={activity}/></li>);
         return(
-            <ul className="mainList" id="scrollable">
+            <div>
                 <CardHeader avatar={this.props.actor.avatar_url} title={this.props.actor.login}/>
+                <ul className="mainList" id="scrollable">
                 {body}
-            </ul>
+                </ul>
+                <FlatButton icon={<Last/>} label="Previous" className="previousButton"/>
+                <span style={{padding:'0 11px 0 11px'}} >{this.props.page}</span>
+                <FlatButton icon={<Next/>} label="Next" labelPosition='before' className="nextButton"/>
+            </div>
+
         )
     }
 }
