@@ -112,6 +112,8 @@ class ProfilePostDetailView(APIView):
             elif post.privacy == PRIVATE_TO_FOF:
                 if post.viewable_to_FOF(author):
                     result.append(post)
+            else:
+                result.append(post)
 
         mypaginator = custom()
         results = mypaginator.paginate_queryset(result, request)
