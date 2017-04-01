@@ -18,9 +18,12 @@ class Main extends React.Component{
 }
 
 auth.checkLogin();
-GetAuthorRequest.getMe(
+if(auth.loggedIn()){
+    GetAuthorRequest.getMe(
     (author)=> {
         ReactDom.render(<Main object={author}/>,
             document.getElementById('container'));
     }
-);
+    );
+}
+

@@ -47,5 +47,8 @@ const cb =
 
     };
 
-GetAuthorRequest.getMe(cb) ;
+if(auth.loggedIn()){
+    GetAuthorRequest.getMe(cb) ;
+}
+
 
