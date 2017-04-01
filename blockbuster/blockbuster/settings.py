@@ -44,6 +44,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_docs',
+    'django.contrib.sites',
+    
 
 )
 
@@ -74,7 +76,8 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'blockbuster.urls'
 # SITE_URL = 'http://warm-hollows-14698.herokuapp.com/' # LIVE server 1
-SITE_URL = 'http://127.0.0.1:8000/' # Dev server
+#SITE_URL = 'http://127.0.0.1:8000/' # Dev server
+SITE_ID = 1
 
 TEMPLATES = [
     {

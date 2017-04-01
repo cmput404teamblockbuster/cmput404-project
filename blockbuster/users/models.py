@@ -9,7 +9,9 @@ from posts.constants import PRIVACY_UNLISTED
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from blockbuster.settings import SITE_URL
+from django.contrib.sites.models import Site
+
+site_name = Site.objects.get_current().domain
 
 class NewUser(models.Model):
     """
@@ -47,7 +49,7 @@ class Profile(models.Model):
                                 editable=False)  # This will be copied from user.username
     github = models.URLField(null=True, blank=True)  # github url can be null
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    host = models.CharField(max_length=100, default=SITE_URL)
+    host = models.CharField(max_length=100, default=site_name)
     bio = models.CharField(max_length=150, null=True, blank=True)
 
     @property
@@ -93,7 +95,7 @@ class Profile(models.Model):
         following_qs = Profile.objects.filter(id__in=following_ids)
         authors = friends_qs | following_qs
         for author in authors:
-            if author.host == SITE_URL:
+            if author.host == site_name:
                 posts = Post.objects.filter(author=author.id)
                 for post in posts:
                     if post.viewable_for_author(author=self):

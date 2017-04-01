@@ -11,7 +11,9 @@ from urlparse import urlparse
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from nodes.models import Node
 from blockbuster import settings
+from django.contrib.sites.models import Site
 
+site_name = Site.objects.get_current().domain
 
 class ProfileViewSet(viewsets.ModelViewSet):
     """
@@ -38,7 +40,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND, data='There are no profiles matching the given UUID')
 
         host = profile.host
-        local = (host == settings.SITE_URL)
+        local = (host == settings.site_name)
         if not local:
             # if host in ['http://warm-hollows-14698.herokuapp.com/', 'http://radiant-beyond-17792.herokuapp.com/']:
             #     host += 'api/'
@@ -177,7 +179,7 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         local_receiver = False
         try:
             local_author = Profile.objects.get(username=data.get('author').get('displayName'))
-            if local_author.host == settings.SITE_URL:
+            if local_author.host == settings.site_name:
                 local_initiator = True
             else:
                 must_create_profile = False
@@ -188,7 +190,7 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
 
         try:
             local_friend = Profile.objects.get(username=data.get('friend').get('displayName'))
-            if local_friend.host == settings.SITE_URL:
+            if local_friend.host == settings.site_name:
                 local_receiver = True
             else:
                 must_create_profile = False

@@ -15,6 +15,9 @@ from blockbuster import settings
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 
+from django.contrib.sites.models import Site
+
+site_name = Site.objects.get_current().domain
 
 class custom(PageNumberPagination):
     page_size_query_param = 'size'
@@ -85,7 +88,7 @@ class ProfilePostsListView(APIView):
 class ProfilePostDetailView(APIView):
     """
     Lists posts by the specified author that are visible to the requesting user.
-    TODO i think here we want ot return all posts by the specified author, except for server_only posts, if the request is foreign (check SITE_URL)
+    TODO i think here we want ot return all posts by the specified author, except for server_only posts, if the request is foreign (check site_name)
     """
     permission_classes = (IsAuthenticated,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
@@ -132,7 +135,7 @@ class ProfilePostDetailView(APIView):
         result = []
         try:
             author = Profile.objects.get(uuid=uuid)
-            if author.host != settings.SITE_URL: # if this is a foreign user
+            if author.host != settings.site_name: # if this is a foreign user
                 raise Profile.DoesNotExist
         except Profile.DoesNotExist:
             for node in Node.objects.all():
