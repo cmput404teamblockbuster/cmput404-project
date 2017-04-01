@@ -12,7 +12,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('id', 'displayName', 'github', 'host', 'url')
+        fields = ('id', 'displayName', 'github', 'host', 'url', 'bio')
 
 
 class CondensedProfileSerializer(serializers.ModelSerializer):

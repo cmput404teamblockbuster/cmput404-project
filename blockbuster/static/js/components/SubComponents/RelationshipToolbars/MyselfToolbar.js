@@ -9,15 +9,20 @@ export default class MyselfToolbar extends React.Component{
 
         this.handleEdit = this.handleEdit.bind(this);
         this.closeDialog = this.closeDialog.bind(this);
-        this.state = {dialog:false};
+        this.state = {dialog:false, object:this.props.object};
     }
 
-    closeDialog(){
-        this.setState({dialog:false})
+    closeDialog(data){
+        if(data.id){
+            this.setState({object:data, dialog:false})
+        } else{
+            this.setState({dialog:false})
+        }
+
     }
 
     handleEdit(){
-        this.setState({dialog:<EditProfileDialog refresh={this.props.refresh} closeAction={this.closeDialog} object={this.props.object}/>})
+        this.setState({dialog:<EditProfileDialog refresh={this.props.refresh} closeAction={this.closeDialog} object={this.state.object}/>})
     }
 
     render(){
