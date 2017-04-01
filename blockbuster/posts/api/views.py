@@ -99,11 +99,11 @@ class ProfilePostDetailView(APIView):
      
         filter_server = False
         request_host = request.get_host()
-        for node in Node.objects.get(is_allowed=True):
+        for node in Node.objects.filter(is_allowed=True):
             if request_host in node.host: # check if a server is making the request, could be bypassed if we do not hold a record of the server
                 filter_server= True
         if filter_server == True:
-            users_posts = Post.objects.filter(author = author, privacy = PRIVACY_SERVER_ONLY)
+            users_posts = Post.objects.filter(author=author, privacy=PRIVACY_SERVER_ONLY)
         else:
                users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
         for post in users_posts:
