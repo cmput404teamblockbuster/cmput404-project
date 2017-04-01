@@ -2,6 +2,7 @@ import React from 'react'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
+import Snackbar from 'material-ui/Snackbar'
 import CreateUserRequest from '../../Requests/CreateUserRequest'
 
 
@@ -17,11 +18,12 @@ export default class RegistrationDialog extends React.Component{
         this.emailChange = this.emailChange.bind(this);
         this.passChange = this.passChange.bind(this);
         this.matchChange = this.matchChange.bind(this);
+        this.snackbarClose = this.snackbarClose.bind(this);
 
         this.requiredText = "This Field is required";
         this.notMatchText = "Password does not match";
 
-        this.state = {username:"", pass:"", email:"", nameError:this.requiredText, emailError:this.requiredText, passError:this.requiredText, matchError:this.requiredText};
+        this.state = {username:"", pass:"", email:"", nameError:this.requiredText, emailError:this.requiredText, passError:this.requiredText, matchError:this.requiredText, snackbar:false};
         this.actions = [
             <FlatButton label="Cancel" primary={true} onTouchTap={this.cancel}/>,
             <FlatButton label="Submit" primary={true} onTouchTap={this.submit}/>]
@@ -65,15 +67,18 @@ export default class RegistrationDialog extends React.Component{
     }
 
     cancel(success){
-        this.props.closeAction(success);
+        success===true? this.props.closeAction(success):this.props.closeAction() ;
     }
 
+    snackbarClose(){
+        this.setState({snackbar:false})
+    }
     submit(){
         if (this.state.username!=="" &&
             this.state.pass!=="" &&
             this.state.email!=="" &&
             this.state.matchError==""){
-            CreateUserRequest.send(this.state.username, this.state.pass, this.state.email, ()=>{this.cancel(true)})
+            CreateUserRequest.send(this.state.username, this.state.pass, this.state.email, ()=>{this.cancel(true)}, ()=>{this.setState({snackbar:true})})
         }
     }
 
@@ -91,6 +96,7 @@ export default class RegistrationDialog extends React.Component{
                 <TextField floatingLabelText="Email" fullWidth={true} onChange={this.emailChange} errorText={this.state.emailError}/> <br/>
                 <TextField floatingLabelText="Password" fullWidth={true} onChange={this.passChange} errorText={this.state.passError} type='password'/> <br/>
                 <TextField floatingLabelText="Confirm Password" fullWidth={true} onChange={this.matchChange} errorText={this.state.matchError} type='password'/>
+                <Snackbar message="Invalid Email" open={this.state.snackbar} onRequestClose={this.snackbarClose} autoHideDuration={4000}/>
             </Dialog>
         );
     }
