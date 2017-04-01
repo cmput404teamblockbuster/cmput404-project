@@ -40,7 +40,7 @@ module.exports = {
         const a = require('./Activities');
         const time = a.formatTime(data.created_at);
 
-        return `created a ${data.payload.ref_type} '${data.payload.ref}' at ${a.getURL(data.repo.full_name)} ${time}`
+        return `created a ${data.payload.ref_type} '${data.payload.ref}' at ${a.getURL(data.repo.name)} ${time}`
     },
     /**
      * @return {string}
@@ -49,7 +49,7 @@ module.exports = {
         const a = require('./Activities');
         const time = a.formatTime(data.created_at);
 
-        return `delete a ${data.payload.ref_type} '${data.payload.ref}' at ${a.getURL(data.repo.full_name)} ${time}`
+        return `delete a ${data.payload.ref_type} '${data.payload.ref}' at ${a.getURL(data.repo.name)} ${time}`
     },
     /**
      * @return {string}
@@ -58,7 +58,7 @@ module.exports = {
         const a = require('./Activities');
         const time = a.formatTime(data.created_at);
 
-        return `deployed ${a.getURL(data.repo.full_name)} ${time}`
+        return `deployed ${a.getURL(data.repo.name)} ${time}`
     },
     /**
      * @return {string}
@@ -67,7 +67,7 @@ module.exports = {
         const a = require('./Activities');
         const time = a.formatTime(data.created_at);
 
-        return `changed the deployment status of ${a.getURL(data.repo.full_name)} to ${data.payload.deployment_status.state} ${time}`
+        return `changed the deployment status of ${a.getURL(data.repo.name)} to ${data.payload.deployment_status.state} ${time}`
     },
     /**
      * @return {string}
@@ -124,7 +124,7 @@ module.exports = {
         const time = a.formatTime(data.created_at);
 
         const singleOrPlural = data.payload.pages.length === 1? 'page' : 'pages';
-        return `created/edited ${data.payload.pages.length} Wiki ${singleOrPlural} for ${a.getURL(data.repo.full_name)} ${time}`
+        return `created/edited ${data.payload.pages.length} Wiki ${singleOrPlural} for ${a.getURL(data.repo.name)} ${time}`
     },
     /**
      * @return {string}
@@ -151,7 +151,7 @@ module.exports = {
         const a = require('./Activities');
         const time = a.formatTime(data.created_at);
 
-        return `${data.payload.action} the label '${data.payload.label.name}' of ${a.getURL(data.repo.full_name)} ${time}`
+        return `${data.payload.action} the label '${data.payload.label.name}' of ${a.getURL(data.repo.name)} ${time}`
     },
     /**
      * @return {string}
@@ -160,7 +160,7 @@ module.exports = {
         const a = require('./Activities');
         const time = a.formatTime(data.created_at);
 
-        return `${a.payload.action} [${data.payload.member.login}](${data.payload.member.html_url}) as a collaborator to ${a.getURL(data.repo.full_name)} ${time}`
+        return `${a.payload.action} [${data.payload.member.login}](${data.payload.member.html_url}) as a collaborator to ${a.getURL(data.repo.name)} ${time}`
     },
     /**
      * @return {string}
@@ -232,7 +232,7 @@ module.exports = {
         const a = require('./Activities');
         const time = a.formatTime(data.created_at);
 
-        return `${data.payload.action} project '${data.payload.project.name}' in ${a.getURL(data.repo.full_name)} ${time}`
+        return `${data.payload.action} project '${data.payload.project.name}' in ${a.getURL(data.repo.name)} ${time}`
     },
     /**
      * @return {string}
@@ -241,7 +241,7 @@ module.exports = {
         const a = require('./Activities');
         const time = a.formatTime(data.created_at);
 
-        return `changed ${a.getURL(data.repo.full_name)} to open source ${time}`
+        return `changed ${a.getURL(data.repo.name)} to open source ${time}`
     },
     /**
      * @return {string}
@@ -278,7 +278,7 @@ module.exports = {
         const time = a.formatTime(data.created_at);
 
         const singleOrPlural = data.payload.size===1? "1 commit": data.payload.size+" commits";
-        return `pushed ${singleOrPlural} to ${a.getURL(data.repo.full_name)} ${time}`
+        return `pushed ${singleOrPlural} to ${a.getURL(data.repo.name)} ${time}`
     },
     /**
      * @return {string}
@@ -323,7 +323,7 @@ module.exports = {
         const a = require('./Activities');
         const time = a.formatTime(data.created_at);
 
-        return `added ${a.getURL(data.repo.full_name)} to team '${data.payload.team.name}' ${time}`
+        return `added ${a.getURL(data.repo.name)} to team '${data.payload.team.name}' ${time}`
     },
     /**
      * @return {string}
@@ -332,6 +332,6 @@ module.exports = {
         const a = require('./Activities');
         const time = a.formatTime(data.created_at);
 
-        return `${data.payload.action} starring ${a.getURL(data.repo.full_name)} ${time}`
+        return `${data.payload.action} starring ${a.getURL(data.repo.name)} ${time}`
     },
 };
