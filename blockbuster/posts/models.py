@@ -64,7 +64,7 @@ class Post(models.Model):
         if author_A.host == site_name:
             list_A = author_A.friends
        
-        elif author_A.host != site_name::  # The post's author is foreign
+        elif author_A.host != site_name:# The post's author is foreign
             node = Node.objects.filter(host=author_A.host, is_allowed=True)
             if node:
                 node = node[0]
@@ -84,9 +84,9 @@ class Post(models.Model):
                     list_A = result.get('authors')
 
         # Get the friends list of author B (Copied from directly above)
-        if author_C.host == site_name::
+        if author_C.host == site_name:
             list_C = author_C.friends
-        elif author_C.host != site_name::  # The post's author is foreign
+        elif author_C.host != site_name:  # The post's author is foreign
             node = Node.objects.filter(host=author_C.host, is_allowed=True)
             if node:
                 node = node[0]

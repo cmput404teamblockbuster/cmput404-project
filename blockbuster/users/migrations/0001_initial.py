@@ -14,13 +14,29 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='NewUser',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(editable=False)),
+                ('username', models.CharField(unique=True, max_length=30)),
+                ('email', models.EmailField(max_length=50, blank=True)),
+                ('password', models.CharField(max_length=128)),
+                ('is_accepted', models.BooleanField(default=False, help_text=b'Let this user join blockbuster?')),
+            ],
+            options={
+                'ordering': ('-created',),
+            },
+        ),
+        migrations.CreateModel(
             name='Profile',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('username', models.CharField(default=None, max_length=30, editable=False)),
-                ('github', models.URLField(null=True)),
+                ('github', models.URLField(null=True, blank=True)),
                 ('uuid', models.UUIDField(default=uuid.uuid4, unique=True, editable=False)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('host', models.CharField(default='example.com', max_length=100)),
+                ('bio', models.CharField(max_length=150, null=True, blank=True)),
+                ('user', models.OneToOneField(null=True, blank=True, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(

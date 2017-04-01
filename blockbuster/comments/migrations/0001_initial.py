@@ -20,6 +20,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(null=True, editable=False)),
                 ('body', models.CharField(max_length=500)),
                 ('uuid', models.UUIDField(default=uuid.uuid4, unique=True, editable=False)),
+                ('contentType', models.CharField(default=b'text/plain', max_length=50, choices=[(b'text/markdown', b'text/markdown'), (b'text/plain', b'text/plain'), (b'application/base64', b'application/base64'), (b'image/png;base64', b'image/png;base64'), (b'image/jpeg;base64', b'image/jpeg;base64')])),
                 ('author', models.ForeignKey(to='users.Profile')),
                 ('post', models.ForeignKey(related_name='comments', to='posts.Post')),
             ],
