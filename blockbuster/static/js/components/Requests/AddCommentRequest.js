@@ -13,7 +13,7 @@ module.exports = {
         const url = '/api/posts/'+uuid+'/comments/';
         const comment_data = { author: p3, comment:p1};
         axios.post(url,
-            {"author":p3,comment:comment_data, host:h},
+            {"author":p3,comment:comment_data,contentType:'text/plain', host:h},
             {headers:{
             'X-CSRFToken':csrfToken,
             'Content-Type':'application/json',
