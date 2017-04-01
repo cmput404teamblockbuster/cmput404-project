@@ -2,7 +2,7 @@ import requests
 from posts.api.serializers import PostSerializer
 from posts.models import Post
 from users.models import Profile
-from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED
+from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVATE_TO_FOF
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -29,6 +29,7 @@ class ProfilePostsListView(APIView):
     authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def get(self, request):
+
         # http://www.django-rest-framework.org/tutorial/3-class-based-views/#rewriting-our-api-using-class-based-views
         user = request.user
 
@@ -52,7 +53,6 @@ class ProfilePostsListView(APIView):
                     result = response.json() if response and 199 < response.status_code < 300 else None
                     if not result:
                         continue
-
                     all_posts.extend(result.get('posts'))
                 else:
                     continue
@@ -64,6 +64,14 @@ class ProfilePostsListView(APIView):
         results = mypaginator.paginate_queryset(local_stream, request)
         page = self.request.GET.get('page', 1)
         page_num = self.request.GET.get('size', 1000)
+
+        #sort the posts
+        if len(all_posts) > 1:
+            all_posts.sort(key=lambda k: k['published'], reverse=True)
+        #sort the comments
+        for post in all_posts:
+            if len(post['comments']) > 1:
+                post['comments'].sort(key=lambda k: k['published'], reverse=True)
 
         return Response(OrderedDict([('count', mypaginator.page.paginator.count),
                                      ('current', page),
@@ -98,6 +106,9 @@ class ProfilePostDetailView(APIView):
         for post in users_posts:
             if post.privacy == PRIVACY_PUBLIC or request.user.id in post.viewable_to:  # check if the post is visible to logged in user
                 result.append(post)
+            elif post.privacy == PRIVATE_TO_FOF:
+                if post.viewable_to_FOF(author):
+                    result.append(post)
 
         mypaginator = custom()
         results = mypaginator.paginate_queryset(result, request)
@@ -139,6 +150,10 @@ class ProfilePostDetailView(APIView):
         for post in users_posts:
             if post.privacy == PRIVACY_PUBLIC or request.data.get('requesting_user_uuid') in post.viewable_to:  # check if the post is visible to logged in user
                 result.append(post)
+
+            elif post.privacy == PRIVATE_TO_FOF:
+                if post.viewable_to_FOF(author):
+                    result.append(post)
 
         mypaginator = custom()
         results = mypaginator.paginate_queryset(result, request)
@@ -186,5 +201,13 @@ class AllPublicPostsView(APIView):
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
         serializer = PostSerializer(data, many=True)
         result.extend(serializer.data)
+
+        #sort the posts
+        if len(result) > 1:
+            result.sort(key=lambda k: k['published'], reverse=True)
+        #sort the comments
+        for post in result:
+            if len(post['comments']) > 1:
+                post['comments'].sort(key=lambda k: k['published'], reverse=True)
 
         return Response(status=status.HTTP_200_OK, data=result)
