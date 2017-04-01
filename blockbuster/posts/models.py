@@ -4,6 +4,9 @@ from core.utils import django_choice_options
 from django.utils import timezone
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,contentchoices,text_markdown,text_plain,binary,png,jpeg
+from nodes.models import Node
+from blockbuster import settings
+import requests
 
 
 class Post(models.Model):
@@ -38,28 +41,87 @@ class Post(models.Model):
         elif self.privacy == PRIVATE_TO_ONE_FRIEND:
             return [self.private_to.uuid]
 
-        # doesn't work
-        # elif self.privacy == PRIVATE_TO_FOF:
-        #    canView = []
-        #    for friend in self.author.friends:
-        #        if friend.id not in canView:
-        #            canView.append(friend.id)
-        #        for fof in friend.friends:
-        #            if fof.id not in canView:
-        #                canView.append(fof.id)  
-        #    return canView
-
         elif self.privacy == PRIVATE_TO_ME:
             return [self.author.uuid]
 
         return []
+
+    def viewable_to_FOF(self, author_A):
+        """
+        Checks if the given author is friends of a friend of post's author making 
+        it visible to the author
+        """
+        #print("ATTEMPTING FOF for post with title:", self.title)
+        author_C = self.author
+
+        list_A = None
+        list_C = None
+        author_B = None
+
+        # Get the friends list of author A
+        if author_A.host == settings.SITE_URL:
+            list_A = author_A.friends
+        elif author_A.host != settings.SITE_URL:  # The post's author is foreign
+            node = Node.objects.filter(host=author_A.host, is_allowed=True)
+            if node:
+                node = node[0]
+
+                api_url = '%s%sauthor/%s/friends/' % (author_A.host, node.api_endpoint, author_A.uuid)
+
+                try:
+                    #print("Attempting to retrieve friends of author_A= ", author_A)
+                    response = requests.get(api_url, auth=(
+                        node.username_for_node, node.password_for_node))
+                except requests.ConnectionError:
+                    response = None
+
+                result = response.json() if response and 199 < response.status_code < 300 else None
+                print response.text
+                if (result and result.get('authors') != False):
+                    list_A = result.get('authors')
+
+        # Get the friends list of author B (Copied from directly above)
+        if author_C.host == settings.SITE_URL:
+            list_C = author_C.friends
+        elif author_C.host != settings.SITE_URL:  # The post's author is foreign
+            node = Node.objects.filter(host=author_C.host, is_allowed=True)
+            if node:
+                node = node[0]
+
+                api_url = '%s%sauthor/%s/friends/' % (author_C.host, node.api_endpoint, author_C.uuid)
+
+                try:
+                    #print("Attempting to retrieve friends of author_A= ", author_C)
+                    response = requests.get(api_url, auth=(
+                        node.username_for_node, node.password_for_node))
+                except requests.ConnectionError:
+                    response = None
+
+                result = response.json() if response and 199 < response.status_code < 300 else None
+                print response.text
+                if (result and result.get('authors') != False):
+                    list_C = result.get('authors')
+
+        if (list_A and list_C):
+
+            # Look for author C who is in both lists and verify the friendships
+            for friend in list_A:
+                if friend in list_C:
+                    author_B = friend
+                    #print("found a friend of friend! - ", author_B)
+
+                    #TODO verify the friendship of foreign servers
+
+                    return True
+        return False
+
 
     def viewable_for_author(self, author):
         """
         will check to see if the given author can see the post
         Returns: boolean
         """
-        if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to:
+        if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to or self.viewable_to_FOF(author):
             return True
 
         return False
