@@ -135,7 +135,7 @@ class ProfilePostDetailView(APIView):
         result = []
         try:
             author = Profile.objects.get(uuid=uuid)
-            if author.host != settings.site_name: # if this is a foreign user
+            if author.host != site_name: # if this is a foreign user
                 raise Profile.DoesNotExist
         except Profile.DoesNotExist:
             for node in Node.objects.all():
