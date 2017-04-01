@@ -12,6 +12,8 @@ from collections import OrderedDict
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from nodes.models import Node
 from blockbuster import settings
+from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
+    PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 
 
 class custom(PageNumberPagination):
@@ -83,7 +85,16 @@ class ProfilePostDetailView(APIView):
     def get(self, request, uuid):
         result = []
         author = Profile.objects.get(uuid=uuid)
-        users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
+     
+        filter_server = False
+        request_host = request.get_host()
+        for node in Node.objets.get(is_allowed=True):
+            if request_host in node.host: # check if a server is making the request, could be bypassed if we do not hold a record of the server
+                filter_server= True
+        if filter_server == True:
+            users_posts = Post.objects.filter(author = author, privacy = PRIVACY_SERVER_ONLY)
+        else:
+               users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
         for post in users_posts:
             if post.privacy == PRIVACY_PUBLIC or request.user.id in post.viewable_to:  # check if the post is visible to logged in user
                 result.append(post)
