@@ -8,6 +8,17 @@ import Next from 'material-ui/svg-icons/navigation/chevron-right'
 export default class ListBody extends React.Component{
     constructor(props){
         super(props);
+
+        this.previousPage = this.previousPage.bind(this);
+        this.nextPage = this.nextPage.bind(this);
+    }
+
+    previousPage(){
+        this.props.changePage(false);
+    }
+
+    nextPage(){
+        this.props.changePage(true);
     }
 
     render(){
@@ -18,9 +29,9 @@ export default class ListBody extends React.Component{
                 <ul className="mainList" id="scrollable">
                 {body}
                 </ul>
-                <FlatButton icon={<Last/>} label="Previous" className="previousButton"/>
-                <span style={{padding:'0 11px 0 11px'}} >{this.props.page}</span>
-                <FlatButton icon={<Next/>} label="Next" labelPosition='before' className="nextButton"/>
+                <FlatButton icon={<Last/>} label="Previous" className="previousButton" onTouchTap={this.previousPage}/>
+                {/*<span style={{padding:'0 11px 0 11px'}} >{this.props.page}</span>*/}
+                <FlatButton icon={<Next/>} label="Next" labelPosition='before' className="nextButton" onTouchTap={this.nextPage}/>
             </div>
 
         )

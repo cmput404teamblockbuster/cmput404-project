@@ -1,10 +1,10 @@
 
 module.exports = {
-    send: function (username, password, email, callback) {
-        this.sendPostRequest(username,password,email, callback);
+    send: function (username, password, email, callback, errCallback) {
+        this.sendPostRequest(username,password,email, callback, errCallback);
     },
 
-    sendPostRequest: function (p1,p2, p3, cb) {
+    sendPostRequest: function (p1,p2, p3, cb, errCallback) {
         var cookie = require('react-cookie');
         var axios = require('axios');
         const csrfToken = cookie.load('csrftoken');
@@ -16,6 +16,11 @@ module.exports = {
                 cb();
                 console.log(res);
             })
+            .catch(
+                (err)=>{
+                    errCallback();
+                }
+            )
     },
 
 };

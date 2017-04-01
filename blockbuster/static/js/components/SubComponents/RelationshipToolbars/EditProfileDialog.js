@@ -2,7 +2,8 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField'
-import GetSinglePostRequest from '../../Requests/GetSinglePostRequest'
+import PutProfileRequest from '../../Requests/PutProfileRequest'
+import ExtractIdFromURL from '../../Requests/ExtractIdFromURL'
 
 export default class EditProfileDialog extends React.Component{
     constructor(props){
@@ -13,12 +14,7 @@ export default class EditProfileDialog extends React.Component{
         this.changeGithub = this.changeGithub.bind(this);
         this.changeBio = this.changeBio.bind(this);
 
-        if (this.props.object.github){
-            this.github = this.props.object.github
-        }
-        if (this.props.object.bio){
-            this.bio = this.props.object.bio
-        }
+        this.state = {github:this.props.object.github, bio:this.props.object.bio};
         this.actions = [
             <FlatButton label="Cancel" onTouchTap={this.handleClose}/>,
             <FlatButton label="Submit" onTouchTap={this.handleSubmit}/>
@@ -27,28 +23,33 @@ export default class EditProfileDialog extends React.Component{
     }
 
     changeGithub(event){
-        this.data.github = event.target.value;
+        this.setState({github: event.target.value});
     }
 
     changeBio(event){
-        this.data.bio = event.target.value
+        this.setState({bio:event.target.value})
     }
 
-    handleClose(){
-        this.props.refresh();
-        this.props.closeAction();
+    handleClose(data){
+        this.props.refresh(data);
+        this.props.closeAction(data);
     }
 
     handleSubmit(){
+        const cb = (data)=>{
+            this.handleClose(data);
+        };
 
+
+        PutProfileRequest.put(this.state.github,this.state.bio,ExtractIdFromURL.extract(this.props.object.id),cb)
     }
 
     render(){
         return(
             <Dialog open={true} actions={this.actions} title="Edit Profile" autoScrollBodyContent={true}>
-                <TextField floatingLabelText="GitHub" value={this.github} fullWidth={true} onChange={this.changeGithub}/>
+                <TextField floatingLabelText="GitHub" value={this.state.github} fullWidth={true} onChange={this.changeGithub}/>
                 <br/>
-                <TextField floatingLabelText="Bio" value={this.bio} fullWidth={true} multiLine={true} onChange={this.changeBio}/>
+                <TextField floatingLabelText="Bio" value={this.state.bio} fullWidth={true} multiLine={true} onChange={this.changeBio}/>
             </Dialog>
         )}
 

@@ -28,7 +28,8 @@ profile_list_local = ProfileViewSet.as_view({
     'get': 'list_local'
 })
 profile_detail = ProfileViewSet.as_view({
-    'get': 'retrieve'
+    'get': 'retrieve',
+    'put': 'update'
 })
 post_detail_comments = CommentViewSet.as_view({
     'get': 'list',

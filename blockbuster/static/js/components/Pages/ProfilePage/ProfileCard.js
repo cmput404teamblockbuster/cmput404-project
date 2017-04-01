@@ -17,7 +17,7 @@ export default class ProfileCard extends React.Component {
         super(object, refresh);
         this.getRelationshipWithMe = this.getRelationshipWithMe.bind(this);
         this.changeButton = this.changeButton.bind(this);
-
+        this.afterEditProfile = this.afterEditProfile.bind(this);
         this.state = {
             username: this.props.object['displayName'],
             github: this.props.object['github'] ? this.props.object['github'] : "Don't have one yet",
@@ -28,11 +28,23 @@ export default class ProfileCard extends React.Component {
         this.getRelationshipWithMe();
     }
 
+    afterEditProfile(data){
+        if (data.id){
+            this.setState({
+                username: data['displayName'],
+                github: data['github'] ? data['github'] : "Don't have one yet",
+                bio: data['bio'] ? data['bio'] : "Don't have one yet",
+                host: data['host'],
+                url: data['url']
+            })
+        }
+
+    }
     changeButton(res){
         console.log("profile card, object:",this.props.object);
         console.log(res);
         if (res === "The profile with the given UUID is your own."){
-            this.setState({button: <MyselfToolbar object={this.props.object} refresh={this.props.refresh}/>})
+            this.setState({button: <MyselfToolbar object={this.props.object} refresh={this.afterEditProfile}/>})
         } else if (res === "No Relationship Found."){
             // send Friend Request Button
             this.setState({button: <BefriendToolbar friend={this.props.object} refresh={this.changeButton}/>})
