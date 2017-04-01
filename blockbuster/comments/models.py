@@ -2,7 +2,7 @@ import uuid
 from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from django.utils import timezone
-
+from posts.constants import contentchoices,text_markdown,text_plain,binary,png,jpeg
 
 class Comment(models.Model):
     created = models.DateTimeField(null=True, editable=False)
@@ -10,6 +10,12 @@ class Comment(models.Model):
     body = models.CharField(max_length=500)
     post = models.ForeignKey('posts.Post', null=False, related_name='comments')
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    contentType = models.CharField(
+        max_length=50,
+        choices=contentchoices,
+        default=text_plain,
+    )
+
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
