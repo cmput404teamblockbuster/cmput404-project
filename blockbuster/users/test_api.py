@@ -3,7 +3,7 @@ import unittest
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase, APIClient
 from rest_framework import status
 from django.contrib.auth.models import User
-from users.models import UserRelationship
+from users.models import UserRelationship, NewUser
 from users.constants import RELATIONSHIP_STATUS_PENDING, RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from users.factories import UserModelFactory, BaseUserRelationshipModelFactory, FollowingUserRelationshipModelFactory, FriendsUserRelationshipModelFactory, ProfileModelFactory
 from nodes.factories import NodeModelFactory
@@ -103,12 +103,13 @@ class UserViewTestCase(APITestCase):
         url = '/api/register/'
         # WHEN the request is made
         response = self.client.post(url, data, format='json')
-        user = User.objects.get(username=username)
+        #print("response is: " + str(response))
+        user = NewUser.objects.get(username=username)
         # THEN the user is in the system
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(user.email, email)
-        # AND they have a profile
-        self.assertTrue(user.profile)
+        # AND they have a profile, no they don't, new user who are not approved does not have profiles
+        #self.assertTrue(user.profile)
 
     def test__create_user_with_invalid_email_fails(self):
         # GIVEN a request to create a new user but the email is invalid
