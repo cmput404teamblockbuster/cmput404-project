@@ -2,7 +2,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate, APITestCa
 from users.factories import ProfileModelFactory, UserModelFactory, FriendsUserRelationshipModelFactory
 from rest_framework import status
 from posts.models import Post
-from posts.constants import PRIVACY_PUBLIC, PRIVATE_TO_ME, PRIVATE_TO_ALL_FRIENDS, PRIVACY_UNLISTED, PRIVATE_TO_ONE_FRIEND
+from posts.constants import PRIVACY_PUBLIC, PRIVATE_TO_ME, PRIVATE_TO_ALL_FRIENDS, PRIVACY_UNLISTED, PRIVATE_TO
 from posts.factories import BasePostModelFactory
 
 

@@ -2,7 +2,6 @@ import requests
 from posts.api.serializers import PostSerializer
 from posts.models import Post
 from users.models import Profile
-from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVATE_TO_FOF
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -12,7 +11,7 @@ from collections import OrderedDict
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from nodes.models import Node
 from blockbuster import settings
-from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
+from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 
 from django.contrib.sites.models import Site

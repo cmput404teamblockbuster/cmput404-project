@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 from core.utils import django_choice_options
 from django.utils import timezone
-from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO_ONE_FRIEND, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
+from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
 PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 from nodes.models import Node
 from blockbuster import settings
@@ -19,8 +19,11 @@ class Post(models.Model):
     description = models.CharField(max_length=150, null=True, blank=True)
     created = models.DateTimeField(null=True, editable=False)
     author = models.ForeignKey('users.Profile', related_name='posts')
-    private_to = models.ForeignKey('users.Profile', blank=True, null=True,
-                                   related_name='received_private_posts')  # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
+
+    private_to = models.ManyToManyField('users.Profile',related_name="allowed_author",blank=True)
+
+    
+      # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
     privacy = models.CharField(choices=PRIVACY_TYPE_OPTIONS, max_length='256', default=PRIVACY_PUBLIC)
     content = models.CharField(max_length=1000000, null=True, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -39,8 +42,8 @@ class Post(models.Model):
         if self.privacy == PRIVATE_TO_ALL_FRIENDS:
             return [friend.uuid for friend in self.author.friends]
 
-        elif self.privacy == PRIVATE_TO_ONE_FRIEND:
-            return [self.private_to.uuid]
+        elif self.privacy == PRIVATE_TO:
+            return [author.uuid for author in self.private_to.all()]
 
         elif self.privacy == PRIVATE_TO_ME:
             return [self.author.uuid]
