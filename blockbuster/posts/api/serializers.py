@@ -16,7 +16,7 @@ class PostSerializer(serializers.ModelSerializer):
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices, required=False)
     published = serializers.CharField(source='created', required=False)
-    visibleTo = ProfileSerializer(many=True,required=False)
+    visibleTo = serializers.SlugRelatedField(many=True,read_only=True,slug_field='url')
 
     def validate(self, data):
         data = super(PostSerializer, self).validate(data)
