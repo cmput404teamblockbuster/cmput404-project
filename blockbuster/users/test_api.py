@@ -166,6 +166,53 @@ class UserRelationshipViewTestCase(APITestCase):
         self.assertEqual(response.data.get('query'), 'friends')
         self.assertEqual(len(response.data.get('authors')), len(authed_user.profile.friends))
 
+    def test__post_list_of_users__some_are_friends_success(self):
+        # GIVEN a user has a friend
+        authed_user = UserModelFactory()
+        friend = UserModelFactory()
+        stranger = UserModelFactory()
+        friendship = FriendsUserRelationshipModelFactory(initiator=authed_user.profile, receiver=friend.profile)
+        self.client.force_authenticate(user=authed_user)
+
+        data = dict(
+            query='friends',
+            author=authed_user.profile.api_id,
+            authors=[friend.profile.api_id, stranger.profile.api_id]
+        )
+        # WHEN they request the api to check a list of friends
+        url = '/api/author/%s/friends/' % authed_user.profile.uuid
+
+        response = self.client.post(url, data=data, format='json')
+
+        # THEN the response will contain their friends
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('query'), 'friends')
+        self.assertEqual(response.data.get('author'), authed_user.profile.api_id)
+        self.assertEqual(response.data.get('authors')[0], friend.profile.api_id)
+
+    def test__post_list_of_users__none_are_friends_success(self):
+        # GIVEN a user has a friend
+        authed_user = UserModelFactory()
+        stranger = UserModelFactory()
+        stranger2 = UserModelFactory()
+        self.client.force_authenticate(user=authed_user)
+
+        data = dict(
+            query='friends',
+            author=authed_user.profile.api_id,
+            authors=[stranger2.profile.api_id, stranger.profile.api_id]
+        )
+        # WHEN they request the api to view their friends list
+        url = '/api/author/%s/friends/' % authed_user.profile.uuid
+
+        response = self.client.post(url, data=data, format='json')
+
+        # THEN the response will be successful and no friends will be returned
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('query'), 'friends')
+        self.assertEqual(response.data.get('author'), authed_user.profile.api_id)
+        self.assertEqual(response.data.get('authors'), [])
+
 
 class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
     def test_local_friend_request_creates_friend_request(self):
