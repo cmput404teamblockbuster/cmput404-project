@@ -37,6 +37,7 @@ post_detail_comments = CommentViewSet.as_view({
 })
 author_friends_list = UserRelationshipViewSet.as_view({
     'get': 'list',
+    'post' : 'query',
 })
 author_friend_requests_list = UserRelationshipFriendRequestViewSet.as_view({
     'get': 'list',

@@ -17,7 +17,6 @@ class PostSerializer(serializers.ModelSerializer):
     contentType = serializers.ChoiceField(choices=contentchoices, required=False)
     published = serializers.CharField(source='created', required=False)
     visibleTo = serializers.SlugRelatedField(many=True,read_only=True,slug_field='url', source='private_to')
-    query = serializers.SerializerMethodField('query_type')
 
     def query_type(self, obj):
         return 'posts'
@@ -48,4 +47,4 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('query', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'comments', 'published', 'id', 'visibility', 'visibleTo')  # These fields will be available to the front end
+        fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'comments', 'published', 'id', 'visibility', 'visibleTo')  # These fields will be available to the front end
