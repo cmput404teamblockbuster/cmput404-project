@@ -1,8 +1,7 @@
 import uuid
-from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from django.utils import timezone
-from posts.constants import contentchoices,text_markdown,text_plain,binary,png,jpeg
+from posts.constants import contentchoices, text_markdown, text_plain, binary, png, jpeg
 
 class Comment(models.Model):
     created = models.DateTimeField(null=True, editable=False)

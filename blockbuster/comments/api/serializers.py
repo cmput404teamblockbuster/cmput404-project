@@ -14,7 +14,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('published', 'comment', 'author', 'id') # These fields will be available to the front end
+        fields = ('published', 'comment', 'author', 'id', 'contentType') # These fields will be available to the front end
 
     def validate(self, data):
         data = super(CommentSerializer, self).validate(data)
