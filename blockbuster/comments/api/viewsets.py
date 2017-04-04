@@ -50,7 +50,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 
                     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
                 else:
-                    return Response(status=status.HTTP_401_UNAUTHORIZED, data='Comment from an unaccepted server')
+                    msg = {
+                        "query": "addComment",
+                        "success": False,
+                        "message": "Comment not allowed"
+                    }
+                    return Response(status=status.HTTP_403_FORBIDDEN, data=msg)
 
             try:
                 identifier = data.get('author').get('id').split('/')[-1]

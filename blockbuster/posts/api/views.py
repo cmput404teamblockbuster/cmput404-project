@@ -75,7 +75,8 @@ class ProfilePostsListView(APIView):
             if len(post['comments']) > 1:
                 post['comments'].sort(key=lambda k: k['published'], reverse=True)
 
-        return Response(OrderedDict([('count', mypaginator.page.paginator.count),
+        return Response(OrderedDict([('query', 'posts'),
+                                     ('count', mypaginator.page.paginator.count),
                                      ('current', page),
                                      ('next', mypaginator.get_next_link()),
                                      ('previous', mypaginator.get_previous_link()),
@@ -120,7 +121,8 @@ class ProfilePostDetailView(APIView):
         page_num = self.request.GET.get('size', 1000)
         serializer = PostSerializer(results,
                                     many=True)
-        return Response(OrderedDict([('count', mypaginator.page.paginator.count),
+        return Response(OrderedDict([('query', 'posts'),
+                                     ('count', mypaginator.page.paginator.count),
                                      ('current', page),
                                      ('next', mypaginator.get_next_link()),
                                      ('previous', mypaginator.get_previous_link()),

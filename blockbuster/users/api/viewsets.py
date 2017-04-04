@@ -137,6 +137,12 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
         )
         return Response(data=data, status=status.HTTP_200_OK)
 
+    # def query(self, request, uuid):
+    #     """
+    #     this will check to see if any author uris in the given list is a friend with the requested author
+    #     """
+
+
 
 class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = UserRelationshipSerializer
