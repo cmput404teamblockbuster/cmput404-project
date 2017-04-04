@@ -5,6 +5,20 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
+from rest_framework.pagination import PageNumberPagination
+
+class custom(PageNumberPagination):
+    page_size_query_param = 'size'
+    page_query_param = 'page'
+    def get_paginated_response(self,data):
+        return Response(OrderedDict([('query', 'comments'),
+                                     ('count', self.page.paginator.count),
+                                     ('current', self.page_query_param),
+                                     ('next', self.get_next_link()),
+                                     ('previous', self.get_previous_link()),
+                                     ('size', self.page_size_query_param),
+                                     ('comments', data)])
+                        )
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -34,6 +48,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     permission_classes = (IsAuthenticated,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
+    pagination_class = custom
     lookup_field = 'uuid'
     lookup_value_regex = '[^/]+'
     serializer_class = PostSerializer
