@@ -137,6 +137,33 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
         )
         return Response(data=data, status=status.HTTP_200_OK)
 
+    def query(self, request, uuid):
+        """
+        this will check to see if any author uris in the given list is a friend with the requested author
+        """
+        try:
+            requested_profile = Profile.objects.get(uuid=uuid)
+        except Profile.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND, data="No profile with the given UUID is found on this server.")
+
+        authors_list = request.data.get('authors', None)
+        result_friends_list = []
+        if authors_list:
+            for friend in requested_profile.friends:
+                if friend.api_id in authors_list:
+                    result_friends_list.append(friend.api_id)
+            response_msg = dict(
+                query='friends',
+                author=requested_profile.api_id,
+                authors=result_friends_list
+            )
+            return Response(status=status.HTTP_200_OK, data=response_msg)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='no authors list given.')
+
+
+
+
 
 class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = UserRelationshipSerializer
