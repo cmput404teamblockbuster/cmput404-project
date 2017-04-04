@@ -29,7 +29,7 @@ export default class PostVisibility extends React.Component{
                 <MenuItem value="private_to_fof" primaryText="Share To FoF"/>
 
                 {/* I mean here */}
-                <MenuItem value="private_to_one_friend" primaryText="Share To An Author"/>
+                <MenuItem value="private_to" primaryText="Share To An Author"/>
                 <MenuItem value="privacy_unlisted" primaryText="Sharable Post"/>
             </DropDownMenu>
         );

@@ -10,10 +10,10 @@ module.exports = {
         const csrfToken = cookie.load('csrftoken');
         const userToken ="Token "+localStorage.token;
 
-        const data = p2!=="private_to_one_friend" ?
+        const data = p2!=="private_to" ?
             {author:p3, title:t, description:des, content:p1,contentType:mode,visibility:p2}
             :
-            {author:p3, title:t, description:des,content:p1,contentType:mode,visibility:p2,visibleTo:targetAuthor }
+            {author:p3, title:t, description:des,content:p1,contentType:mode,visibility:p2,visibleTo:[targetAuthor.id] }
         console.log("make post request: ", data);
         axios.post('/api/posts/',
             data,

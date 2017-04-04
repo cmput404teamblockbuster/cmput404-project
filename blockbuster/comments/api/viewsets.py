@@ -31,9 +31,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         serializer = CommentSerializer(data=our_data)
         host = data.get('host')
-        if host in ['http://warm-hollows-14698.herokuapp.com/', 'http://radiant-beyond-17792.herokuapp.com/']:
-            # host += "api/"
-            data = our_data
+        
 
         if serializer.is_valid():
             try:
@@ -43,6 +41,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                 if node:
                     node = node[0]
                     api_url = host + node.api_endpoint + 'posts/' + uuid_input + '/comments/'
+                    print(data)
                     response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
                     if 199 < response.status_code < 300:
                         comment = response.json()

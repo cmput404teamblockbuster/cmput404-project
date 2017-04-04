@@ -41,7 +41,7 @@ export default class MakePost extends React.Component {
     }
 
     changeVisibility(data){
-        if (data === "private_to_one_friend"){
+        if (data === "private_to"){
             this.setState({visibility:data, button: <SelectAuthorButton changeAuthor={this.changeAuthor}/>})
         } else {
             this.author = undefined;
@@ -65,7 +65,7 @@ export default class MakePost extends React.Component {
 
     handleSubmit(){
         if (this.state.content !== ""){
-            if (this.state.visibility === "private_to_one_friend" && this.author){
+            if (this.state.visibility === "private_to" && this.author){
                 // post to one single user TODO: make sure users on other server as well
                 CreatePostRequest.send(this.state.content, this.state.title, this.state.description,
                     this.state.contentType, this.state.visibility, this.afterSubmit, this.author)
