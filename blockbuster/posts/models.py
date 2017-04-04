@@ -82,7 +82,6 @@ class Post(models.Model):
                     response = None
 
                 result = response.json() if response and 199 < response.status_code < 300 else None
-                print response.text
                 if (result and result.get('authors') != False):
                     list_A = result.get('authors')
 
@@ -104,7 +103,6 @@ class Post(models.Model):
                     response = None
 
                 result = response.json() if response and 199 < response.status_code < 300 else None
-                print response.text
                 if (result and result.get('authors') != False):
                     list_C = result.get('authors')
 
