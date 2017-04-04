@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import requests
 import uuid
 from comments.models import Comment
@@ -9,18 +10,18 @@ from rest_framework.response import Response
 from posts.models import Post
 from users.models import Profile
 from nodes.models import Node
-from rest_framwork.pagination import PageNumberPagination
+from rest_framework.pagination import PageNumberPagination
 
 class custom(PageNumberPagination):
     page_size_query_param = 'size'
     page_query_param = 'page'
     def get_paginated_response(self,data):
         return Response(OrderedDict([('count', self.page.paginator.count),
-                                     ('current', page),
+                                     ('current', self.page_query_param),
                                      ('next', self.get_next_link()),
                                      ('previous', self.get_previous_link()),
-                                     ('size', page_num),
-                                     ('posts', data)])
+                                     ('size', self.page_size_query_param),
+                                     ('comments', data)])
                         )
         
 
