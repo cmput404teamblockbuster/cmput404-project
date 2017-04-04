@@ -109,8 +109,15 @@ class Profile(models.Model):
         friends_qs = self.friends
         following_qs = (r.receiver for r in UserRelationship.objects.filter(initiator=self, status__in=[RELATIONSHIP_STATUS_FOLLOWING, RELATIONSHIP_STATUS_PENDING]))
         authors = friends_qs | following_qs
+
     def __str__(self):
         return self.username  # TODO this should be the url of their profile
+
+    def save(self, *args, **kwargs):
+        ''' On save, update host '''
+        if self.host == 'example.com':
+            self.host = site_name
+        return super(Profile, self).save(*args, **kwargs)
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
