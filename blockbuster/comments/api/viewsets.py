@@ -9,7 +9,20 @@ from rest_framework.response import Response
 from posts.models import Post
 from users.models import Profile
 from nodes.models import Node
+from rest_framwork.pagination import PageNumberPagination
 
+class custom(PageNumberPagination):
+    page_size_query_param = 'size'
+    page_query_param = 'page'
+    def get_paginated_response(self,data):
+        return Response(OrderedDict([('count', self.page.paginator.count),
+                                     ('current', page),
+                                     ('next', self.get_next_link()),
+                                     ('previous', self.get_previous_link()),
+                                     ('size', page_num),
+                                     ('posts', data)])
+                        )
+        
 
 class CommentViewSet(viewsets.ModelViewSet):
     """
@@ -24,6 +37,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
+    pagination_class = custom
 
     def create(self, request, uuid_input):
         data = request.data
@@ -31,7 +45,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         serializer = CommentSerializer(data=our_data)
         host = data.get('host')
-        if host in ['http://warm-hollows-14698.herokuapp.com/', 'http://radiant-beyond-17792.herokuapp.com/']:
+        if host in ['http://blockbuster.canadacentral.cloudapp.azure.com']:
             # host += "api/"
             data = our_data
 
