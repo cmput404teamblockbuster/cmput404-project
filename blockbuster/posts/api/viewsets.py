@@ -70,7 +70,10 @@ class PostViewSet(viewsets.ModelViewSet):
         all public posts will be returned for the current server
         """
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
-        serializer = PostSerializer(data, many=True)
+        mypaginator = custom()
+        results = mypaginator.paginate_queryset(data, request)
+        serializer = PostSerializer(results, many=True)
+        
 
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
