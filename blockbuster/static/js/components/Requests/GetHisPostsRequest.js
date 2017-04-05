@@ -12,7 +12,7 @@ module.exports = {
 
         const url = '/api/author/'+id+'/posts/';
 
-        axios.post(url,{requesting_user_uuid:me},
+        axios.get(url,
             {headers:{'X-CSRFToken':csrfToken,'Authorization':userToken}})
             .then((res)=>{
                 cb(res.data);
