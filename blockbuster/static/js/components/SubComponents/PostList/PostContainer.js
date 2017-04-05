@@ -9,6 +9,7 @@ import CommentSection from '../CommentList/CommentSection'
 import NameLink from './NameLink'
 import GetSinglePostRequest from '../../Requests/GetSinglePostRequest'
 import EditPostDialog from './EditPostDialog'
+import moment from 'moment';
 
 export default class PostContainer extends React.Component{
     constructor(object,refresh, me){
@@ -66,7 +67,8 @@ export default class PostContainer extends React.Component{
         return(
             <li>
                 <Card className="textField">
-                    <CardHeader title={<NameLink object={this.props.object['author']}/>} >
+                    <CardHeader title={<NameLink object={this.props.object['author']}/>}
+                                subtitle={<span>{moment(this.props.object['published']).format("h:mm:ss a, MMMM Do YYYY")}</span>}>
                         {this.buttons}
                     </CardHeader>
                     <Divider/>
