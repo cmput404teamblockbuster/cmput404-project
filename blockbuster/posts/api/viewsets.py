@@ -73,7 +73,7 @@ class PostViewSet(viewsets.ModelViewSet):
         mypaginator = custom()
         results = mypaginator.paginate_queryset(data, self.request)
         serializer = PostSerializer(results, many=True)
-
+        
         page = self.request.GET.get('page', 1)
         page_num = self.request.GET.get('size', 1000)
 
