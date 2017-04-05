@@ -16,10 +16,7 @@ class PostSerializer(serializers.ModelSerializer):
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices, required=False)
     published = serializers.CharField(source='created', required=False)
-    visibleTo = serializers.SlugRelatedField(many=True,read_only=True,slug_field='url', source='private_to')
-
-    def query_type(self, obj):
-        return 'posts'
+    visibleTo = serializers.SlugRelatedField(many=True, read_only=True, slug_field='url', source='private_to')
 
     def validate(self, data):
         data = super(PostSerializer, self).validate(data)

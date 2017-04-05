@@ -1,12 +1,15 @@
+import uuid
 from collections import OrderedDict
 from rest_framework import viewsets, status
 from posts.api.serializers import PostSerializer
 from posts.models import Post
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED
+from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVATE_TO
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
+from users.models import Profile
+
 
 class custom(PageNumberPagination):
     page_size_query_param = 'size'
@@ -61,6 +64,13 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = PostSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
+            # manually add visibileTo field
+            # WARNING - we can only handle one visibility to one person!
+            if serializer.data.get('visibility') == PRIVATE_TO:
+                profile = Profile.objects.get(uuid=(data.get('visibleTo')[0].split('/')[-1]))
+                post = Post.objects.filter(content=serializer.data.get('content')).order_by('-created')
+                post[0].private_to.add(profile)
+                post[0].save()
             return Response(status=status.HTTP_201_CREATED, data=serializer.data)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
@@ -73,7 +83,7 @@ class PostViewSet(viewsets.ModelViewSet):
         mypaginator = custom()
         results = mypaginator.paginate_queryset(data, self.request)
         serializer = PostSerializer(results, many=True)
-        
+
         page = self.request.GET.get('page', 1)
         page_num = self.request.GET.get('size', 1000)
 
