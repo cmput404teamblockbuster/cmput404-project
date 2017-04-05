@@ -73,9 +73,18 @@ class PostViewSet(viewsets.ModelViewSet):
         mypaginator = custom()
         results = mypaginator.paginate_queryset(data, self.request)
         serializer = PostSerializer(results, many=True)
-        
 
-        return Response(status=status.HTTP_200_OK, data=serializer.data)
+        page = self.request.GET.get('page', 1)
+        page_num = self.request.GET.get('size', 1000)
+
+        return Response(OrderedDict([('query', 'posts'),
+                                     ('count', mypaginator.page.paginator.count),
+                                     ('current', page),
+                                     ('next', mypaginator.get_next_link()),
+                                     ('previous', mypaginator.get_previous_link()),
+                                     ('size', page_num),
+                                     ('posts', serializer.data)]), status=status.HTTP_200_OK
+                        )
 
     def retrieve(self, *args, **kwargs):
         """
