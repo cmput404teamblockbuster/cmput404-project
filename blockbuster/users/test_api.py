@@ -1,5 +1,7 @@
 import requests
 import unittest
+
+from django.contrib.sites.models import Site
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase, APIClient
 from rest_framework import status
 from django.contrib.auth.models import User
@@ -215,6 +217,17 @@ class UserRelationshipViewTestCase(APITestCase):
 
 
 class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        site = 'http://127.0.0.1:8000/'
+        site_ob = Site.objects.get(domain='example.com')
+        site_ob.domain = site
+        site_ob.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
+
     def test_local_friend_request_creates_friend_request(self):
         # GIVEN an authenticated user makes a friend request for another user
         authed_user = UserModelFactory()
@@ -223,6 +236,7 @@ class UserRelationshipFriendRequestViewSetTestCase(APITestCase):
 
         url = '/api/friendrequest/'
         data = dict(
+            query='friendrequest',
             author=dict(
                 id=authed_user.profile.api_id,
                 displayName=authed_user.profile.username

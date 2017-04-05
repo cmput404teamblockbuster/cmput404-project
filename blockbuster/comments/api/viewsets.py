@@ -16,7 +16,8 @@ class custom(PageNumberPagination):
     page_size_query_param = 'size'
     page_query_param = 'page'
     def get_paginated_response(self,data):
-        return Response(OrderedDict([('count', self.page.paginator.count),
+        return Response(OrderedDict([('query', 'comments'),
+                                     ('count', self.page.paginator.count),
                                      ('current', self.page_query_param),
                                      ('next', self.get_next_link()),
                                      ('previous', self.get_previous_link()),
