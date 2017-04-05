@@ -71,7 +71,7 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
         mypaginator = custom()
-        results = mypaginator.paginate_queryset(data, request)
+        results = mypaginator.paginate_queryset(data, self.request)
         serializer = PostSerializer(results, many=True)
         
 
