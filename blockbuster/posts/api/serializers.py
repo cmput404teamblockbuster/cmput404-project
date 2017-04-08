@@ -56,10 +56,10 @@ class PostSerializer(serializers.ModelSerializer):
 
 
     def paginate_comment(self,obj):
-        print(site_name)
-        comments = urllib2.urlopen(site_name+"api/posts/"+str(obj.uuid)+"/comments?size=5").read()
+        #print(site_name)
+        comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
         
-        print(str(comments))
+        #print(str(comments))
         result = json.loads(comments)
         return [OrderedDict(result)]
      
