@@ -43,19 +43,16 @@ class ProfilePostsListView(APIView):
                 if node:
                     node = node[0]
                     api_url = '%s%sauthor/%s/posts/' % (friend.host, node.api_endpoint, friend.uuid)
-                    # We send a post request to the other server with the requesting users uuid so they know who is wanting info
-                    data = dict(
-                        requesting_user_uuid=str(self.request.user.profile.uuid)
-                    )
                     try:
-                        response = requests.post(api_url, json=data, auth=(
-                        node.username_for_node, node.password_for_node))  # TODO change this back to request.get
+                        response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
                     except requests.ConnectionError:
                         response = None
                     result = response.json() if response and 199 < response.status_code < 300 else None
                     if not result:
                         continue
-                    all_posts.extend(result.get('posts'))
+                    # TODO filter posts to check if viewable to!!
+                    # TODO here!
+                    all_posts.extend(result.get('posts'))  # TODO look here
                 else:
                     continue
 
@@ -88,32 +85,32 @@ class ProfilePostsListView(APIView):
 class ProfilePostDetailView(APIView):
     """
     Lists posts by the specified author that are visible to the requesting user.
-    TODO i think here we want ot return all posts by the specified author, except for server_only posts, if the request is foreign (check site_name)
     """
     permission_classes = (IsAuthenticated,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def get(self, request, uuid):
         result = []
-        author = Profile.objects.get(uuid=uuid)
-     
         filter_server = False
         request_host = request.get_host()
         for node in Node.objects.filter(is_allowed=True):
-            if request_host in node.host: # check if a server is making the request, could be bypassed if we do not hold a record of the server
-                filter_server= True
-        if filter_server == True:
-            users_posts = Post.objects.filter(author=author, privacy=PRIVACY_SERVER_ONLY)
+            if request_host in node.host:  # check if a server is making the request, could be bypassed if we do not hold a record of the server
+                filter_server = True
+
+        try:
+            author = Profile.objects.get(uuid=uuid)
+        except Profile.DoesNotExist:
+            if not filter_server:
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data="No profile with the given UUID is found on this server.")
+
+        if filter_server:
+            result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY) # send them all posts that are NOT server only
         else:
-               users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
-        for post in users_posts:
-            if post.privacy == PRIVACY_PUBLIC or request.user.id in post.viewable_to:  # check if the post is visible to logged in user
-                result.append(post)
-            elif post.privacy == PRIVATE_TO_FOF:
-                if post.viewable_to_FOF(author):
+            users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
+            for post in users_posts:
+                if post.privacy == PRIVACY_PUBLIC or post.viewable_for_author(request.user.profile):  # check if the post is visible to logged in user
                     result.append(post)
-            else:
-                result.append(post)
 
         mypaginator = custom()
         results = mypaginator.paginate_queryset(result, request)
@@ -123,51 +120,6 @@ class ProfilePostDetailView(APIView):
                                     many=True)
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
-                                     ('current', page),
-                                     ('next', mypaginator.get_next_link()),
-                                     ('previous', mypaginator.get_previous_link()),
-                                     ('size', page_num),
-                                     ('posts', serializer.data)])
-                        )
-
-    # TODO likely remove this post
-    def post(self, request, uuid):
-        """
-        exact same as the get request except we return posts visible to the given uuid in the post body
-        """
-        result = []
-        try:
-            author = Profile.objects.get(uuid=uuid)
-            if author.host != site_name: # if this is a foreign user
-                raise Profile.DoesNotExist
-        except Profile.DoesNotExist:
-            for node in Node.objects.all():
-                api_url = '%sauthor/%s/posts/' % (node.host, uuid)
-                try:
-                    data = dict(requesting_user_uuid=request.data.get('requesting_user_uuid')) # TODO change from post to get
-                    response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
-                except requests.ConnectionError:
-                    continue
-                if 199 < response.status_code < 300:
-                    return Response(data=response.json())
-                print response.text
-                continue
-        users_posts = Post.objects.filter(author=author).order_by('-created').exclude(privacy=PRIVACY_UNLISTED)  # get all posts by the specified user
-        for post in users_posts:
-            if post.privacy == PRIVACY_PUBLIC or request.data.get('requesting_user_uuid') in post.viewable_to:  # check if the post is visible to logged in user
-                result.append(post)
-
-            elif post.privacy == PRIVATE_TO_FOF:
-                if post.viewable_to_FOF(author):
-                    result.append(post)
-
-        mypaginator = custom()
-        results = mypaginator.paginate_queryset(result, request)
-        page = self.request.GET.get('page', 1)
-        page_num = self.request.GET.get('size', 1000)
-        serializer = PostSerializer(results,
-                                    many=True)
-        return Response(OrderedDict([('count', mypaginator.page.paginator.count),
                                      ('current', page),
                                      ('next', mypaginator.get_next_link()),
                                      ('previous', mypaginator.get_previous_link()),
