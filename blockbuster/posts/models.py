@@ -52,15 +52,15 @@ class Post(models.Model):
         return []
 
 
-    def __F_verify(self, author_B, author):
+    def __F_verify(self, foreign, local):
         """
         Verifies that the given ids are friends by sending a /author/{author_id}/friends/{author_id}/ request
         """
-        node = Node.objects.filter(host=author_B.host, is_allowed=True)
+        node = Node.objects.filter(host=foreign.host, is_allowed=True)
         if node:
             node = node[0]
 
-            api_url = '%s%sauthor/%s/friends/%s' % (author_B.host, node.api_endpoint, author_B.uuid, author.uuid)
+            api_url = '%s%sauthor/%s/friends/%s' % (foreign.host, node.api_endpoint, foreign.uuid, local.uuid)
 
             try:
                 #print("Attempting to verify friendship between:", author_B, "and", author)
@@ -86,16 +86,15 @@ class Post(models.Model):
 
         #print("FOF verifying author_B:", B)
 
-        if A.host == B.host == C.host == site_name:
-            #print("A.friends:",A.friends, "B.friends:", B.friends)
-            if (A in B.friends) and (C in B.friends):
-                return True
-
         #if B is foreign
-        elif B.host != site_name:
+        if B.host != site_name:
             if self.__F_verify(B, A) == self.__F_verify(B, C) == True:
                 return True
 
+        #if B is local
+        elif B.host == site_name:
+            if (A in B.friends) and (C in B.friends):
+                return True
         return False
 
 
