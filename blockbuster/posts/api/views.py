@@ -47,7 +47,7 @@ class ProfilePostsListView(APIView):
         all_posts = []
         if foreign_request:
             posts = Post.objects.all().exclude(privacy=PRIVACY_SERVER_ONLY)
-            serializer = PostSerializer(posts, many=True)
+            serializer = PostSerializer(posts, many=True, context={'request': request} )
 
         else: # local user making request
             user = request.user
@@ -73,7 +73,7 @@ class ProfilePostsListView(APIView):
                     else:
                         continue
 
-            serializer = PostSerializer(local_stream, many=True)
+            serializer = PostSerializer(local_stream, many=True, context={'request': request} )
         all_posts.extend(serializer.data)
 
         mypaginator = custom()
@@ -146,7 +146,7 @@ class ProfilePostDetailView(APIView):
         page = self.request.GET.get('page', 1)
         page_num = self.request.GET.get('size', 1000)
         serializer = PostSerializer(results,
-                                    many=True)
+                                    many=True, context={'request': request} )
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
                                      ('current', page),
@@ -186,7 +186,7 @@ class AllPublicPostsView(APIView):
 
         # get all local public posts
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
-        serializer = PostSerializer(data, many=True)
+        serializer = PostSerializer(data, many=True, context={'request': request} )
         result.extend(serializer.data)
 
         #sort the posts
