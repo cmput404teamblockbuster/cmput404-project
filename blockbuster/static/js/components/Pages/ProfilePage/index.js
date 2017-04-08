@@ -3,6 +3,7 @@ import ReactDom from 'react-dom'
 import AppWrapper from '../AppWrapper'
 import ProfilePage from './ProfilePage'
 import GetAuthorRequest from '../../Requests/GetAuthorRequest'
+import ExtractIdFromURL from '../../Requests/ExtractIdFromURL'
 import auth from '../../Requests/auth'
 import TopBar from '../TopBar'
 import ActivityList from '../../SubComponents/GitHubActivityList/ActivityList'
@@ -36,8 +37,7 @@ const cb =
 
         // if it is other's uuid
         } else{
-            const array = url.pathname.split('/');
-            const uuid = array[array.length-1];
+            const uuid = ExtractIdFromURL.extract(url.pathname);
             GetAuthorRequest.getHim(uuid,
                 (object)=> {
                     ReactDom.render(<Main object={object}/>,

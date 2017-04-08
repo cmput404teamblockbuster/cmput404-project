@@ -8,7 +8,7 @@ from nodes.models import Node
 from blockbuster import settings
 import requests
 from django.contrib.sites.models import Site
-
+site_name = Site.objects.get_current().domain
 
 
 class Post(models.Model):
@@ -194,6 +194,9 @@ class Post(models.Model):
         will check to see if the given author can see the post
         Returns: boolean
         """
+        if self.privacy == PRIVACY_SERVER_ONLY and author.host == site_name:
+            return True
+
         if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to or self.viewable_to_FOF(author):
             return True
 

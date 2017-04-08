@@ -16,7 +16,7 @@ from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, P
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 
 from django.contrib.sites.models import Site
-from posts.utils import foreign_post_viewable_for_author
+from posts.utils import foreign_post_viewable_for_author, get_foreign_posts_by_author
 
 site_name = Site.objects.get_current().domain
 
@@ -47,7 +47,7 @@ class ProfilePostsListView(APIView):
         all_posts = []
         if foreign_request:
             posts = Post.objects.all().exclude(privacy=PRIVACY_SERVER_ONLY)
-            serializer = PostSerializer(posts, many=True)
+            serializer = PostSerializer(posts, many=True, context={'request': request} )
 
         else: # local user making request
             user = request.user
@@ -65,7 +65,7 @@ class ProfilePostsListView(APIView):
                         result = response.json() if response and 199 < response.status_code < 300 else None
                         if not result:
                             continue
-                            
+
                         # Filter on our own end
                         for post in result.get('posts'):
                             if foreign_post_viewable_for_author(post, request.user.profile):
@@ -73,7 +73,7 @@ class ProfilePostsListView(APIView):
                     else:
                         continue
 
-            serializer = PostSerializer(local_stream, many=True)
+            serializer = PostSerializer(local_stream, many=True, context={'request': request} )
         all_posts.extend(serializer.data)
 
         mypaginator = custom()
@@ -108,22 +108,37 @@ class ProfilePostDetailView(APIView):
 
     def get(self, request, uuid):
         result = []
-        filter_server = False
+        foreign_request = False
         request_host = request.get_host()
         for node in Node.objects.filter(is_allowed=True):
             if request_host in node.host:  # check if a server is making the request, could be bypassed if we do not hold a record of the server
-                filter_server = True
+                foreign_request = True
 
+        foreign_profile = False
         try:
             author = Profile.objects.get(uuid=uuid)
+            if site_name != author.host:
+                foreign_profile = True # Then the uuid given is for a remote author
         except Profile.DoesNotExist:
-            if not filter_server:
+            if foreign_request:
                 return Response(status=status.HTTP_404_NOT_FOUND,
                                 data="No profile with the given UUID is found on this server.")
+            foreign_profile = True # Then the uuid given is for a remote author
 
-        if filter_server:
+        if foreign_request:
             result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY) # send them all posts that are NOT server only
-        else:
+
+        elif foreign_profile:
+            response = get_foreign_posts_by_author(uuid)
+            if not response:
+                return Response(data="Could not find a host with such a UUID profile", status=status.HTTP_404_NOT_FOUND)
+            for post in response:
+                if foreign_post_viewable_for_author(post, self.request.user.profile) or post.get('visibility') in ['PUBLIC']:
+                    result.append(post)
+
+            return Response(data=dict(posts=result), status=status.HTTP_200_OK)
+
+        else: # a local user is requesting posts from a local author
             users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
             for post in users_posts:
                 if post.privacy == PRIVACY_PUBLIC or post.viewable_for_author(request.user.profile):  # check if the post is visible to logged in user
@@ -134,7 +149,7 @@ class ProfilePostDetailView(APIView):
         page = self.request.GET.get('page', 1)
         page_num = self.request.GET.get('size', 1000)
         serializer = PostSerializer(results,
-                                    many=True)
+                                    many=True, context={'request': request} )
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
                                      ('current', page),
@@ -174,7 +189,7 @@ class AllPublicPostsView(APIView):
 
         # get all local public posts
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
-        serializer = PostSerializer(data, many=True)
+        serializer = PostSerializer(data, many=True, context={'request': request} )
         result.extend(serializer.data)
 
         #sort the posts
