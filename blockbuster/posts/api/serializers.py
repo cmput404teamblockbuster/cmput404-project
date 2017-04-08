@@ -5,13 +5,22 @@ from users.api.serializers import ProfileSerializer, CondensedProfileSerializer
 from users.models import Profile
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,contentchoices,text_markdown,text_plain,binary,png,jpeg
+from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.utils.urls import remove_query_param, replace_query_param
+import urllib2
+from collections import OrderedDict
+import json
 
 
+    
+                        
 
 class PostSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
     author = ProfileSerializer(required=False)
-    comments = CommentSerializer(many=True, read_only=True)
+    comments = serializers.SerializerMethodField('paginate_comment')
+
     id = serializers.CharField(source='uuid', required=False)
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices, required=False)
@@ -41,6 +50,14 @@ class PostSerializer(serializers.ModelSerializer):
             author, created = Profile.objects.get_or_create(**author_data)
             validated_data['author'] = author
         return Post.objects.create(**validated_data)
+
+
+    def paginate_comment(self,obj):
+        comments = urllib2.urlopen("http://127.0.0.1:8000/api/posts/"+str(obj.uuid)+"/comments/").read()
+        print(str(comments))
+        result = json.loads(comments)
+        return OrderedDict(result)
+     
 
     class Meta:
         model = Post
