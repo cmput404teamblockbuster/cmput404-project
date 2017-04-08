@@ -10,6 +10,7 @@ import requests
 from django.contrib.sites.models import Site
 
 
+
 class Post(models.Model):
     PRIVACY_TYPE_OPTIONS = django_choice_options(
         PRIVACY_TYPES, 'name')
@@ -39,7 +40,7 @@ class Post(models.Model):
         """
         Returns: a qs of users that the post is viewable to
         """
-        if self.privacy == PRIVATE_TO_ALL_FRIENDS or self.privacy == PRIVACY_SERVER_ONLY:
+        if self.privacy == PRIVATE_TO_ALL_FRIENDS or self.privacy == PRIVACY_SERVER_ONLY or self.privacy == PRIVATE_TO_FOF:
             return [friend.uuid for friend in self.author.friends]
 
         elif self.privacy == PRIVATE_TO:
@@ -50,73 +51,142 @@ class Post(models.Model):
 
         return []
 
+
+    def __F_verify(self, author_B, author):
+        """
+        Verifies that the given ids are friends by sending a /author/{author_id}/friends/{author_id}/ request
+        """
+        node = Node.objects.filter(host=author_B.host, is_allowed=True)
+        if node:
+            node = node[0]
+
+            api_url = '%s%sauthor/%s/friends/%s' % (author_B.host, node.api_endpoint, author_B.uuid, author.uuid)
+
+            try:
+                #print("Attempting to verify friendship between:", author_B, "and", author)
+                response = requests.get(api_url, auth=(
+                    node.username_for_node, node.password_for_node))
+            except requests.ConnectionError:
+                response = None
+
+            result = response.json() if response and 199 < response.status_code < 300 else None
+            if (result and result.get('friends') != False):
+                #print("friendship verified by host:", author_B.host)
+                return result.get('friends')
+
+        return False
+
+
+    def __FOF_verify(self, A, B, C):
+        """
+        Verifies that author B is friends of A and C. B is just the id of the author
+        """
+
+        site_name = Site.objects.get_current().domain
+
+        #print("FOF verifying author_B:", B)
+
+        if A.host == B.host == C.host == site_name:
+            #print("A.friends:",A.friends, "B.friends:", B.friends)
+            if (A in B.friends) and (C in B.friends):
+                return True
+
+        #if B is foreign
+        elif B.host != site_name:
+            if self.__F_verify(B, A) == self.__F_verify(B, C) == True:
+                return True
+
+        return False
+
+
+    def __check_for_FOF(self, local, foreign):
+        """
+        Sends an api POST request to author/{author_id}/friends/ to get a list of common friends
+        """
+        list_local = local.friends
+
+        node = Node.objects.filter(host=foreign.host, is_allowed=True)
+        if node:
+            node = node[0]
+
+            data = dict(
+                query = "friends",
+                author = foreign.api_id,
+                authors = list_local
+            )
+            api_url = '%s%sauthor/%s/friends/' % (foreign.host, node.api_endpoint, foreign.uuid)
+
+            try:
+                #print("Attempting to retrieve common freinds from foreign author= ", foreign)
+                response = requests.post(api_url, json=data, auth=(
+                    node.username_for_node, node.password_for_node))
+            except requests.ConnectionError:
+                response = None
+
+            result = response.json() if response and 199 < response.status_code < 300 else None
+            if (result and result.get('authors') != False):
+                #print("found common friends!:", result.get('authors'))
+                return result.get('authors')
+
+        return []
+
+
+
     def viewable_to_FOF(self, author_A):
         """
         Checks if the given author is friends of a friend of post's author making 
-        it visible to the author
+        it visible to the author. Assumes that the 2 authors are not friends
         """
-        #print("ATTEMPTING FOF for post with title:", self.title)
+
+        if self.privacy != PRIVATE_TO_FOF:
+            return False
+
+        print("FOF ATTEMPTING FOF for post with title:", self.title)
         author_C = self.author
 
-        list_A = None
-        list_C = None
-        author_B = None
+        #list_A = None
+        #list_C = None
+        list_B = None
+        site_name = Site.objects.get_current().domain
 
-        # Get the friends list of author A
-        site_name = Site.objects.get_current().domain 
-        if author_A.host == site_name:
-            list_A = author_A.friends
-       
-        elif author_A.host != site_name:# The post's author is foreign
-            node = Node.objects.filter(host=author_A.host, is_allowed=True)
-            if node:
-                node = node[0]
-
-                api_url = '%s%sauthor/%s/friends/' % (author_A.host, node.api_endpoint, author_A.uuid)
-
-                try:
-                    #print("Attempting to retrieve friends of author_A= ", author_A)
-                    response = requests.get(api_url, auth=(
-                        node.username_for_node, node.password_for_node))
-                except requests.ConnectionError:
-                    response = None
-
-                result = response.json() if response and 199 < response.status_code < 300 else None
-                if (result and result.get('authors') != False):
-                    list_A = result.get('authors')
-
-        # Get the friends list of author B (Copied from directly above)
-        if author_C.host == site_name:
-            list_C = author_C.friends
-        elif author_C.host != site_name:  # The post's author is foreign
-            node = Node.objects.filter(host=author_C.host, is_allowed=True)
-            if node:
-                node = node[0]
-
-                api_url = '%s%sauthor/%s/friends/' % (author_C.host, node.api_endpoint, author_C.uuid)
-
-                try:
-                    #print("Attempting to retrieve friends of author_A= ", author_C)
-                    response = requests.get(api_url, auth=(
-                        node.username_for_node, node.password_for_node))
-                except requests.ConnectionError:
-                    response = None
-
-                result = response.json() if response and 199 < response.status_code < 300 else None
-                if (result and result.get('authors') != False):
-                    list_C = result.get('authors')
-
-        if (list_A and list_C):
-
-            # Look for author C who is in both lists and verify the friendships
-            for friend in list_A:
-                if friend in list_C:
+        # If both are local
+        if author_A.host == site_name and author_C.host == site_name:
+            #print("FOF A and C are local")
+            for friend in author_A.friends:
+                #print("FOF checking if:", friend, "is a common friend by using its id:", friend.api_id)
+                if friend in author_C.friends:
                     author_B = friend
-                    #print("found a friend of friend! - ", author_B)
+                    print("FOF B found!:", author_B, "from host:", author_B.host)
+                    return self.__FOF_verify(author_A, author_B, author_C)
 
-                    #TODO verify the friendship of foreign servers
+        local = None
+        foreign = None
+        if author_A.host == site_name and author_C.host != site_name:
+            list_B = self.__check_for_FOF(author_A, author_C)
+            local = author_A
+            foreign = author_C
 
+        elif author_A.host != site_name and author_C.host == site_name:
+            list_B = self.__check_for_FOF(author_C, author_A)
+            local = author_C
+            foreign = author_A
+
+        else: #both are not local
+            return False
+
+        if len(list_B) < 1:
+            return False
+
+        for author_B in list_B:
+            for friend in local.friends:
+                if author_B == friend.api_id:
+                    author_B = friend
+                    continue
+
+            if(author_B.host):
+                if self.__FOF_verify(local, author_B, foreign):
                     return True
+
         return False
 
 
