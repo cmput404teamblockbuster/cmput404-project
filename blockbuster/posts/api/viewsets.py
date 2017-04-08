@@ -66,7 +66,10 @@ class PostViewSet(viewsets.ModelViewSet):
             # manually add visibileTo field
             # WARNING - we can only handle one visibility to one person!
             if serializer.data.get('visibility') == PRIVATE_TO:
-                profile = Profile.objects.get(uuid=(data.get('visibleTo')[0].split('/')[-1]))
+                identifier = data.get('visibleTo')[0].split('/')[-1]
+                if len(identifier) <= 1:
+                    identifier = data.get('visibleTo')[0].split('/')[-2]
+                profile = Profile.objects.get(uuid=(identifier))
                 post = Post.objects.filter(content=serializer.data.get('content')).order_by('-created')
                 post[0].private_to.add(profile)
                 post[0].save()

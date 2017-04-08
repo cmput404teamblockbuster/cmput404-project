@@ -75,11 +75,22 @@ class CommentViewSet(viewsets.ModelViewSet):
 
             try:
                 identifier = data.get('author').get('id').split('/')[-1]
+                if len(identifier) <= 1:
+                    identifier = data.get('author').get('id').split('/')[-2]
+
                 profile = Profile.objects.get(uuid=identifier)
             except Profile.DoesNotExist:
                 author = data.get('author')
                 profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=author.get('displayName'),
                                                  host=author.get('host'))
+
+            if not post.viewable_for_author(profile):
+                msg = {
+                    "query": "addComment",
+                    "success": False,
+                    "message": "Comment not allowed"
+                }
+                return Response(status=status.HTTP_403_FORBIDDEN, data=msg)
 
             Comment.objects.create(
                 author=profile,
