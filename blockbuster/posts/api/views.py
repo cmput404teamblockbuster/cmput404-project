@@ -1,4 +1,5 @@
 import requests
+from django.contrib.auth.models import User
 from posts.api.serializers import PostSerializer
 from posts.models import Post
 from users.models import Profile
@@ -31,36 +32,50 @@ class ProfilePostsListView(APIView):
     authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def get(self, request):
+        try:
+            foreign_request = False
+            host = request.user.node.host
+            for node in Node.objects.filter(is_allowed=True):
+                if host in node.host:
+                    foreign_request = True
+            if not foreign_request:
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data='Request is from an unaccepted server.')
+        except Node.DoesNotExist:
+            foreign_request = False
 
-        # http://www.django-rest-framework.org/tutorial/3-class-based-views/#rewriting-our-api-using-class-based-views
-        user = request.user
-
-        local_stream, foreign_friend_list = user.profile.get_local_stream_and_foreign_friend_list()
         all_posts = []
-        if foreign_friend_list:
-            for friend in foreign_friend_list:
-                node = Node.objects.filter(host=friend.host, is_allowed=True)
-                if node:
-                    node = node[0]
-                    api_url = '%s%sauthor/%s/posts/' % (friend.host, node.api_endpoint, friend.uuid)
-                    try:
-                        response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
-                    except requests.ConnectionError:
-                        response = None
-                    result = response.json() if response and 199 < response.status_code < 300 else None
-                    if not result:
-                        continue
-                    # TODO filter posts to check if viewable to!!
-                    # TODO here!
-                    all_posts.extend(result.get('posts'))  # TODO look here
-                else:
-                    continue
+        if foreign_request:
+            posts = Post.objects.all().exclude(privacy=PRIVACY_SERVER_ONLY)
+            serializer = PostSerializer(posts, many=True)
 
-        serializer = PostSerializer(local_stream, many=True)
+        else: # local user making request
+            user = request.user
+            local_stream, foreign_friend_list = user.profile.get_local_stream_and_foreign_friend_list()
+            if foreign_friend_list:
+                for friend in foreign_friend_list:
+                    node = Node.objects.filter(host=friend.host, is_allowed=True)
+                    if node:
+                        node = node[0]
+                        api_url = '%s%sauthor/%s/posts/' % (friend.host, node.api_endpoint, friend.uuid)
+                        try:
+                            response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
+                        except requests.ConnectionError:
+                            response = None
+                        result = response.json() if response and 199 < response.status_code < 300 else None
+                        if not result:
+                            continue
+                        print result
+                        # TODO filter posts to check if viewable to!!
+                        # TODO here!
+                        all_posts.extend(result.get('posts'))  # TODO look here
+                    else:
+                        continue
+
+            serializer = PostSerializer(local_stream, many=True)
         all_posts.extend(serializer.data)
 
         mypaginator = custom()
-        results = mypaginator.paginate_queryset(local_stream, request)
+        results = mypaginator.paginate_queryset(all_posts, request)
         page = self.request.GET.get('page', 1)
         page_num = self.request.GET.get('size', 1000)
 
