@@ -127,15 +127,18 @@ class ProfilePostDetailView(APIView):
 
         if foreign_request:
             result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY) # send them all posts that are NOT server only
+
         elif foreign_profile:
             response = get_foreign_posts_by_author(uuid)
-            print response
+            if not response:
+                return Response(data="Could not find a host with such a UUID profile", status=status.HTTP_404_NOT_FOUND)
             for post in response:
-                if foreign_post_viewable_for_author(post, self.request.user.profile) or post.get('visibility') == 'PUBLIC':
+                if foreign_post_viewable_for_author(post, self.request.user.profile) or post.get('visibility') in ['PUBLIC']:
                     result.append(post)
 
             return Response(data=dict(posts=result), status=status.HTTP_200_OK)
-        else:
+
+        else: # a local user is requesting posts from a local author
             users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
             for post in users_posts:
                 if post.privacy == PRIVACY_PUBLIC or post.viewable_for_author(request.user.profile):  # check if the post is visible to logged in user

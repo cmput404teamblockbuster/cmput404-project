@@ -17,7 +17,7 @@ def foreign_post_viewable_for_author(post, profile):
     WARNING: This needs to follow the docs of other groups *precisely* in order to work
     """
     post_viewable_to = post.get('visibleTo')
-    if profile.uuid in post_viewable_to:
+    if post_viewable_to and profile.uuid in post_viewable_to:
         return True
     post_visibility = post.get('visibility')
     post_author = post.get('author')
@@ -47,8 +47,10 @@ def get_foreign_posts_by_author(author_uuid):
     This will search all nodes for posts by the specified author uuid
     WARNING: This will return all posts by the author. You must filter them out yourself
     """
-    # First we look for the host of the user by asking all nodes. The issue is some nodes might have local copies
-    for node in Node.objects.filter(is_allowed=True):
+    host = find_authors_host(author_uuid)
+    if not host:
+        return None
+    for node in Node.objects.filter(host=host, is_allowed=True):
         url = '%sauthor/%s/posts/' % (node.host, author_uuid)
         try:
             response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
@@ -56,10 +58,29 @@ def get_foreign_posts_by_author(author_uuid):
             print ('ERROR: could not connect to host %s' % node.host)
             continue
         if 199 < response.status_code < 300:
-            print url
             try:
                 return response.json().get('posts')
             except AttributeError:
                 return response.json()
         continue
     return None
+
+
+def find_authors_host(author_uuid):
+    """
+    This will search all nodes for the host of a given uuid
+    """
+    # First we look for the host of the user by asking all nodes. The issue is some nodes might have local copies
+    for node in Node.objects.filter(is_allowed=True):
+        url = '%sauthor/%s/' % (node.host, author_uuid)
+        try:
+            response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
+        except requests.ConnectionError:
+            print ('WARNING - could not connect to host %s. Continuing...' % node.host)
+            continue
+        if 199 < response.status_code < 300:
+            host = response.json().get('host')
+            return host
+
+    return None
+
