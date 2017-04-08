@@ -57,7 +57,11 @@ class Profile(models.Model):
         """
         returns a link to the users profile on our website
         """
-        return '%sprofile/%s/' % (str(self.host), str(self.uuid))
+        if self.host[:-4] == 'api/':
+            service = self.host[:-4]
+        else:
+            service = self.host
+        return '%sprofile/%s/' % (str(service), str(self.uuid))
 
     @property
     def api_id(self):

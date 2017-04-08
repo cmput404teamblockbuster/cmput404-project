@@ -1,6 +1,8 @@
+import requests
 from users.models import Profile
 from users.models import UserRelationship
 from users.constants import *
+from nodes.models import Node
 
 
 def foreign_post_viewable_for_author(post, profile):
@@ -38,3 +40,26 @@ def foreign_post_viewable_for_author(post, profile):
         return True
 
     return False
+
+
+def get_foreign_posts_by_author(author_uuid):
+    """
+    This will search all nodes for posts by the specified author uuid
+    WARNING: This will return all posts by the author. You must filter them out yourself
+    """
+    # First we look for the host of the user by asking all nodes. The issue is some nodes might have local copies
+    for node in Node.objects.filter(is_allowed=True):
+        url = '%sauthor/%s/posts/' % (node.host, author_uuid)
+        try:
+            response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
+        except requests.ConnectionError:
+            print ('ERROR: could not connect to host %s' % node.host)
+            continue
+        if 199 < response.status_code < 300:
+            print url
+            try:
+                return response.json().get('posts')
+            except AttributeError:
+                return response.json()
+        continue
+    return None
