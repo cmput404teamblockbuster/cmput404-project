@@ -11,6 +11,9 @@ from rest_framework.utils.urls import remove_query_param, replace_query_param
 import urllib2
 from collections import OrderedDict
 import json
+from django.contrib.sites.models import Site
+
+site_name = Site.objects.get_current().domain
 
 
     
@@ -53,10 +56,12 @@ class PostSerializer(serializers.ModelSerializer):
 
 
     def paginate_comment(self,obj):
-        comments = urllib2.urlopen("http://127.0.0.1:8000/api/posts/"+str(obj.uuid)+"/comments/").read()
+        print(site_name)
+        comments = urllib2.urlopen(site_name+"api/posts/"+str(obj.uuid)+"/comments?size=5").read()
+        
         print(str(comments))
         result = json.loads(comments)
-        return OrderedDict(result)
+        return [OrderedDict(result)]
      
 
     class Meta:
