@@ -18,7 +18,7 @@ module.exports = {
 
     sendPostRequest: function (p1,p2, p3, cb) {
         axios.post('/api/friendrequest/',
-            {"author":p1,"friend":p2,"status":p3},
+            {"author":p1,"friend":p2,"status":p3, query:"friendrequest"},
             {headers:{'X-CSRFToken':csrfToken,'Content-Type':'application/json','Authorization':userToken}})
             .then((res)=>{
                 if(cb != null){
