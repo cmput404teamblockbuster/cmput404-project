@@ -1,4 +1,3 @@
-import uuid
 from collections import OrderedDict
 from rest_framework import viewsets, status
 from posts.api.serializers import PostSerializer

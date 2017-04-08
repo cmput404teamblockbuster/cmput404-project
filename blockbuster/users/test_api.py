@@ -14,7 +14,7 @@ from posts.factories import BasePostModelFactory
 from users.models import Profile
 
 
-class ProfilePostsListView(APITestCase):
+class ProfilePostsListViewTestCase(APITestCase):
     def test_get_stream_success_no_foreign_posts(self):
         # Given a user is authenticated
         authed_user = UserModelFactory()

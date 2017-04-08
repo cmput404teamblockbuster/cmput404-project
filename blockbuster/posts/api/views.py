@@ -43,19 +43,16 @@ class ProfilePostsListView(APIView):
                 if node:
                     node = node[0]
                     api_url = '%s%sauthor/%s/posts/' % (friend.host, node.api_endpoint, friend.uuid)
-                    # We send a post request to the other server with the requesting users uuid so they know who is wanting info
-                    data = dict(
-                        requesting_user_uuid=str(self.request.user.profile.uuid)
-                    )
                     try:
-                        response = requests.post(api_url, json=data, auth=(
-                        node.username_for_node, node.password_for_node))  # TODO change this back to request.get
+                        response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
                     except requests.ConnectionError:
                         response = None
                     result = response.json() if response and 199 < response.status_code < 300 else None
                     if not result:
                         continue
-                    all_posts.extend(result.get('posts'))
+                    # TODO filter posts to check if viewable to!!
+                    # TODO here!
+                    all_posts.extend(result.get('posts'))  # TODO look here
                 else:
                     continue
 
@@ -94,17 +91,19 @@ class ProfilePostDetailView(APIView):
 
     def get(self, request, uuid):
         result = []
-        try:
-            author = Profile.objects.get(uuid=uuid)
-        except Profile.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND,
-                            data="No profile with the given UUID is found on this server.")
-     
         filter_server = False
         request_host = request.get_host()
         for node in Node.objects.filter(is_allowed=True):
-            if request_host in node.host: # check if a server is making the request, could be bypassed if we do not hold a record of the server
+            if request_host in node.host:  # check if a server is making the request, could be bypassed if we do not hold a record of the server
                 filter_server = True
+
+        try:
+            author = Profile.objects.get(uuid=uuid)
+        except Profile.DoesNotExist:
+            if not filter_server:
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data="No profile with the given UUID is found on this server.")
+
         if filter_server:
             result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY) # send them all posts that are NOT server only
         else:
