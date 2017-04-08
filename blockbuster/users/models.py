@@ -57,14 +57,14 @@ class Profile(models.Model):
         """
         returns a link to the users profile on our website
         """
-        return '%sprofile/%s' % (str(self.host), str(self.uuid))
+        return '%sprofile/%s/' % (str(self.host), str(self.uuid))
 
     @property
     def api_id(self):
         """
         returns the url to the api to get the profile data
         """
-        return '%sapi/author/%s' % (str(self.host), str(self.uuid))
+        return '%sauthor/%s/' % (str(self.host), str(self.uuid))
 
     @property
     def friends(self):
