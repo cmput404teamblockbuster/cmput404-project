@@ -16,6 +16,7 @@ from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, P
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 
 from django.contrib.sites.models import Site
+from posts.utils import foreign_post_viewable_for_author
 
 site_name = Site.objects.get_current().domain
 
@@ -64,10 +65,11 @@ class ProfilePostsListView(APIView):
                         result = response.json() if response and 199 < response.status_code < 300 else None
                         if not result:
                             continue
-                        print result
-                        # TODO filter posts to check if viewable to!!
-                        # TODO here!
-                        all_posts.extend(result.get('posts'))  # TODO look here
+                            
+                        # Filter on our own end
+                        for post in result.get('posts'):
+                            if foreign_post_viewable_for_author(post, request.user.profile):
+                                all_posts.append(post)
                     else:
                         continue
 
