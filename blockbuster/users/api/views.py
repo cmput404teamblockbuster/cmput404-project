@@ -121,6 +121,6 @@ class UserRelationshipCheckView(APIView):
         user2 = Profile.objects.get(uuid=uuid_2)
 
         if user2 in user1.friends:
-            return Response(data={'authors': [user1.api_id, user2.api_id], 'friends': True}, status=status.HTTP_200_OK)
+            return Response(data={'query':'friends', 'authors': [user1.api_id, user2.api_id], 'friends': True}, status=status.HTTP_200_OK)
         else:
-            return Response(data={'authors': [user1.api_id, user2.api_id], 'friends': False}, status=status.HTTP_200_OK)
+            return Response(data={'query':'friends', 'authors': [user1.api_id, user2.api_id], 'friends': False}, status=status.HTTP_200_OK)
