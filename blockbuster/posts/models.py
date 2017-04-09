@@ -2,7 +2,7 @@ import uuid
 import datetime
 from django.db import models
 from core.utils import django_choice_options
-from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
+from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVATE, PRIVACY_PRIVATE, PRIVACY_PUBLIC, \
 PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 from nodes.models import Node
 import requests
@@ -42,11 +42,11 @@ class Post(models.Model):
         if self.privacy == PRIVATE_TO_ALL_FRIENDS or self.privacy == PRIVACY_SERVER_ONLY or self.privacy == PRIVATE_TO_FOF:
             return [friend.uuid for friend in self.author.friends]
 
-        elif self.privacy == PRIVATE_TO:
+        elif self.privacy == PRIVACY_PRIVATE:
             array = [author.uuid for author in self.private_to.all()]
             array.append(self.author.uuid)
         #
-        # elif self.privacy == PRIVATE_TO_ME:
+        # elif self.privacy == PRIVACY_PRIVATE:
         #     return [self.author.uuid]
 
         return []
