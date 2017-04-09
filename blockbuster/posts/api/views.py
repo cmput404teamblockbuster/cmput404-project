@@ -81,11 +81,11 @@ class ProfilePostsListView(APIView):
 
         #sort the posts
         if len(all_posts) > 1:
-            all_posts.sort(key=lambda k: k['published'], reverse=True)
+            all_posts.sort(key=lambda k: k.get('published', None), reverse=True)
         #sort the comments
         for post in all_posts:
-            if len(post['comments']) > 1:
-                post['comments'].sort(key=lambda k: k['published'], reverse=True)
+            if len(post.get('comments', None)) > 1:
+                post.get('comments').sort(key=lambda k: k.get('published', None), reverse=True)
 
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
@@ -161,11 +161,11 @@ class ProfilePostDetailView(APIView):
 
         #sort the posts
         if len(serializer.data) > 1:
-            serializer.data.sort(key=lambda k: k['published'], reverse=True)
+            serializer.data.sort(key=lambda k: k.get('published', None), reverse=True)
         #sort the comments
         for post in serializer.data:
-            if len(post['comments']) > 1:
-                post['comments'].sort(key=lambda k: k['published'], reverse=True)
+            if len(post.get('comments', None)) > 1:
+                post.get('comments').sort(key=lambda k: k.get('published', None), reverse=True)
 
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
@@ -211,10 +211,10 @@ class AllPublicPostsView(APIView):
 
         #sort the posts
         if len(result) > 1:
-            result.sort(key=lambda k: k['published'], reverse=True)
+            result.sort(key=lambda k: k.get('published', None), reverse=True)
         #sort the comments
         for post in result:
-            if len(post['comments']) > 1:
-                post['comments'].sort(key=lambda k: k['published'], reverse=True)
+            if len(post.get('comments', None)) > 1:
+                post.get('comments').sort(key=lambda k: k.get('published', None), reverse=True)
 
         return Response(status=status.HTTP_200_OK, data=result)
