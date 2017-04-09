@@ -11,17 +11,19 @@ from posts.models import Post
 from users.models import Profile
 from nodes.models import Node
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.utils.urls import remove_query_param, replace_query_param
 
 class custom(PageNumberPagination):
     page_size_query_param = 'size'
     page_query_param = 'page'
+
     def get_paginated_response(self,data):
         return Response(OrderedDict([('query', 'comments'),
                                      ('count', self.page.paginator.count),
-                                     ('current', self.page_query_param),
+                                     ('current', 1),
                                      ('next', self.get_next_link()),
                                      ('previous', self.get_previous_link()),
-                                     ('size', self.page_size_query_param),
+                                     ('size', 5),
                                      ('comments', data)])
                         )
         
