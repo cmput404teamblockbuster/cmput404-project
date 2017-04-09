@@ -193,7 +193,7 @@ class AllPublicPostsView(APIView):
                 except AttributeError:
                     result.extend(response.json())
             else:
-                print response.status_code,"can not get public posts from node:", host, "with url:", url
+                print response.status_code,"can not get public posts from node:", host, "with url:", url,response.text
 
         # get all local public posts
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
