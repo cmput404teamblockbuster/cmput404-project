@@ -21,6 +21,7 @@ class Post(models.Model):
     author = models.ForeignKey('users.Profile', related_name='posts')
 
     private_to = models.ManyToManyField('users.Profile',related_name="allowed_author",blank=True)
+    unlisted = models.BooleanField(default=False)
 
     
       # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend

@@ -78,9 +78,6 @@ class PostSerializer(serializers.ModelSerializer):
         result = json.loads(comments)
         return OrderedDict(result)['next']
 
-
-     
-
     class Meta:
         model = Post
-        fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 'author','count','size','next', 'comments', 'published', 'id', 'visibility', 'visibleTo')  # These fields will be available to the front end
+        fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 'author','count','size','next', 'comments', 'published', 'id', 'visibility', 'visibleTo', 'unlisted')  # These fields will be available to the front end
