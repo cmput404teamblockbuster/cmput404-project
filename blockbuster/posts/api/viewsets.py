@@ -8,6 +8,7 @@ from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVACY_PRIVATE, P
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
 from users.models import Profile
+
 from nodes.models import Node
 
 
@@ -110,11 +111,12 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         if not user.is_anonymous():
             serializer = PostSerializer(post)
-            if post.privacy != PRIVACY_SERVER_ONLY:
-                if user.node and Node.objects.get(host=user.node.host, is_allowed=True):
+            try:
+                if post.viewable_for_author(user.profile):
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-            if post.viewable_for_author(user.profile):
-                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            except Profile.DoesNotExist:
+                if post.privacy != PRIVACY_SERVER_ONLY:
+                    if Node.objects.get(host=user.node.host, is_allowed=True):
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
         return Response('You do not have permission to see this post.', status=status.HTTP_403_FORBIDDEN)
