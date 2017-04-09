@@ -48,13 +48,14 @@ class CommentViewSet(viewsets.ModelViewSet):
         our_data = request.data.get('comment')
         serializer = CommentSerializer(data=our_data)
         host = data.get('host')
-        if host in ['http://blockbuster.canadacentral.cloudapp.azure.com']:
+        if host in 'http://blockbuster.canadacentral.cloudapp.azure.com/api/':
             # host += "api/"
             data = our_data
 
         if serializer.is_valid():
             try:
                 post = Post.objects.get(uuid=uuid_input)  # Get the post the comment is for
+                data = our_data
             except Post.DoesNotExist:
                 node = Node.objects.filter(host=host, is_allowed=True)
                 if node:
@@ -80,6 +81,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                 if len(identifier) <= 1:
                     identifier = data.get('author').get('id').split('/')[-2]
 
+                # TODO: create a user if it is remote user
                 profile = Profile.objects.get(uuid=identifier)
             except Profile.DoesNotExist:
                 author = data.get('author')
