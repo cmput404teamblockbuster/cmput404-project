@@ -207,6 +207,8 @@ class Post(models.Model):
         ''' On save, update timestamps '''
         if not self.id:
             self.created = timezone.now()
+            self.source = '%sposts/%s/' % (site_name, self.uuid)
+            self.origin = '%sposts/%s/' % (site_name, self.uuid)
         return super(Post, self).save(*args, **kwargs)
 
     def __str__(self):
