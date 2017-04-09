@@ -111,7 +111,12 @@ class ProfilePostDetailView(APIView):
         foreign_request = False
         request_host = request.get_host()
         for node in Node.objects.filter(is_allowed=True):
+            print vars(request.user)
             if request_host in node.host:  # check if a server is making the request, could be bypassed if we do not hold a record of the server
+                foreign_request = True
+
+            elif request.user.is_active: # temp side check for if node. might need to be more secure?
+                print "get to /author/id/posts by node:", request.user
                 foreign_request = True
 
         foreign_profile = False
