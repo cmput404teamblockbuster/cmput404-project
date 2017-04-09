@@ -11,6 +11,7 @@ from urlparse import urlparse
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from nodes.models import Node
 from django.contrib.sites.models import Site
+from users.utils import determine_if_request_from_foundbook
 
 site_name = Site.objects.get_current().domain
 
@@ -162,9 +163,6 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_400_BAD_REQUEST, data='no authors list given.')
 
 
-
-
-
 class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = UserRelationshipSerializer
     model = UserRelationship
@@ -203,8 +201,13 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         must_create_profile = True
         local_initiator = False
         local_receiver = False
+        from_foundbook = determine_if_request_from_foundbook(data)
+
         try:
-            local_author = Profile.objects.get(username=data.get('author').get('displayName'))
+            if from_foundbook:
+                local_author = Profile.objects.get(uuid=data.get('author').get('id'))
+            else:
+                local_author = Profile.objects.get(username=data.get('author').get('displayName'))
             if local_author.host == site_name:
                 local_initiator = True
             else:
@@ -215,7 +218,10 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
             role = 'author'
 
         try:
-            local_friend = Profile.objects.get(username=data.get('friend').get('displayName'))
+            if from_foundbook:
+                local_friend = Profile.objects.get(uuid=data.get('friend').get('id'))
+            else:
+                local_friend = Profile.objects.get(username=data.get('friend').get('displayName'))
             if local_friend.host == site_name:
                 local_receiver = True
             else:
@@ -224,10 +230,11 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         except Profile.DoesNotExist:
             foreign_user = data.get('friend')
             role = 'friend'
+
         if not local_initiator or not local_receiver: # one of the users is from another server
-            url_contents = urlparse(foreign_user.get('id'))
-            host = foreign_user.get('host', foreign_user.get('id')[:foreign_user.get('id').find(url_contents.path) + 1])
-            node = Node.objects.filter(host=host)
+            url_contents = urlparse(foreign_user.get('id')) # TODO this might not always be a url
+            host = foreign_user.get('host', foreign_user.get('id')[:foreign_user.get('id').find(url_contents.path) + 1] if not from_foundbook else None)
+            node = Node.objects.filter(host=host, is_allowed=True)
             if node:  # then we trust their server
                 identifier = url_contents.path.split('/')[-1]
                 if identifier == "":

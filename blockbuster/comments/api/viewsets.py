@@ -62,6 +62,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                 if node:
                     node = node[0]
                     api_url = host + node.api_endpoint + 'posts/' + uuid_input + '/comments/'
+                    print api_url
                     print(data)
                     response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
                     if 199 < response.status_code < 300:

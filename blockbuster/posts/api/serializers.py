@@ -5,9 +5,6 @@ from users.api.serializers import ProfileSerializer, CondensedProfileSerializer
 from users.models import Profile
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVATE, PRIVACY_PRIVATE, PRIVACY_PUBLIC, \
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,contentchoices,text_markdown,text_plain,binary,png,jpeg
-from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.utils.urls import remove_query_param, replace_query_param
 import urllib2
 from collections import OrderedDict
 import json
