@@ -20,9 +20,9 @@ class PostSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
     author = ProfileSerializer(required=False)
     comments = CommentSerializer(many=True, read_only=True)
-    count = serializers.SerializerMethodField()
-    size = serializers.SerializerMethodField()
-    next = serializers.SerializerMethodField()
+    # count = serializers.SerializerMethodField()
+    # size = serializers.SerializerMethodField()
+    # next = serializers.SerializerMethodField()
     id = serializers.CharField(source='uuid', required=False)
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices, required=False)
@@ -77,4 +77,4 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 'author','count','size','next', 'comments', 'published', 'id', 'visibility', 'visibleTo', 'unlisted')  # These fields will be available to the front end
+        fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'comments', 'published', 'id', 'visibility', 'visibleTo', 'unlisted')  # These fields will be available to the front end
