@@ -1,6 +1,6 @@
 import uuid
+import datetime
 from django.db import models
-from django.utils import timezone
 from posts.constants import contentchoices, text_markdown, text_plain, binary, png, jpeg
 
 class Comment(models.Model):
@@ -20,7 +20,7 @@ class Comment(models.Model):
         ''' On save, update timestamps '''
         # http://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add/1737078#1737078 Muhammad Usman
         if not self.id:
-            self.created = timezone.now()
+            self.created = datetime.datetime.now().isoformat()
         return super(Comment, self).save(*args, **kwargs)
 
     def __str__(self):

@@ -1,11 +1,10 @@
 import uuid
+import datetime
 from django.db import models
 from core.utils import django_choice_options
-from django.utils import timezone
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
 PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 from nodes.models import Node
-from blockbuster import settings
 import requests
 from django.contrib.sites.models import Site
 site_name = Site.objects.get_current().domain
@@ -44,10 +43,11 @@ class Post(models.Model):
             return [friend.uuid for friend in self.author.friends]
 
         elif self.privacy == PRIVATE_TO:
-            return [author.uuid for author in self.private_to.all()]
-
-        elif self.privacy == PRIVATE_TO_ME:
-            return [self.author.uuid]
+            array = [author.uuid for author in self.private_to.all()]
+            array.append(self.author.uuid)
+        #
+        # elif self.privacy == PRIVATE_TO_ME:
+        #     return [self.author.uuid]
 
         return []
 
@@ -205,7 +205,9 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
         if not self.id:
-            self.created = timezone.now()
+            self.created = datetime.datetime.now().isoformat()
+            self.source = '%sposts/%s/' % (site_name, self.uuid)
+            self.origin = '%sposts/%s/' % (site_name, self.uuid)
         return super(Post, self).save(*args, **kwargs)
 
     def __str__(self):

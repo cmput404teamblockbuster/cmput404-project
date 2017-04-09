@@ -12,7 +12,7 @@ export default class MakePost extends React.Component {
         // props: refresh: callback function to re-render MyStream
         super(refresh);
 
-        this.state = {content:"", contentType:"text/plain", visibility:"privacy_public", button: false, title:"", description:""};
+        this.state = {content:"", contentType:"text/plain", visibility:"PUBLIC", button: false, title:"", description:""};
         this.author = undefined;
 
         this.changeTitle = this.changeTitle.bind(this);
@@ -41,7 +41,7 @@ export default class MakePost extends React.Component {
     }
 
     changeVisibility(data){
-        if (data === "private_to"){
+        if (data === "PRIVATE"){
             this.setState({visibility:data, button: <SelectAuthorButton changeAuthor={this.changeAuthor}/>})
         } else {
             this.author = undefined;
@@ -65,7 +65,7 @@ export default class MakePost extends React.Component {
 
     handleSubmit(){
         if (this.state.content !== ""){
-            if (this.state.visibility === "private_to" && this.author){
+            if (this.state.visibility === "PRIVATE" && this.author){
                 // post to one single user TODO: make sure users on other server as well
                 CreatePostRequest.send(this.state.content, this.state.title, this.state.description,
                     this.state.contentType, this.state.visibility, this.afterSubmit, this.author)
