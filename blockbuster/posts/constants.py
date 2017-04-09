@@ -1,13 +1,10 @@
-(PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, PRIVACY_PUBLIC, PRIVATE_TO_FOF, PRIVATE_TO_ME, PRIVACY_UNLISTED, PRIVACY_SERVER_ONLY) = (
-    'FRIENDS', 'PRIVATE', 'PUBLIC', 'FOAF', 'PRIVATE',
+(PRIVATE_TO_ALL_FRIENDS, PRIVACY_PUBLIC, PRIVATE_TO_FOF, PRIVACY_PRIVATE, PRIVACY_UNLISTED, PRIVACY_SERVER_ONLY) = (
+    'FRIENDS', 'PUBLIC', 'FOAF', 'PRIVATE',
     'privacy_unlisted', 'SERVERONLY')
 
 PRIVACY_TYPES = {
     PRIVATE_TO_ALL_FRIENDS: {
         'name': 'Friends',
-    },
-    PRIVATE_TO: {
-        'name': 'Specified Users'
     },
     PRIVACY_PUBLIC: {
         'name': 'Public'
@@ -15,8 +12,8 @@ PRIVACY_TYPES = {
     PRIVATE_TO_FOF: {
         'name': 'Friends-of-Friends'
     },
-    PRIVATE_TO_ME: {
-        'name': 'Me'
+    PRIVACY_PRIVATE: {
+        'name': 'Private'
     },
     PRIVACY_UNLISTED: {
         'name': 'Unlisted'

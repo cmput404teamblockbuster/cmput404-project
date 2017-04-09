@@ -10,7 +10,7 @@ module.exports = {
         const csrfToken = cookie.load('csrftoken');
         const userToken ="Token "+localStorage.token;
 
-        const data = p2!=="private_to" ?
+        const data = p2!=="PRIVATE" ?
             {author:p3, title:t, description:des, content:p1,contentType:mode,visibility:p2}
             :
             {author:p3, title:t, description:des,content:p1,contentType:mode,visibility:p2,visibleTo:[targetAuthor.id] }

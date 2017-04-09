@@ -3,7 +3,6 @@ from users.factories import ProfileModelFactory, UserModelFactory
 from rest_framework import status
 from posts.factories import BasePostModelFactory
 from comments.models import Comment
-from posts.constants import PRIVATE_TO_ME
 
 
 class CommentViewSetTestCase(APITestCase):
@@ -48,7 +47,7 @@ class CommentViewSetTestCase(APITestCase):
     # def test__create_comment__unviewable_post_fails(self):
     #     # GIVEN an authenticated user chooses to make a comment on a post that is not viewable to them
     #     post_author = UserModelFactory()
-    #     post_obj = BasePostModelFactory(privacy=PRIVATE_TO_ME, author=post_author.profile)
+    #     post_obj = BasePostModelFactory(privacy=PRIVACY_PRIVATE, author=post_author.profile)
     #     comment_author = UserModelFactory()
     #     self.client.force_authenticate(
     #         user=comment_author)  # http://www.django-rest-framework.org/api-guide/testing/#force_authenticateusernone-tokennone
