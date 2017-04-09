@@ -114,6 +114,10 @@ class ProfilePostDetailView(APIView):
             if request_host in node.host:  # check if a server is making the request, could be bypassed if we do not hold a record of the server
                 foreign_request = True
 
+        if Node.objects.filter(user=request.user, is_allowed=True): # temp side check for if node. might need to be more secure?
+            print "get to /author/id/posts by node:", request.user
+            foreign_request = True
+
         foreign_profile = False
         try:
             author = Profile.objects.get(uuid=uuid)
