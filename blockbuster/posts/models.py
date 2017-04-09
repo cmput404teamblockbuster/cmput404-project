@@ -42,7 +42,7 @@ class Post(models.Model):
         if self.privacy == PRIVATE_TO_ALL_FRIENDS or self.privacy == PRIVATE_TO_FOF:
             return [friend.uuid for friend in self.author.friends]
 
-        if self.privacy == PRIVACY_SERVER_ONLY:
+        elif self.privacy == PRIVACY_SERVER_ONLY:
             viewList = []
             site_name = Site.objects.get_current().domain
             for friend in self.author.friends:
