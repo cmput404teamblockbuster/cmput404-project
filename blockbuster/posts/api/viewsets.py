@@ -4,7 +4,7 @@ from posts.api.serializers import PostSerializer
 from posts.models import Post
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVACY_PRIVATE, PRIVACY_SERVER_ONLY
+from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVACY_PRIVATE, PRIVACY_SERVER_ONLY, png, jpeg
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
 from users.models import Profile
@@ -83,7 +83,20 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         all public posts will be returned for the current server
         """
-        data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
+        # check if it's the remote server
+        if Node.objects.get(user=self.request.user):
+            if Node.objects.get(user=self.request.user, is_allowed=True):
+                print("node, allowed")
+                data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
+                if Node.objects.get(user=self.request.user, is_allowed=True, share_image=False):
+                    print("node, allowed, no pic")
+                    data = data.exclude(contentType=png).exclude(contentType=jpeg)
+            else:
+                print("node, not allowed")
+                data = Post.objects.none() # return empty data if the node is not allowed
+
+        else:
+            data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
         mypaginator = custom()
         results = mypaginator.paginate_queryset(data, self.request)
         serializer = PostSerializer(results, many=True)
