@@ -8,6 +8,7 @@ from nodes.models import Node
 import requests
 from django.contrib.sites.models import Site
 site_name = Site.objects.get_current().domain
+from users.utils import determine_if_foaf
 
 
 class Post(models.Model):
@@ -60,144 +61,6 @@ class Post(models.Model):
 
         return []
 
-
-    def __F_verify(self, foreign, local):
-        """
-        Verifies that the given ids are friends by sending a /author/{author_id}/friends/{author_id}/ request
-        """
-        node = Node.objects.filter(host=foreign.host, is_allowed=True)
-        if node:
-            node = node[0]
-
-            api_url = '%s%sauthor/%s/friends/%s' % (foreign.host, node.api_endpoint, foreign.uuid, local.uuid)
-
-            try:
-                #print("Attempting to verify friendship between:", author_B, "and", author)
-                response = requests.get(api_url, auth=(
-                    node.username_for_node, node.password_for_node))
-            except requests.ConnectionError:
-                response = None
-
-            result = response.json() if response and 199 < response.status_code < 300 else None
-            if (result and result.get('friends') != False):
-                #print("friendship verified by host:", author_B.host)
-                return result.get('friends')
-
-        return False
-
-
-    def __FOAF_verify(self, A, B, C):
-        """
-        Verifies that author B is friends of A and C. B is just the id of the author
-        """
-
-        site_name = Site.objects.get_current().domain
-
-        #print("FOAF verifying author_B:", B)
-
-        #if B is foreign
-        if B.host != site_name:
-            if self.__F_verify(B, A) == self.__F_verify(B, C) == True:
-                return True
-
-        #if B is local
-        elif B.host == site_name:
-            if (A in B.friends) and (C in B.friends):
-                return True
-        return False
-
-
-    def __check_for_FOAF(self, local, foreign):
-        """
-        Sends an api POST request to author/{author_id}/friends/ to get a list of common friends
-        """
-        list_local = local.friends
-
-        node = Node.objects.filter(host=foreign.host, is_allowed=True)
-        if node:
-            node = node[0]
-
-            data = dict(
-                query = "friends",
-                author = foreign.api_id,
-                authors = list_local
-            )
-            api_url = '%s%sauthor/%s/friends/' % (foreign.host, node.api_endpoint, foreign.uuid)
-
-            try:
-                #print("Attempting to retrieve common freinds from foreign author= ", foreign)
-                response = requests.post(api_url, json=data, auth=(
-                    node.username_for_node, node.password_for_node))
-            except requests.ConnectionError:
-                response = None
-
-            result = response.json() if response and 199 < response.status_code < 300 else None
-            if (result and result.get('authors') != False):
-                #print("found common friends!:", result.get('authors'))
-                return result.get('authors')
-
-        return []
-
-
-
-    def viewable_to_FOAF(self, author_A):
-        """
-        Checks if the given author is friends of a friend of post's author making 
-        it visible to the author. Assumes that the 2 authors are not friends
-        """
-
-        if self.privacy != PRIVATE_TO_FOAF:
-            return False
-
-        print("FOAF ATTEMPTING FOAF for post with title:", self.title)
-        author_C = self.author
-
-        #list_A = None
-        #list_C = None
-        list_B = None
-        site_name = Site.objects.get_current().domain
-
-        # If both are local
-        if author_A.host == site_name and author_C.host == site_name:
-            #print("FOAF A and C are local")
-            for friend in author_A.friends:
-                #print("FOAF checking if:", friend, "is a common friend by using its id:", friend.api_id)
-                if friend in author_C.friends:
-                    author_B = friend
-                    print("FOAF B found!:", author_B, "from host:", author_B.host)
-                    return self.__FOAF_verify(author_A, author_B, author_C)
-
-        local = None
-        foreign = None
-        if author_A.host == site_name and author_C.host != site_name:
-            list_B = self.__check_for_FOAF(author_A, author_C)
-            local = author_A
-            foreign = author_C
-
-        elif author_A.host != site_name and author_C.host == site_name:
-            list_B = self.__check_for_FOAF(author_C, author_A)
-            local = author_C
-            foreign = author_A
-
-        else: #both are not local
-            return False
-
-        if len(list_B) < 1:
-            return False
-
-        for author_B in list_B:
-            for friend in local.friends:
-                if author_B == friend.api_id:
-                    author_B = friend
-                    continue
-
-            if(author_B.host):
-                if self.__FOAF_verify(local, author_B, foreign):
-                    return True
-
-        return False
-
-
     def viewable_for_author(self, author):
         """
         will check to see if the given author can see the post
@@ -210,7 +73,7 @@ class Post(models.Model):
             return True
 
         if self.privacy == PRIVATE_TO_FOAF:
-            if self.viewable_to_FOAF(author):
+            if determine_if_foaf(self.author, author):
                 return True
             
             
