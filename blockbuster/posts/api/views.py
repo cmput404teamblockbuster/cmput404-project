@@ -12,7 +12,7 @@ from collections import OrderedDict
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from nodes.models import Node
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVATE, PRIVACY_PRIVATE, PRIVACY_PUBLIC, \
-    PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
+    PRIVATE_TO_FOAF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 from django.contrib.sites.models import Site
 from posts.utils import foreign_post_viewable_for_author, get_foreign_posts_by_author
 
@@ -158,6 +158,15 @@ class ProfilePostDetailView(APIView):
         page_num = self.request.GET.get('size', 1000)
         serializer = PostSerializer(results,
                                     many=True, context={'request': request} )
+
+        #sort the posts
+        if len(serializer.data) > 1:
+            serializer.data.sort(key=lambda k: k['published'], reverse=True)
+        #sort the comments
+        for post in serializer.data:
+            if len(post['comments']) > 1:
+                post['comments'].sort(key=lambda k: k['published'], reverse=True)
+
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
                                      ('current', page),

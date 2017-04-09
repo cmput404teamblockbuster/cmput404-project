@@ -224,7 +224,7 @@ def viewable_to_FOAF(author_A, author_C):
                 identifier = author_B.split('/')[-2]
             author_B = Profile.objects.get(uuid=identifier)
         except Profile.DoesNotExist:
-            print "in-between author of FOF relation apparently does not have a profile"
+            print "in-between author of FOAF relation apparently does not have a profile"
 
         if (author_B.host):
             if FOAF_verify(local, author_B, foreign):
