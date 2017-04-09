@@ -3,7 +3,7 @@ from posts.models import Post
 from comments.api.serializers import CommentSerializer
 from users.api.serializers import ProfileSerializer, CondensedProfileSerializer
 from users.models import Profile
-from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
+from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVATE, PRIVACY_PRIVATE, PRIVACY_PUBLIC, \
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,contentchoices,text_markdown,text_plain,binary,png,jpeg
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
@@ -22,8 +22,10 @@ site_name = Site.objects.get_current().domain
 class PostSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
     author = ProfileSerializer(required=False)
-    # comments = serializers.SerializerMethodField('paginate_comment')
     comments = CommentSerializer(many=True, read_only=True)
+    count = serializers.SerializerMethodField()
+    size = serializers.SerializerMethodField()
+    next = serializers.SerializerMethodField()
     id = serializers.CharField(source='uuid', required=False)
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices, required=False)
@@ -54,16 +56,31 @@ class PostSerializer(serializers.ModelSerializer):
             validated_data['author'] = author
         return Post.objects.create(**validated_data)
 
-
-    def paginate_comment(self,obj):
-        #print(site_name)
+    def get_count(self,obj):
+        print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
         comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
         
         #print(str(comments))
         result = json.loads(comments)
-        return [OrderedDict(result)]
+        return OrderedDict(result)['count']
+    def get_size(self,obj):
+        print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
+        comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
+        
+        #print(str(comments))
+        result = json.loads(comments)
+        return OrderedDict(result)['size']
+    def get_next(self,obj):
+        print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
+        comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
+        
+        #print(str(comments))
+        result = json.loads(comments)
+        return OrderedDict(result)['next']
+
+
      
 
     class Meta:
         model = Post
-        fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'comments', 'published', 'id', 'visibility', 'visibleTo')  # These fields will be available to the front end
+        fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 'author','count','size','next', 'comments', 'published', 'id', 'visibility', 'visibleTo')  # These fields will be available to the front end

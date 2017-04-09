@@ -4,7 +4,7 @@ from posts.api.serializers import PostSerializer
 from posts.models import Post
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVATE_TO
+from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVACY_PRIVATE
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
 from users.models import Profile
@@ -65,7 +65,7 @@ class PostViewSet(viewsets.ModelViewSet):
             serializer.save()
             # manually add visibileTo field
             # WARNING - we can only handle one visibility to one person!
-            if serializer.data.get('visibility') == PRIVATE_TO:
+            if serializer.data.get('visibility') == PRIVACY_PRIVATE:
                 identifier = data.get('visibleTo')[0].split('/')[-1]
                 if len(identifier) <= 1:
                     identifier = data.get('visibleTo')[0].split('/')[-2]

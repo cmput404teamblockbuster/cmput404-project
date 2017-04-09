@@ -1,7 +1,7 @@
 import uuid
+import datetime
 from django.db import models
 from core.utils import django_choice_options
-from django.utils import timezone
 from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDING, \
     RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from posts.models import Post
@@ -26,7 +26,7 @@ class NewUser(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.created = timezone.now()
+            self.created = datetime.datetime.now().isoformat()
         super(NewUser, self).save(*args, **kwargs)
         # if they are accepted and not already created, then we create a new profile for them
         if self.is_accepted and not User.objects.filter(username=self.username):
