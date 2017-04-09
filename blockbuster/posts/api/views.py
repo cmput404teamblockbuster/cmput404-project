@@ -154,6 +154,15 @@ class ProfilePostDetailView(APIView):
         page_num = self.request.GET.get('size', 1000)
         serializer = PostSerializer(results,
                                     many=True, context={'request': request} )
+
+        #sort the posts
+        if len(serializer.data) > 1:
+            serializer.data.sort(key=lambda k: k['published'], reverse=True)
+        #sort the comments
+        for post in serializer.data:
+            if len(post['comments']) > 1:
+                post['comments'].sort(key=lambda k: k['published'], reverse=True)
+
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
                                      ('current', page),
