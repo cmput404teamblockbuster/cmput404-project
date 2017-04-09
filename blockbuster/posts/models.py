@@ -209,7 +209,7 @@ class Post(models.Model):
         if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to :
             return True
 
-        if self.privacy == PRIVACY_TO_FOAF:
+        if self.privacy == PRIVATE_TO_FOAF:
             if self.viewable_to_FOAF(author):
                 return True
             
