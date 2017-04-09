@@ -130,7 +130,11 @@ class ProfilePostDetailView(APIView):
             foreign_profile = True # Then the uuid given is for a remote author
 
         if foreign_request:
-            result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY) # send them all posts that are NOT server only
+            ### TODO: I'm not sure if this will work
+            if Node.objects.filter(user=request.user, share_image=False):
+                result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY).exclude(contentType=png).exclude(contentType=jpeg)
+            else:
+                result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY) # send them all posts that are NOT server only
 
         elif foreign_profile:
             response = get_foreign_posts_by_author(uuid)
