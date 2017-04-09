@@ -44,10 +44,11 @@ class Post(models.Model):
             return [friend.uuid for friend in self.author.friends]
 
         elif self.privacy == PRIVATE_TO:
-            return [author.uuid for author in self.private_to.all()]
-
-        elif self.privacy == PRIVATE_TO_ME:
-            return [self.author.uuid]
+            array = [author.uuid for author in self.private_to.all()]
+            array.append(self.author.uuid)
+        #
+        # elif self.privacy == PRIVATE_TO_ME:
+        #     return [self.author.uuid]
 
         return []
 
