@@ -54,21 +54,21 @@ class PostSerializer(serializers.ModelSerializer):
         return Post.objects.create(**validated_data)
 
     def get_count(self,obj):
-        print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
+        #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
         comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
         
         #print(str(comments))
         result = json.loads(comments)
         return OrderedDict(result)['count']
     def get_size(self,obj):
-        print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
+        #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
         comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
         
         #print(str(comments))
         result = json.loads(comments)
         return OrderedDict(result)['size']
     def get_next(self,obj):
-        print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
+        #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
         comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
         
         #print(str(comments))

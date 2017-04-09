@@ -206,9 +206,14 @@ class Post(models.Model):
         if self.privacy == PRIVACY_SERVER_ONLY and author.host == site_name:
             return True
 
-        if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to or self.viewable_to_FOF(author):
+        if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to :
             return True
 
+        if self.privacy == PRIVACY_TO_FOF:
+            if self.viewable_to_FOF(author):
+                return True
+            
+            
         return False
 
     def save(self, *args, **kwargs):
