@@ -57,23 +57,30 @@ class PostSerializer(serializers.ModelSerializer):
         #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
         comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
         
-        #print(str(comments))
+        # print(str(comments))
+        # print "LOOK ABOVE"
+        # return len(comments)
         result = json.loads(comments)
-        return str(len(OrderedDict(result)['comments']))
+        # print type(result)
+
+        return len(result)
     def get_size(self,obj):
         #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
         comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
         
         #print(str(comments))
-        result = json.loads(comments)
-        return OrderedDict(result)['size']
+        # result = json.loads(comments)
+        # return OrderedDict(result)['size']
+        return 5
+
     def get_next(self,obj):
         #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
         comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
         
-        #print(str(comments))
-        result = json.loads(comments)
-        return OrderedDict(result)['next']
+        # #print(str(comments))
+        # result = json.loads(comments)
+        # return OrderedDict(result)['next']
+        return "http://random.com"
 
     class Meta:
         model = Post

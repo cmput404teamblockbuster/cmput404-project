@@ -43,6 +43,17 @@ class CommentViewSet(viewsets.ModelViewSet):
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     pagination_class = custom
 
+    def list(self, request, *args, **kwargs):
+        from pprint import pprint
+        # pprint(vars(request))
+        # print request.get('parser_context').get('kwargs').get('uuid_input')
+        uuid_input = kwargs.get('uuid_input')
+        print uuid_input
+        serializer = CommentSerializer(Post.objects.get(uuid=uuid_input).comments, many=True)
+        # print serializer.data
+        return Response(data=serializer.data)
+        # return Comment.objects.filter(post=post)
+
     def create(self, request, uuid_input):
         data = request.data
         our_data = request.data.get('comment')
