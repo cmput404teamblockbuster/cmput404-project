@@ -1,4 +1,5 @@
 import requests
+from django.contrib.auth.models import User
 from posts.api.serializers import PostSerializer
 from posts.models import Post
 from users.models import Profile
@@ -10,11 +11,10 @@ from rest_framework.pagination import PageNumberPagination
 from collections import OrderedDict
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from nodes.models import Node
-from blockbuster import settings
-from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
+from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVATE, PRIVACY_PRIVATE, PRIVACY_PUBLIC, \
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
-
 from django.contrib.sites.models import Site
+from posts.utils import foreign_post_viewable_for_author, get_foreign_posts_by_author
 
 site_name = Site.objects.get_current().domain
 
@@ -31,39 +31,51 @@ class ProfilePostsListView(APIView):
     authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def get(self, request):
+        try:
+            foreign_request = False
+            host = request.user.node.host
+            for node in Node.objects.filter(is_allowed=True):
+                if host in node.host:
+                    foreign_request = True
+            if not foreign_request:
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data='Request is from an unaccepted server.')
+        except Node.DoesNotExist:
+            foreign_request = False
 
-        # http://www.django-rest-framework.org/tutorial/3-class-based-views/#rewriting-our-api-using-class-based-views
-        user = request.user
-
-        local_stream, foreign_friend_list = user.profile.get_local_stream_and_foreign_friend_list()
         all_posts = []
-        if foreign_friend_list:
-            for friend in foreign_friend_list:
-                node = Node.objects.filter(host=friend.host, is_allowed=True)
-                if node:
-                    node = node[0]
-                    api_url = '%s%sauthor/%s/posts/' % (friend.host, node.api_endpoint, friend.uuid)
-                    # We send a post request to the other server with the requesting users uuid so they know who is wanting info
-                    data = dict(
-                        requesting_user_uuid=str(self.request.user.profile.uuid)
-                    )
-                    try:
-                        response = requests.post(api_url, json=data, auth=(
-                        node.username_for_node, node.password_for_node))  # TODO change this back to request.get
-                    except requests.ConnectionError:
-                        response = None
-                    result = response.json() if response and 199 < response.status_code < 300 else None
-                    if not result:
-                        continue
-                    all_posts.extend(result.get('posts'))
-                else:
-                    continue
+        if foreign_request:
+            posts = Post.objects.all().exclude(privacy=PRIVACY_SERVER_ONLY)
+            serializer = PostSerializer(posts, many=True, context={'request': request})
 
-        serializer = PostSerializer(local_stream, many=True)
+        else: # local user making request
+            user = request.user
+            local_stream, foreign_friend_list = user.profile.get_local_stream_and_foreign_friend_list()
+            if foreign_friend_list:
+                for friend in foreign_friend_list:
+                    node = Node.objects.filter(host=friend.host, is_allowed=True)
+                    if node:
+                        node = node[0]
+                        api_url = '%s%sauthor/%s/posts/' % (friend.host, node.api_endpoint, friend.uuid)
+                        try:
+                            response = requests.get(api_url, auth=(node.username_for_node, node.password_for_node))
+                        except requests.ConnectionError:
+                            response = None
+                        result = response.json() if response and 199 < response.status_code < 300 else None
+                        if not result:
+                            continue
+
+                        # Filter on our own end
+                        for post in result.get('posts'):
+                            if foreign_post_viewable_for_author(post, request.user.profile):
+                                all_posts.append(post)
+                    else:
+                        continue
+
+            serializer = PostSerializer(local_stream, many=True, context={'request': request} )
         all_posts.extend(serializer.data)
 
         mypaginator = custom()
-        results = mypaginator.paginate_queryset(local_stream, request)
+        results = mypaginator.paginate_queryset(all_posts, request)
         page = self.request.GET.get('page', 1)
         page_num = self.request.GET.get('size', 1000)
 
@@ -88,77 +100,52 @@ class ProfilePostsListView(APIView):
 class ProfilePostDetailView(APIView):
     """
     Lists posts by the specified author that are visible to the requesting user.
-    TODO i think here we want ot return all posts by the specified author, except for server_only posts, if the request is foreign (check site_name)
     """
     permission_classes = (IsAuthenticated,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
 
     def get(self, request, uuid):
         result = []
-        author = Profile.objects.get(uuid=uuid)
-     
-        filter_server = False
-        request_host = request.get_host()
+        foreign_request = False
+        request_host = request.get_host() #TODO: note this get_host() is giving back our own host, not the requesting user's host???
+        # see: https://docs.python.org/3.3/library/urllib.request.html
         for node in Node.objects.filter(is_allowed=True):
-            if request_host in node.host: # check if a server is making the request, could be bypassed if we do not hold a record of the server
-                filter_server= True
-        if filter_server == True:
-            users_posts = Post.objects.filter(author=author, privacy=PRIVACY_SERVER_ONLY)
-        else:
-               users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
-        for post in users_posts:
-            if post.privacy == PRIVACY_PUBLIC or request.user.id in post.viewable_to:  # check if the post is visible to logged in user
-                result.append(post)
-            elif post.privacy == PRIVATE_TO_FOF:
-                if post.viewable_to_FOF(author):
-                    result.append(post)
-            else:
-                result.append(post)
+            if request_host in node.host:  # check if a server is making the request, could be bypassed if we do not hold a record of the server
+                foreign_request = True
 
-        mypaginator = custom()
-        results = mypaginator.paginate_queryset(result, request)
-        page = self.request.GET.get('page', 1)
-        page_num = self.request.GET.get('size', 1000)
-        serializer = PostSerializer(results,
-                                    many=True)
-        return Response(OrderedDict([('query', 'posts'),
-                                     ('count', mypaginator.page.paginator.count),
-                                     ('current', page),
-                                     ('next', mypaginator.get_next_link()),
-                                     ('previous', mypaginator.get_previous_link()),
-                                     ('size', page_num),
-                                     ('posts', serializer.data)])
-                        )
+        # this will also make sure that team8's host is filtered out
+        if Node.objects.filter(user=request.user, is_allowed=True): # temp side check for if node. might need to be more secure?
+            print "get to /author/id/posts by node:", request.user
+            foreign_request = True
 
-    # TODO likely remove this post
-    def post(self, request, uuid):
-        """
-        exact same as the get request except we return posts visible to the given uuid in the post body
-        """
-        result = []
+        foreign_profile = False
         try:
             author = Profile.objects.get(uuid=uuid)
-            if author.host != site_name: # if this is a foreign user
-                raise Profile.DoesNotExist
+            if site_name != author.host:
+                foreign_profile = True # Then the uuid given is for a remote author
         except Profile.DoesNotExist:
-            for node in Node.objects.all():
-                api_url = '%sauthor/%s/posts/' % (node.host, uuid)
-                try:
-                    data = dict(requesting_user_uuid=request.data.get('requesting_user_uuid')) # TODO change from post to get
-                    response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
-                except requests.ConnectionError:
-                    continue
-                if 199 < response.status_code < 300:
-                    return Response(data=response.json())
-                print response.text
-                continue
-        users_posts = Post.objects.filter(author=author).order_by('-created').exclude(privacy=PRIVACY_UNLISTED)  # get all posts by the specified user
-        for post in users_posts:
-            if post.privacy == PRIVACY_PUBLIC or request.data.get('requesting_user_uuid') in post.viewable_to:  # check if the post is visible to logged in user
-                result.append(post)
+            if foreign_request:
+                return Response(status=status.HTTP_404_NOT_FOUND,
+                                data="No profile with the given UUID is found on this server.")
+            foreign_profile = True # Then the uuid given is for a remote author
 
-            elif post.privacy == PRIVATE_TO_FOF:
-                if post.viewable_to_FOF(author):
+        if foreign_request:
+            result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY) # send them all posts that are NOT server only
+
+        elif foreign_profile:
+            response = get_foreign_posts_by_author(uuid)
+            if not response:
+                return Response(data="Could not find a host with such a UUID profile", status=status.HTTP_404_NOT_FOUND)
+            for post in response:
+                if foreign_post_viewable_for_author(post, self.request.user.profile) or post.get('visibility') in ['PUBLIC']:
+                    result.append(post)
+
+            return Response(data=dict(posts=result), status=status.HTTP_200_OK)
+
+        else: # a local user is requesting posts from a local author
+            users_posts = Post.objects.filter(author=author).order_by('-created')  # get all posts by the specified user
+            for post in users_posts:
+                if post.privacy == PRIVACY_PUBLIC or post.viewable_for_author(request.user.profile):  # check if the post is visible to logged in user
                     result.append(post)
 
         mypaginator = custom()
@@ -166,8 +153,9 @@ class ProfilePostDetailView(APIView):
         page = self.request.GET.get('page', 1)
         page_num = self.request.GET.get('size', 1000)
         serializer = PostSerializer(results,
-                                    many=True)
-        return Response(OrderedDict([('count', mypaginator.page.paginator.count),
+                                    many=True, context={'request': request} )
+        return Response(OrderedDict([('query', 'posts'),
+                                     ('count', mypaginator.page.paginator.count),
                                      ('current', page),
                                      ('next', mypaginator.get_next_link()),
                                      ('previous', mypaginator.get_previous_link()),
@@ -205,7 +193,7 @@ class AllPublicPostsView(APIView):
 
         # get all local public posts
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
-        serializer = PostSerializer(data, many=True)
+        serializer = PostSerializer(data, many=True, context={'request': request} )
         result.extend(serializer.data)
 
         #sort the posts

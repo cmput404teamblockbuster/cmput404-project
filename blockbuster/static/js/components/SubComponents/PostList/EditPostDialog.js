@@ -39,7 +39,7 @@ export default class EditPostDialog extends React.Component{
     }
 
     changeVisibility(data){
-        if (data === "private_to"){
+        if (data === "PRIVATE"){
             this.setState({visibility:data, button: <SelectAuthorButton changeAuthor={this.changeAuthor}/>})
         } else {
             this.setState({visibility:data, button:false});

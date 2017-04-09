@@ -4,9 +4,13 @@ from posts.api.serializers import PostSerializer
 from posts.models import Post
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED
+from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVACY_PRIVATE, PRIVACY_SERVER_ONLY
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
+from users.models import Profile
+
+from nodes.models import Node
+
 
 class custom(PageNumberPagination):
     page_size_query_param = 'size'
@@ -61,6 +65,16 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = PostSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
+            # manually add visibileTo field
+            # WARNING - we can only handle one visibility to one person!
+            if serializer.data.get('visibility') == PRIVACY_PRIVATE:
+                identifier = data.get('visibleTo')[0].split('/')[-1]
+                if len(identifier) <= 1:
+                    identifier = data.get('visibleTo')[0].split('/')[-2]
+                profile = Profile.objects.get(uuid=(identifier))
+                post = Post.objects.filter(content=serializer.data.get('content')).order_by('-created')
+                post[0].private_to.add(profile)
+                post[0].save()
             return Response(status=status.HTTP_201_CREATED, data=serializer.data)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
@@ -96,8 +110,13 @@ class PostViewSet(viewsets.ModelViewSet):
             serializer = PostSerializer(post)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         if not user.is_anonymous():
-            if post.viewable_for_author(user.profile):
-                serializer = PostSerializer(post)
-                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            serializer = PostSerializer(post)
+            try:
+                if post.viewable_for_author(user.profile):
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+            except Profile.DoesNotExist: # Then its a node requesting it
+                if post.privacy != PRIVACY_SERVER_ONLY:
+                    if Node.objects.get(host=user.node.host, is_allowed=True):
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
         return Response('You do not have permission to see this post.', status=status.HTTP_403_FORBIDDEN)

@@ -1,10 +1,30 @@
+import requests
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase, APIClient
 from users.factories import ProfileModelFactory, UserModelFactory, FriendsUserRelationshipModelFactory
 from rest_framework import status
 from posts.models import Post
-from posts.constants import PRIVACY_PUBLIC, PRIVATE_TO_ME, PRIVATE_TO_ALL_FRIENDS, PRIVACY_UNLISTED, PRIVATE_TO
+from posts.constants import PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVATE_TO_ALL_FRIENDS, PRIVACY_UNLISTED, PRIVACY_SERVER_ONLY
 from posts.factories import BasePostModelFactory
 
+from nodes.factories import NodeModelFactory
+
+
+class ProfilePostDetailViewTestCase(APITestCase):
+    client = APIClient
+
+    def test__author_posts_from_requesting_node_gives_all_posts_but_server_only_success(self):
+        # GIVEN a bunch of posts by a given author
+        author = UserModelFactory()
+        post = BasePostModelFactory(privacy=PRIVACY_PRIVATE, author=author.profile)
+        post_public = BasePostModelFactory(privacy=PRIVACY_PUBLIC, author=author.profile)
+        post_server = BasePostModelFactory(privacy=PRIVACY_SERVER_ONLY, author=author.profile)
+
+        # WHEN a foreign Node requests this users page
+        user = UserModelFactory(username='test_node', password='test_node')
+        node = NodeModelFactory(user=user)
+        url = 'http://127.0.0.1:9000/api/author/9b6d50c4-011a-4753-954c-30ac73b62d81/posts/' # taylor's profile
+        response = requests.get(url, auth=('test_node', 'test'))
+        print response.text
 
 class PostViewSetTestCase(APITestCase):
     client = APIClient()
@@ -39,7 +59,7 @@ class PostViewSetTestCase(APITestCase):
         # GIVEN an unauthed user
         user = UserModelFactory()
         user2 = UserModelFactory()
-        post = BasePostModelFactory(privacy=PRIVATE_TO_ME, author=user.profile)
+        post = BasePostModelFactory(privacy=PRIVACY_PRIVATE, author=user.profile)
         self.client.force_authenticate(user=user2)
 
 
@@ -136,7 +156,7 @@ class PostViewSetTestCase(APITestCase):
         self.assertEquals(Post.objects.all()[0].privacy, PRIVACY_PUBLIC)
 
         data = dict(
-            visibility = PRIVATE_TO_ME
+            visibility = PRIVACY_PRIVATE
         )
         # WHEN we try to update the post with a new status
         url = '/api/posts/%s/' % post.uuid
@@ -145,7 +165,7 @@ class PostViewSetTestCase(APITestCase):
         # THEN the post should be updated
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Post.objects.all().count(), 1)
-        self.assertEqual(Post.objects.all()[0].privacy, PRIVATE_TO_ME)
+        self.assertEqual(Post.objects.all()[0].privacy, PRIVACY_PRIVATE)
 
     # def test__update_post_to_private_to_success(self):
     #     # GIVEN a post
@@ -175,3 +195,20 @@ class PostViewSetTestCase(APITestCase):
     #     self.assertEqual(Post.objects.all()[0].privacy, PRIVATE_TO_ONE_FRIEND)
     #     self.assertEqual(Post.objects.all()[0].private_to, author2.profile)
 
+"""
+{"query": "posts", "count": 2, "current": 1, "next": null, "previous": null, "size": 1000, "posts": [
+    {"title": "newer post", "source": null, "origin": null, "description": "", "contentType": "text/plain",
+     "content": "newer post",
+     "author": {"id": "http://127.0.0.1:8000/api/author/9b6d50c4-011a-4753-954c-30ac73b62d81", "displayName": "taylor",
+                "github": "http://www.github.com/tdarnett/", "host": "http://127.0.0.1:8000/",
+                "url": "http://127.0.0.1:8000/profile/9b6d50c4-011a-4753-954c-30ac73b62d81",
+                "bio": "This is my bio :)"}, "comments": [], "published": "2017-04-04 17:39:12.628290+00:00",
+     "id": "554e8c73-c8b4-4b2f-abc5-3cc0e98f0f22", "visibility": "privacy_public", "visibleTo": []},
+    {"title": "This is a post title", "source": null, "origin": null, "description": "this is a description",
+     "contentType": "text/plain", "content": "This is the post content!",
+     "author": {"id": "http://127.0.0.1:8000/api/author/9b6d50c4-011a-4753-954c-30ac73b62d81", "displayName": "taylor",
+                "github": "http://www.github.com/tdarnett/", "host": "http://127.0.0.1:8000/",
+                "url": "http://127.0.0.1:8000/profile/9b6d50c4-011a-4753-954c-30ac73b62d81",
+                "bio": "This is my bio :)"}, "comments": [], "published": "2017-04-04 15:12:16.470331+00:00",
+     "id": "ef73e05b-fa85-458e-b2cb-ad3bbc848e2a", "visibility": "privacy_public", "visibleTo": []}]}
+"""
