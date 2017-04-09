@@ -54,9 +54,7 @@ class Post(models.Model):
         elif self.privacy == PRIVACY_PRIVATE:
             array = [author.uuid for author in self.private_to.all()]
             array.append(self.author.uuid)
-        #
-        # elif self.privacy == PRIVACY_PRIVATE:
-        #     return [self.author.uuid]
+            return array
 
         return []
 
@@ -206,7 +204,7 @@ class Post(models.Model):
         if self.privacy == PRIVACY_SERVER_ONLY and author.host == site_name:
             return True
 
-        if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to :
+        if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to:
             return True
 
         if self.privacy == PRIVATE_TO_FOAF:
