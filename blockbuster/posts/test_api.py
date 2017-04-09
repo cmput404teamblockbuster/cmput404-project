@@ -3,7 +3,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate, APITestCa
 from users.factories import ProfileModelFactory, UserModelFactory, FriendsUserRelationshipModelFactory
 from rest_framework import status
 from posts.models import Post
-from posts.constants import PRIVACY_PUBLIC, PRIVATE_TO_ME, PRIVATE_TO_ALL_FRIENDS, PRIVACY_UNLISTED, PRIVATE_TO, PRIVACY_SERVER_ONLY
+from posts.constants import PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVATE_TO_ALL_FRIENDS, PRIVACY_UNLISTED, PRIVACY_SERVER_ONLY
 from posts.factories import BasePostModelFactory
 
 from nodes.factories import NodeModelFactory
@@ -15,7 +15,7 @@ class ProfilePostDetailViewTestCase(APITestCase):
     def test__author_posts_from_requesting_node_gives_all_posts_but_server_only_success(self):
         # GIVEN a bunch of posts by a given author
         author = UserModelFactory()
-        post = BasePostModelFactory(privacy=PRIVATE_TO_ME, author=author.profile)
+        post = BasePostModelFactory(privacy=PRIVACY_PRIVATE, author=author.profile)
         post_public = BasePostModelFactory(privacy=PRIVACY_PUBLIC, author=author.profile)
         post_server = BasePostModelFactory(privacy=PRIVACY_SERVER_ONLY, author=author.profile)
 
@@ -59,7 +59,7 @@ class PostViewSetTestCase(APITestCase):
         # GIVEN an unauthed user
         user = UserModelFactory()
         user2 = UserModelFactory()
-        post = BasePostModelFactory(privacy=PRIVATE_TO_ME, author=user.profile)
+        post = BasePostModelFactory(privacy=PRIVACY_PRIVATE, author=user.profile)
         self.client.force_authenticate(user=user2)
 
 
@@ -156,7 +156,7 @@ class PostViewSetTestCase(APITestCase):
         self.assertEquals(Post.objects.all()[0].privacy, PRIVACY_PUBLIC)
 
         data = dict(
-            visibility = PRIVATE_TO_ME
+            visibility = PRIVACY_PRIVATE
         )
         # WHEN we try to update the post with a new status
         url = '/api/posts/%s/' % post.uuid
@@ -165,7 +165,7 @@ class PostViewSetTestCase(APITestCase):
         # THEN the post should be updated
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Post.objects.all().count(), 1)
-        self.assertEqual(Post.objects.all()[0].privacy, PRIVATE_TO_ME)
+        self.assertEqual(Post.objects.all()[0].privacy, PRIVACY_PRIVATE)
 
     # def test__update_post_to_private_to_success(self):
     #     # GIVEN a post

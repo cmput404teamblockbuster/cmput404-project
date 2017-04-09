@@ -3,7 +3,7 @@ from posts.models import Post
 from comments.api.serializers import CommentSerializer
 from users.api.serializers import ProfileSerializer, CondensedProfileSerializer
 from users.models import Profile
-from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, PRIVATE_TO_ME, PRIVACY_PUBLIC, \
+from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVATE, PRIVACY_PRIVATE, PRIVACY_PUBLIC, \
     PRIVATE_TO_FOF, PRIVACY_UNLISTED,contentchoices,text_markdown,text_plain,binary,png,jpeg
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination

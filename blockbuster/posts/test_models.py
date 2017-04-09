@@ -19,7 +19,7 @@ class PostModelTestCase(TestCase):
         receiver2 = UserModelFactory()
         author = UserModelFactory()
         # AND a post is made that is viewable to one specific person
-        post = BasePostModelFactory(author=author.profile, privacy=PRIVATE_TO)  # i did User.profile because the post expects a Profile() instance instead of a User() instance. Ill come up with a better solution later.
+        post = BasePostModelFactory(author=author.profile, privacy=PRIVACY_PRIVATE)  # i did User.profile because the post expects a Profile() instance instead of a User() instance. Ill come up with a better solution later.
         post.private_to.add(receiver.profile)
         post.private_to.add(receiver2.profile)
         # print post.viewable_to feel free debug using print statements like this
@@ -39,7 +39,7 @@ class PostModelTestCase(TestCase):
 
     def test__viewable_to_self(self):
         author = UserModelFactory()
-        post = BasePostModelFactory(author=author.profile, privacy=PRIVATE_TO_ME)
+        post = BasePostModelFactory(author=author.profile, privacy=PRIVACY_PRIVATE)
 
         self.assertEqual(len(post.viewable_to), 1)
         self.assertEqual(post.viewable_to[0], author.profile.uuid)
