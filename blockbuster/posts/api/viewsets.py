@@ -114,7 +114,7 @@ class PostViewSet(viewsets.ModelViewSet):
             try:
                 if post.viewable_for_author(user.profile):
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
-            except Profile.DoesNotExist:
+            except Profile.DoesNotExist: # Then its a node requesting it
                 if post.privacy != PRIVACY_SERVER_ONLY:
                     if Node.objects.get(host=user.node.host, is_allowed=True):
                         return Response(data=serializer.data, status=status.HTTP_200_OK)

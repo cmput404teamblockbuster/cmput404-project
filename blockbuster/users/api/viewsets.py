@@ -203,6 +203,14 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
         local_receiver = False
         from_foundbook = determine_if_request_from_foundbook(data)
 
+        if from_foundbook: # set displayName for them!
+            try:
+                our_profile = Profile.objects.get(uuid=data.get('friend').get('id'))
+                displayName = our_profile.username
+                data.get('friend')['displayName'] = displayName
+            except Profile.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND, data="Profile with given UUID does not exist.")
+
         try:
             if from_foundbook:
                 local_author = Profile.objects.get(uuid=data.get('author').get('id'))
