@@ -15,6 +15,7 @@ from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVA
     PRIVATE_TO_FOAF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 from django.contrib.sites.models import Site
 from posts.utils import foreign_post_viewable_for_author, get_foreign_posts_by_author
+from dateutil import parser
 
 site_name = Site.objects.get_current().domain
 
@@ -161,11 +162,11 @@ class ProfilePostDetailView(APIView):
 
         #sort the posts
         if len(serializer.data) > 1:
-            serializer.data.sort(key=lambda k: k.get('published', None), reverse=True)
+            serializer.data.sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
         #sort the comments
         for post in serializer.data:
             if len(post.get('comments', None)) > 1:
-                post.get('comments').sort(key=lambda k: k.get('published', None), reverse=True)
+                post.get('comments').sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
 
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
