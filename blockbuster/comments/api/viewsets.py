@@ -47,7 +47,8 @@ class CommentViewSet(viewsets.ModelViewSet):
         # pprint(vars(request))
         # print request.get('parser_context').get('kwargs').get('uuid_input')
         uuid_input = kwargs.get('uuid_input')
-        comment_queryset = Post.objects.get(uuid=uuid_input).comments
+        
+        comment_queryset = Comment.objects.filter(Post.uuid=uuid_input)
         
         
         # print serializer.data
