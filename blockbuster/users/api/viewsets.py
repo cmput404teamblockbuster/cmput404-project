@@ -69,20 +69,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def list(self, *args, **kwargs):
         listofauthors = []
         local = Profile.objects.all()
-        node = Node.objects.filter(is_allowed=True)
         localserializer = ProfileSerializer(local, many=True)
         listofauthors.extend(localserializer.data)
-        for singlenode in node:
-            endpoint = singlenode.api_endpoint + 'author/local/'
-            api_url = singlenode.host + endpoint
-            try:
-                response = requests.get(api_url, auth=(singlenode.username_for_node, singlenode.password_for_node))
-            except requests.ConnectionError:
-                continue
-            if response.status_code == 200:
-                payload = response.json()
-                if len(payload) > 0:
-                    listofauthors.extend(payload)
 
         return Response(status=status.HTTP_200_OK, data=listofauthors)
 
