@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class Node(models.Model):
     host = models.URLField(max_length=500, unique=True)
     is_allowed = models.BooleanField(default=True)
+    share_image = models.BooleanField(default=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     username_for_node = models.CharField(max_length=60, null=True, blank=True)
     password_for_node = models.CharField(max_length=60, null=True, blank=True)

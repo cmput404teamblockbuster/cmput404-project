@@ -4,7 +4,7 @@ from posts.api.serializers import PostSerializer
 from posts.models import Post
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVACY_PRIVATE, PRIVACY_SERVER_ONLY
+from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVACY_PRIVATE, PRIVACY_SERVER_ONLY, png, jpeg
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
 from users.models import Profile
@@ -83,14 +83,24 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         all public posts will be returned for the current server
         """
-        data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
+
+        if Node.objects.filter(user=self.request.user):
+            if Node.objects.filter(user=self.request.user, is_allowed=True):  # remote user and allowed
+                data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
+                if Node.objects.filter(user=self.request.user, is_allowed=True, share_image=False): # remote user, allowed but no picture.
+                    data = data.exclude(contentType=png).exclude(contentType=jpeg)
+            else: # remote user, not allowed
+                data = Post.objects.none() # return empty data if the node is not allowed
+        else: # local user
+            data = Post.objects.filter(privacy=PRIVACY_PUBLIC)\
+
         mypaginator = custom()
         results = mypaginator.paginate_queryset(data, self.request)
         serializer = PostSerializer(results, many=True)
 
         page = self.request.GET.get('page', 1)
         page_num = self.request.GET.get('size', 1000)
-
+        print serializer.data, "nere"
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
                                      ('current', page),
@@ -106,6 +116,14 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
         post = Post.objects.get(uuid=kwargs.get('uuid'))
+
+        # return 403 if a node is requiring
+        if Node.objects.filter(user=user, is_allowed=False):
+            return Response('You do not have permission to see this post.', status=status.HTTP_403_FORBIDDEN)
+        if Node.objects.filter(user=user, is_allowed=True,share_image=False) and post.contentType in [jpeg,png]:
+            return Response('You do not have permission to see this post.', status=status.HTTP_403_FORBIDDEN)
+
+
         if post.privacy == PRIVACY_PUBLIC or post.privacy == PRIVACY_UNLISTED:
             serializer = PostSerializer(post)
             return Response(data=serializer.data, status=status.HTTP_200_OK)

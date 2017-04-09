@@ -130,7 +130,11 @@ class ProfilePostDetailView(APIView):
             foreign_profile = True # Then the uuid given is for a remote author
 
         if foreign_request:
-            result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY) # send them all posts that are NOT server only
+            ### TODO: I'm not sure if this will work
+            if Node.objects.filter(user=request.user, share_image=False):
+                result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY).exclude(contentType=png).exclude(contentType=jpeg)
+            else:
+                result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY) # send them all posts that are NOT server only
 
         elif foreign_profile:
             response = get_foreign_posts_by_author(uuid)
@@ -198,7 +202,7 @@ class AllPublicPostsView(APIView):
                 except AttributeError:
                     result.extend(response.json())
             else:
-                print response.status_code,"can not get public posts from node:", host, "with url:", url
+                print response.status_code,"can not get public posts from node:", host, "with url:", url,response.text
 
         # get all local public posts
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)

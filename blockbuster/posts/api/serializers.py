@@ -59,7 +59,7 @@ class PostSerializer(serializers.ModelSerializer):
         
         #print(str(comments))
         result = json.loads(comments)
-        return OrderedDict(result)['count']
+        return str(len(OrderedDict(result)['comments']))
     def get_size(self,obj):
         #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
         comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
