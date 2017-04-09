@@ -47,16 +47,17 @@ class CommentViewSet(viewsets.ModelViewSet):
         data = request.data
         our_data = request.data.get('comment')
         serializer = CommentSerializer(data=our_data)
-        host = our_data.get('author')['host']
-        if host in 'http://blockbuster.canadacentral.cloudapp.azure.com/api/':
-            # host += "api/"
-            data = our_data
 
         if serializer.is_valid():
             try:
                 post = Post.objects.get(uuid=uuid_input)  # Get the post the comment is for
                 data = our_data
             except Post.DoesNotExist:
+                service = data.get('post').split('/')[2]
+                for node in Node.objects.filter(is_allowed=True):  # get host of the post TODO: this is not a good idea.....
+                    if service in node.host:
+                        host = node.host
+                        break
                 node = Node.objects.filter(host=host, is_allowed=True)
                 if node:
                     node = node[0]
@@ -69,6 +70,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
                     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
                 else:
+                    print "WHAAAAAAAAAT"
                     msg = {
                         "query": "addComment",
                         "success": False,
