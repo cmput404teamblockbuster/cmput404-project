@@ -144,6 +144,14 @@ class ProfilePostDetailView(APIView):
                 if post.privacy == PRIVACY_PUBLIC or post.viewable_for_author(request.user.profile):  # check if the post is visible to logged in user
                     result.append(post)
 
+        #sort the posts
+        if len(result) > 1:
+            result.sort(key=lambda k: k['published'], reverse=True)
+        #sort the comments
+        for post in result:
+            if len(post['comments']) > 1:
+                post['comments'].sort(key=lambda k: k['published'], reverse=True)
+
         mypaginator = custom()
         results = mypaginator.paginate_queryset(result, request)
         page = self.request.GET.get('page', 1)
