@@ -1,6 +1,6 @@
 (PRIVATE_TO_ALL_FRIENDS, PRIVATE_TO, PRIVACY_PUBLIC, PRIVATE_TO_FOF, PRIVATE_TO_ME, PRIVACY_UNLISTED, PRIVACY_SERVER_ONLY) = (
-    'private_to_all_friends', 'private_to', 'privacy_public', 'private_to_fof', 'private_to_me',
-    'privacy_unlisted', 'privacy_server_only')
+    'FRIENDS', 'PRIVATE', 'PUBLIC', 'FOF', 'PRIVATE',
+    'privacy_unlisted', 'SERVERONLY')
 
 PRIVACY_TYPES = {
     PRIVATE_TO_ALL_FRIENDS: {

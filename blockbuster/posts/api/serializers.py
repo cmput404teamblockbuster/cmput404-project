@@ -22,8 +22,8 @@ site_name = Site.objects.get_current().domain
 class PostSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
     author = ProfileSerializer(required=False)
-    comments = serializers.SerializerMethodField('paginate_comment')
-
+    # comments = serializers.SerializerMethodField('paginate_comment')
+    comments = CommentSerializer(many=True, read_only=True)
     id = serializers.CharField(source='uuid', required=False)
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices, required=False)
@@ -56,10 +56,10 @@ class PostSerializer(serializers.ModelSerializer):
 
 
     def paginate_comment(self,obj):
-        print(site_name)
-        comments = urllib2.urlopen(site_name+"api/posts/"+str(obj.uuid)+"/comments?size=5").read()
+        #print(site_name)
+        comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
         
-        print(str(comments))
+        #print(str(comments))
         result = json.loads(comments)
         return [OrderedDict(result)]
      

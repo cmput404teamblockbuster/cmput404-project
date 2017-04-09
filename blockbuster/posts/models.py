@@ -52,10 +52,11 @@ class Post(models.Model):
             return viewList
 
         elif self.privacy == PRIVATE_TO:
-            return [author.uuid for author in self.private_to.all()]
-
-        elif self.privacy == PRIVATE_TO_ME:
-            return [self.author.uuid]
+            array = [author.uuid for author in self.private_to.all()]
+            array.append(self.author.uuid)
+        #
+        # elif self.privacy == PRIVATE_TO_ME:
+        #     return [self.author.uuid]
 
         return []
 
@@ -214,6 +215,8 @@ class Post(models.Model):
         ''' On save, update timestamps '''
         if not self.id:
             self.created = timezone.now()
+            self.source = '%sposts/%s/' % (site_name, self.uuid)
+            self.origin = '%sposts/%s/' % (site_name, self.uuid)
         return super(Post, self).save(*args, **kwargs)
 
     def __str__(self):
