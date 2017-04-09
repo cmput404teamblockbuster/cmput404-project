@@ -3,7 +3,7 @@ import datetime
 from django.db import models
 from core.utils import django_choice_options
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVATE, PRIVACY_PRIVATE, PRIVACY_PUBLIC, \
-PRIVATE_TO_FOF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
+PRIVATE_TO_FOAF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 from nodes.models import Node
 import requests
 from django.contrib.sites.models import Site
@@ -40,7 +40,7 @@ class Post(models.Model):
         """
         Returns: a qs of users that the post is viewable to
         """
-        if self.privacy == PRIVATE_TO_ALL_FRIENDS or self.privacy == PRIVATE_TO_FOF:
+        if self.privacy == PRIVATE_TO_ALL_FRIENDS or self.privacy == PRIVATE_TO_FOAF:
             return [friend.uuid for friend in self.author.friends]
 
         elif self.privacy == PRIVACY_SERVER_ONLY:
@@ -86,14 +86,14 @@ class Post(models.Model):
         return False
 
 
-    def __FOF_verify(self, A, B, C):
+    def __FOAF_verify(self, A, B, C):
         """
         Verifies that author B is friends of A and C. B is just the id of the author
         """
 
         site_name = Site.objects.get_current().domain
 
-        #print("FOF verifying author_B:", B)
+        #print("FOAF verifying author_B:", B)
 
         #if B is foreign
         if B.host != site_name:
@@ -107,7 +107,7 @@ class Post(models.Model):
         return False
 
 
-    def __check_for_FOF(self, local, foreign):
+    def __check_for_FOAF(self, local, foreign):
         """
         Sends an api POST request to author/{author_id}/friends/ to get a list of common friends
         """
@@ -140,16 +140,16 @@ class Post(models.Model):
 
 
 
-    def viewable_to_FOF(self, author_A):
+    def viewable_to_FOAF(self, author_A):
         """
         Checks if the given author is friends of a friend of post's author making 
         it visible to the author. Assumes that the 2 authors are not friends
         """
 
-        if self.privacy != PRIVATE_TO_FOF:
+        if self.privacy != PRIVATE_TO_FOAF:
             return False
 
-        print("FOF ATTEMPTING FOF for post with title:", self.title)
+        print("FOAF ATTEMPTING FOAF for post with title:", self.title)
         author_C = self.author
 
         #list_A = None
@@ -159,23 +159,23 @@ class Post(models.Model):
 
         # If both are local
         if author_A.host == site_name and author_C.host == site_name:
-            #print("FOF A and C are local")
+            #print("FOAF A and C are local")
             for friend in author_A.friends:
-                #print("FOF checking if:", friend, "is a common friend by using its id:", friend.api_id)
+                #print("FOAF checking if:", friend, "is a common friend by using its id:", friend.api_id)
                 if friend in author_C.friends:
                     author_B = friend
-                    print("FOF B found!:", author_B, "from host:", author_B.host)
-                    return self.__FOF_verify(author_A, author_B, author_C)
+                    print("FOAF B found!:", author_B, "from host:", author_B.host)
+                    return self.__FOAF_verify(author_A, author_B, author_C)
 
         local = None
         foreign = None
         if author_A.host == site_name and author_C.host != site_name:
-            list_B = self.__check_for_FOF(author_A, author_C)
+            list_B = self.__check_for_FOAF(author_A, author_C)
             local = author_A
             foreign = author_C
 
         elif author_A.host != site_name and author_C.host == site_name:
-            list_B = self.__check_for_FOF(author_C, author_A)
+            list_B = self.__check_for_FOAF(author_C, author_A)
             local = author_C
             foreign = author_A
 
@@ -192,7 +192,7 @@ class Post(models.Model):
                     continue
 
             if(author_B.host):
-                if self.__FOF_verify(local, author_B, foreign):
+                if self.__FOAF_verify(local, author_B, foreign):
                     return True
 
         return False
@@ -209,8 +209,8 @@ class Post(models.Model):
         if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to :
             return True
 
-        if self.privacy == PRIVACY_TO_FOF:
-            if self.viewable_to_FOF(author):
+        if self.privacy == PRIVACY_TO_FOAF:
+            if self.viewable_to_FOAF(author):
                 return True
             
             
