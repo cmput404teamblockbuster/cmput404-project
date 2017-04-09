@@ -109,11 +109,13 @@ class ProfilePostDetailView(APIView):
     def get(self, request, uuid):
         result = []
         foreign_request = False
-        request_host = request.get_host()
+        request_host = request.get_host() #TODO: note this get_host() is giving back our own host, not the requesting user's host???
+        # see: https://docs.python.org/3.3/library/urllib.request.html
         for node in Node.objects.filter(is_allowed=True):
             if request_host in node.host:  # check if a server is making the request, could be bypassed if we do not hold a record of the server
                 foreign_request = True
 
+        # this will also make sure that team8's host is filtered out
         if Node.objects.filter(user=request.user, is_allowed=True): # temp side check for if node. might need to be more secure?
             print "get to /author/id/posts by node:", request.user
             foreign_request = True

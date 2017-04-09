@@ -47,7 +47,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         data = request.data
         our_data = request.data.get('comment')
         serializer = CommentSerializer(data=our_data)
-        host = data.get('host')
+        host = our_data.get('author')['host']
         if host in 'http://blockbuster.canadacentral.cloudapp.azure.com/api/':
             # host += "api/"
             data = our_data
