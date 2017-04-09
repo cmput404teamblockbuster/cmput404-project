@@ -24,8 +24,7 @@ class custom(PageNumberPagination):
                                      ('next', self.get_next_link()),
                                      ('previous', self.get_previous_link()),
                                      ('size', 5),
-                                     ('comments', data)])
-                        )
+                                     ('comments', data)]))
         
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -48,10 +47,26 @@ class CommentViewSet(viewsets.ModelViewSet):
         # pprint(vars(request))
         # print request.get('parser_context').get('kwargs').get('uuid_input')
         uuid_input = kwargs.get('uuid_input')
-        print uuid_input
-        serializer = CommentSerializer(Post.objects.get(uuid=uuid_input).comments, many=True)
+        comment_queryset = Post.objects.get(uuid=uuid_input).comments
+        
+        
         # print serializer.data
-        return Response(data=serializer.data)
+        mypaginator = custom()
+        results = mypaginator.paginate_queryset( comment_queryset, request)
+        page = self.request.GET.get('page', 1)
+        page_num = self.request.GET.get('size', 1000)
+
+        serializer = CommentSerializer(results,many=True)
+        
+        
+        return Response(OrderedDict([('query', 'posts'),
+                                     ('count', mypaginator.page.paginator.count),
+                                     ('current', page),
+                                     ('next', mypaginator.get_next_link()),
+                                     ('previous', mypaginator.get_previous_link()),
+                                     ('size', page_num),
+                                     ('posts', serializer.data)]), status=status.HTTP_200_OK
+                        )
         # return Comment.objects.filter(post=post)
 
     def create(self, request, uuid_input):
