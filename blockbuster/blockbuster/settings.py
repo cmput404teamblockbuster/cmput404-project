@@ -154,59 +154,43 @@ WEBPACK_LOADER = {
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
+
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        # Include the default Django email handler for errors
-        # This is what you'd get without configuring logging at all.
-        'mail_admins': {
-            'class': 'django.utils.log.AdminEmailHandler',
-            'level': 'ERROR',
-             # But the emails are plain text by default - HTML is nicer
-            'include_html': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
-        # Log to a text file that can be rotated by logrotate
-        'logfile': {
-            'class': 'logging.handlers.WatchedFileHandler',
-            'filename': '/var/log/django/myapp.log'
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'DEBUG.log',
+            'formatter': 'simple'
         },
     },
     'loggers': {
-        # Again, default Django configuration to email unhandled exceptions
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'INFO',
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
             'propagate': True,
         },
-        # Might as well log any errors anywhere else in Django
-        'django': {
-            'handlers': ['logfile'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        # Your own app - this assumes all your logger names start with "myapp."
-        'users': {
-            'handlers': ['logfile'],
-            'level': 'INFO', # Or maybe INFO or DEBUG
-            'propagate': False
-        },
-        'posts': {
-            'handlers': ['logfile'],
-            'level': 'INFO', # Or maybe INFO or DEBUG
-            'propagate': False
-        },
-        'nodes': {
-            'handlers': ['logfile'],
-            'level': 'INFO', # Or maybe INFO or DEBUG
-            'propagate': False
-        },
-        'comment': {
-            'handlers': ['logfile'],
-            'level': 'INFO', # Or maybe INFO or DEBUG
-            'propagate': False
-        },
-    },
+    }
 }
+
+if DEBUG:
+    # make all loggers use the console.
+    for logger in LOGGING['loggers']:
+        LOGGING['loggers'][logger]['handlers'] = ['console']
+
 
 
