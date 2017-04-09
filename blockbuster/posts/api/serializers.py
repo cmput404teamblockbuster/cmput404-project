@@ -22,8 +22,8 @@ site_name = Site.objects.get_current().domain
 class PostSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
     author = ProfileSerializer(required=False)
-    comments = serializers.SerializerMethodField('paginate_comment')
-
+    # comments = serializers.SerializerMethodField('paginate_comment')
+    comments = CommentSerializer(many=True, read_only=True)
     id = serializers.CharField(source='uuid', required=False)
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices, required=False)
