@@ -21,6 +21,7 @@ class Post(models.Model):
     author = models.ForeignKey('users.Profile', related_name='posts')
 
     private_to = models.ManyToManyField('users.Profile',related_name="allowed_author",blank=True)
+    unlisted = models.BooleanField(default=False)
 
     
       # if the privacy is PRIVATE_TO_ONE_FRIEND, this is set to the friend
@@ -39,8 +40,16 @@ class Post(models.Model):
         """
         Returns: a qs of users that the post is viewable to
         """
-        if self.privacy == PRIVATE_TO_ALL_FRIENDS or self.privacy == PRIVACY_SERVER_ONLY or self.privacy == PRIVATE_TO_FOF:
+        if self.privacy == PRIVATE_TO_ALL_FRIENDS or self.privacy == PRIVATE_TO_FOF:
             return [friend.uuid for friend in self.author.friends]
+
+        elif self.privacy == PRIVACY_SERVER_ONLY:
+            viewList = []
+            site_name = Site.objects.get_current().domain
+            for friend in self.author.friends:
+                if friend.host == site_name:
+                    viewList.append(friend.uuid)
+            return viewList
 
         elif self.privacy == PRIVACY_PRIVATE:
             array = [author.uuid for author in self.private_to.all()]
