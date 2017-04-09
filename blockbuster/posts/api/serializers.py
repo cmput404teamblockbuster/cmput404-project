@@ -20,9 +20,9 @@ class PostSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
     author = ProfileSerializer(required=False)
     comments = CommentSerializer(many=True, read_only=True)
-    # count = serializers.SerializerMethodField()
-    # size = serializers.SerializerMethodField()
-    # next = serializers.SerializerMethodField()
+    count = serializers.SerializerMethodField()
+    size = serializers.SerializerMethodField()
+    next = serializers.SerializerMethodField()
     id = serializers.CharField(source='uuid', required=False)
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices, required=False)
@@ -55,32 +55,32 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_count(self,obj):
         #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
-        comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
-        
-        # print(str(comments))
-        # print "LOOK ABOVE"
-        # return len(comments)
-        result = json.loads(comments)
-        # print type(result)
+        try:
+            comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
+            result = json.loads(comments)
+            return len(OrderedDict(result)['comment'])
+        except:
+            return 1
 
         return len(result)
     def get_size(self,obj):
         #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
-        comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
-        
-        #print(str(comments))
-        # result = json.loads(comments)
-        # return OrderedDict(result)['size']
-        return 5
+        try: 
+            comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
+            result = json.loads(comments)
+            return OrderedDict(result)['size']
+        except:
+            return 5
+
 
     def get_next(self,obj):
         #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
-        comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
-        
-        # #print(str(comments))
-        # result = json.loads(comments)
-        # return OrderedDict(result)['next']
-        return "http://random.com"
+        try:
+            comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments?size=5").read()
+            result = json.loads(comments)
+            return OrderedDict(result)['next']
+        except:
+            return "http://random.com"
 
     class Meta:
         model = Post
