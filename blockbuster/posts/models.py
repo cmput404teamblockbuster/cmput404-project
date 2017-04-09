@@ -83,6 +83,10 @@ class Post(models.Model):
             self.created = datetime.datetime.now().isoformat()
             self.source = '%sposts/%s/' % (site_name, self.uuid)
             self.origin = '%sposts/%s/' % (site_name, self.uuid)
+        if self.privacy == PRIVACY_UNLISTED:
+            self.unlisted = True
+        else:
+            self.unlisted = False
         return super(Post, self).save(*args, **kwargs)
 
     def __str__(self):
