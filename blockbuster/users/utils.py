@@ -36,7 +36,7 @@ def verify_friends(foreign, local):
 
         result = response.json() if response and 199 < response.status_code < 300 else None
         if (result and result.get('friends') != False):
-            # print("friendship verified by host:", author_B.host)
+            print("friendship between:", local, "and:", foreign,"verified by host:", foreign.host)
             return result.get('friends')
 
     return False
@@ -108,7 +108,7 @@ def determine_if_foaf(author_A, author_C):
     site_name = Site.objects.get_current().domain
 
     #print("author C is", author_C)
-    print(vars(author_C))
+    #print(vars(author_C))
     # If both are local
     if author_A.host == site_name and author_C.host == site_name:
         # print("FOAF A and C are local")
@@ -144,7 +144,7 @@ def determine_if_foaf(author_A, author_C):
                 continue
         if (author_B.host):
             if verify_foaf(local, author_B, foreign):
-                print "FOAF found shared friend:", author_B
+                print "FOAF found/verified shared friend:", author_B
                 return True
 
     return False
