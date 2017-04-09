@@ -64,7 +64,7 @@ class Post(models.Model):
         will check to see if the given author can see the post
         Returns: boolean
         """
-        if self.privacy == PRIVACY_SERVER_ONLY and author.host == site_name:
+        if self.privacy == PRIVACY_SERVER_ONLY and author.host == site_name and author in author.friends:
             return True
 
         if self.privacy == PRIVACY_PUBLIC or author.uuid in self.viewable_to:
