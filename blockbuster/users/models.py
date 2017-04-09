@@ -5,7 +5,7 @@ from core.utils import django_choice_options
 from users.constants import RELATIONSHIP_STATUS_TYPES, RELATIONSHIP_STATUS_PENDING, \
     RELATIONSHIP_STATUS_FRIENDS, RELATIONSHIP_STATUS_FOLLOWING
 from posts.models import Post
-from posts.constants import PRIVACY_UNLISTED
+from posts.constants import PRIVACY_UNLISTED, PRIVACY_PRIVATE
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -41,6 +41,7 @@ class NewUser(models.Model):
 
     class Meta:
         ordering = ('-created',)
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User,
@@ -89,6 +90,12 @@ class Profile(models.Model):
         """
         assert self.user, "There is no stream for a foreign profile."
         local_stream = [post for post in Post.objects.filter(author=self).exclude(privacy=PRIVACY_UNLISTED)]
+
+        # Check private to posts
+        for p_post in Post.objects.filter(privacy=PRIVACY_PRIVATE):
+            if p_post.viewable_for_author(author=self):
+                local_stream.append(p_post)
+
         foreign_friend_list = []
         friends_qs = self.friends
         following_ids = (r.receiver.id for r in UserRelationship.objects.filter(initiator=self,

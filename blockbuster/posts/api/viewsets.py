@@ -123,7 +123,6 @@ class PostViewSet(viewsets.ModelViewSet):
         if Node.objects.filter(user=user, is_allowed=True,share_image=False) and post.contentType in [jpeg,png]:
             return Response('You do not have permission to see this post.', status=status.HTTP_403_FORBIDDEN)
 
-
         if post.privacy == PRIVACY_PUBLIC or post.privacy == PRIVACY_UNLISTED:
             serializer = PostSerializer(post)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
