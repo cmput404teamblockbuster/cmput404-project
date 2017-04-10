@@ -4,8 +4,6 @@ from django.db import models
 from core.utils import django_choice_options
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVATE, PRIVACY_PRIVATE, PRIVACY_PUBLIC, \
 PRIVATE_TO_FOAF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
-from nodes.models import Node
-import requests
 from django.contrib.sites.models import Site
 site_name = Site.objects.get_current().domain
 from users.utils import determine_if_foaf
@@ -64,7 +62,7 @@ class Post(models.Model):
         will check to see if the given author can see the post
         Returns: boolean
         """
-        if self.author == author: # authors can always see their own posts
+        if self.author == author and self.privacy != PRIVACY_UNLISTED: # authors can always see their own posts
             return True
 
         if self.privacy == PRIVACY_SERVER_ONLY and author.host == site_name and author in author.friends:
@@ -76,8 +74,7 @@ class Post(models.Model):
         if self.privacy == PRIVATE_TO_FOAF:
             if determine_if_foaf(self.author, author):
                 return True
-            
-            
+
         return False
 
     def save(self, *args, **kwargs):
@@ -86,11 +83,17 @@ class Post(models.Model):
             self.created = datetime.datetime.now().isoformat()
             self.source = '%sposts/%s/' % (site_name, self.uuid)
             self.origin = '%sposts/%s/' % (site_name, self.uuid)
+        else:
+            if self.privacy != PRIVACY_PRIVATE:
+                self.private_to = []
+
         if self.privacy == PRIVACY_UNLISTED:
             self.unlisted = True
         else:
             self.unlisted = False
+            
         return super(Post, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return 'post by %s (type: %s, ID: %s) %s' % (self.author.username, self.contentType, self.id, self.content if self.contentType==text_plain else '')

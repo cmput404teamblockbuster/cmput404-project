@@ -56,12 +56,8 @@ class Profile(models.Model):
     @property
     def url(self):
         """
-        returns a link to the users profile on our website
+        returns the url to the api to get the profile data SAME AS api_id
         """
-        # host = site_name
-        # if 'api/' in site_name:
-        #     host = host[:-4]
-        # return '%sprofile/%s/' % (host, str(self.uuid))
         return '%sauthor/%s/' % (str(self.host), str(self.uuid))
 
     @property

@@ -3,7 +3,6 @@ from users.models import Profile
 from users.models import UserRelationship
 from users.constants import *
 from nodes.models import Node
-from django.contrib.sites.models import Site
 import uuid
 from users.utils import determine_if_foaf, verify_friends
 
@@ -38,8 +37,6 @@ def foreign_post_viewable_for_author(post, profile):
     if not foreign_profile:  # Then there is no relationship with that author and no chance of visibility at this point
         if post_visibility == PRIVATE_TO_FOAF: # Can still be visible to FOAF?
             return check_if_viewable_as_FOAF(post, profile)
-        # else:
-        #     return False
     elif post_visibility == PRIVATE_TO_FOAF:
         return check_if_viewable_as_FOAF(post, profile, foreign_profile)
 
@@ -47,10 +44,6 @@ def foreign_post_viewable_for_author(post, profile):
                                                status=RELATIONSHIP_STATUS_FRIENDS)
     friends2 = UserRelationship.objects.filter(receiver=foreign_profile, initiator=profile,
                                                status=RELATIONSHIP_STATUS_FRIENDS)
-    # following = UserRelationship.objects.filter(receiver=foreign_profile, initiator=profile,
-    #                                             status=RELATIONSHIP_STATUS_FOLLOWING)
-    # pending = UserRelationship.objects.filter(receiver=foreign_profile, initiator=profile,
-    #                                           status=RELATIONSHIP_STATUS_PENDING)
 
     relationship_exists = friends1 | friends2
     if relationship_exists and post_visibility in ['FRIENDS', 'PUBLIC', 'FOAF']:

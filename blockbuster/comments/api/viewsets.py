@@ -51,7 +51,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         comment_queryset = Comment.objects.filter(Q(post__uuid=uuid_input))
         
         
-        # print serializer.data
         mypaginator = custom()
         results = mypaginator.paginate_queryset( comment_queryset, request)
         page = self.request.GET.get('page', 1)
@@ -68,7 +67,6 @@ class CommentViewSet(viewsets.ModelViewSet):
                                      ('size', page_num),
                                      ('posts', serializer.data)]), status=status.HTTP_200_OK
                         )
-        # return Comment.objects.filter(post=post)
 
     def create(self, request, uuid_input):
         data = request.data
@@ -89,8 +87,6 @@ class CommentViewSet(viewsets.ModelViewSet):
                 if node:
                     node = node[0]
                     api_url = host + node.api_endpoint + 'posts/' + uuid_input + '/comments/'
-                    print api_url
-                    print(data)
                     response = requests.post(api_url, json=data, auth=(node.username_for_node, node.password_for_node))
                     if 199 < response.status_code < 300:
                         comment = response.json()
@@ -98,7 +94,6 @@ class CommentViewSet(viewsets.ModelViewSet):
 
                     return Response(status=status.HTTP_400_BAD_REQUEST, data=response)
                 else:
-                    print "WHAAAAAAAAAT"
                     msg = {
                         "query": "addComment",
                         "success": False,
@@ -111,7 +106,6 @@ class CommentViewSet(viewsets.ModelViewSet):
                 if len(identifier) <= 1:
                     identifier = data.get('author').get('id').split('/')[-2]
 
-                # TODO: create a user if it is remote user
                 profile = Profile.objects.get(uuid=identifier)
             except Profile.DoesNotExist:
                 author = data.get('author')

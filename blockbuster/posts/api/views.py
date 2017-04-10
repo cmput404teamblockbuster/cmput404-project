@@ -1,5 +1,4 @@
 import requests
-from django.contrib.auth.models import User
 from posts.api.serializers import PostSerializer
 from posts.models import Post
 from users.models import Profile
@@ -118,6 +117,8 @@ class ProfilePostDetailView(APIView):
         if Node.objects.filter(user=request.user, is_allowed=True): # temp side check for if node. might need to be more secure?
             print "get to /author/id/posts by node:", request.user
             foreign_request = True
+        elif Node.objects.filter(user=request.user, is_allowed=False):
+            return Response(data="You are not allowed on our server.", status=status.HTTP_401_UNAUTHORIZED)
 
         foreign_profile = False
         try:
@@ -131,7 +132,6 @@ class ProfilePostDetailView(APIView):
             foreign_profile = True # Then the uuid given is for a remote author
 
         if foreign_request:
-            ### TODO: I'm not sure if this will work
             if Node.objects.filter(user=request.user, share_image=False):
                 result = Post.objects.filter(author=author).exclude(privacy=PRIVACY_SERVER_ONLY).exclude(contentType=png).exclude(contentType=jpeg)
             else:
