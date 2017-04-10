@@ -212,10 +212,10 @@ class AllPublicPostsView(APIView):
 
         #sort the posts
         if len(result) > 1:
-            result.sort(key=lambda k: k.get('published', None), reverse=True)
+            result.sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
         #sort the comments
         for post in result:
             if len(post.get('comments', None)) > 1:
-                post.get('comments').sort(key=lambda k: k.get('published', None), reverse=True)
+                post.get('comments').sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
 
         return Response(status=status.HTTP_200_OK, data=result)
