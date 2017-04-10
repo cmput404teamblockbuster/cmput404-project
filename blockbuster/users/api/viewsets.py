@@ -235,7 +235,7 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
                     print 'request sent to other server'
                     if response.status_code>=300:
                         return Response(status=response.status_code,
-                                        data='Your request is rejected by %s' % host)
+                                        data=response.text)
 
                 if must_create_profile:
                     new_profile = Profile.objects.create(uuid=uuid.UUID(identifier).hex, username=foreign_user.get('displayName'),
