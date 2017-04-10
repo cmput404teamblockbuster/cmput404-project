@@ -14,7 +14,7 @@ export default class EditPostDialog extends React.Component{
         this.changeVisibility = this.changeVisibility.bind(this);
         this.changeAuthor = this.changeAuthor.bind(this);
 
-        this.state = {visibility:"", button:undefined};
+        this.state = {visibility:"PUBLIC", button:undefined};
         this.actions = [
             <FlatButton label="Cancel" onTouchTap={this.handleClose}/>,
             <FlatButton label="Submit" onTouchTap={this.handleSubmit}/>
@@ -54,7 +54,7 @@ export default class EditPostDialog extends React.Component{
                         {this.state.button}
                     </ToolbarGroup>
                     <ToolbarGroup >
-                        <PostVisibility change={this.changeVisibility}/>
+                        <PostVisibility change={this.changeVisibility} edit={true}/>
                     </ToolbarGroup>
                     <ToolbarGroup/>
                 </Toolbar>
