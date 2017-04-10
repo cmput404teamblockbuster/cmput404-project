@@ -51,7 +51,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
                 if response and response.status_code == 200:
                     profile = response.json()
                     return Response(status=status.HTTP_200_OK, data=profile)
-                return Response(status=status.HTTP_400_BAD_REQUEST, data='Could not contact server.')
+                return Response(status=status.HTTP_400_BAD_REQUEST, data='Could not contact server. Received response:%s'
+                                                                         %(response))
             else:
                 return Response(status=status.HTTP_401_UNAUTHORIZED, data='User is from an unaccepted server.')
 
