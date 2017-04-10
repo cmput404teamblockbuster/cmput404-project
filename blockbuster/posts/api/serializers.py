@@ -11,9 +11,6 @@ import json
 from django.contrib.sites.models import Site
 
 site_name = Site.objects.get_current().domain
-
-
-    
                         
 
 class PostSerializer(serializers.ModelSerializer):
@@ -55,8 +52,7 @@ class PostSerializer(serializers.ModelSerializer):
         return Post.objects.create(**validated_data)
 
     def get_count(self,obj):
-        #print(str(site_name+"posts/"+str(obj.uuid)+"/comments/?size=5"))
-        
+
         try:
             comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments/?size=5").read()
             result = json.loads(comments)
@@ -68,8 +64,7 @@ class PostSerializer(serializers.ModelSerializer):
 
         return len(result)
     def get_size(self,obj):
-        #print(str(site_name+"posts/"+str(obj.uuid)+"/comments/?size=5"))
-        
+
         try:
             comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments/?size=5").read()
             result = json.loads(comments)
@@ -81,8 +76,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 
     def get_next(self,obj):
-        #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
-        
+
         try:
             comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments/?size=5").read()
             result = json.loads(comments)
@@ -91,8 +85,7 @@ class PostSerializer(serializers.ModelSerializer):
             return "http://random.com"
         
     def get_previous(self,obj):
-        #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
-        
+
         try:
             comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments/?size=5").read()
             result = json.loads(comments)

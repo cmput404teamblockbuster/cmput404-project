@@ -3,10 +3,8 @@ from users.models import Profile
 from users.models import UserRelationship
 from users.constants import *
 from nodes.models import Node
-from django.contrib.sites.models import Site
 import uuid
 from users.utils import determine_if_foaf
-
 from posts.constants import PRIVATE_TO_FOAF, PRIVACY_PUBLIC
 
 

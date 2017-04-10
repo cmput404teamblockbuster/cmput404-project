@@ -4,8 +4,6 @@ from django.db import models
 from core.utils import django_choice_options
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVATE, PRIVACY_PRIVATE, PRIVACY_PUBLIC, \
 PRIVATE_TO_FOAF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
-from nodes.models import Node
-import requests
 from django.contrib.sites.models import Site
 site_name = Site.objects.get_current().domain
 from users.utils import determine_if_foaf
@@ -76,8 +74,7 @@ class Post(models.Model):
         if self.privacy == PRIVATE_TO_FOAF:
             if determine_if_foaf(self.author, author):
                 return True
-            
-            
+
         return False
 
     def save(self, *args, **kwargs):

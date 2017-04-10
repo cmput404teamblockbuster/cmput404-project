@@ -7,9 +7,7 @@ from users.api.serializers import ProfileSerializer, CondensedProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from users.constants import RELATIONSHIP_STATUS_FOLLOWING, RELATIONSHIP_STATUS_PENDING
-from blockbuster import settings
-from nodes.models import Node
-import requests
+
 
 class RegisterUserView(APIView):
     """
@@ -114,7 +112,6 @@ class UserRelationshipCheckView(APIView):
     """
     permission_classes = (IsAuthenticated,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
-
 
     def get(self, request, uuid, uuid_2):
         user1 = Profile.objects.get(uuid=uuid)
