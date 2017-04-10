@@ -73,7 +73,7 @@ export default class PostContainer extends React.Component{
                     </CardHeader>
                     <Divider/>
                     {t_and_d}
-                    <CardText >
+                    <CardText style={{overflow:scroll}}>
                         {this.body}
                     </CardText>
                     <Divider/>
