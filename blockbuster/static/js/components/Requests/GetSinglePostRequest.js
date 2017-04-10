@@ -31,7 +31,7 @@ module.exports = {
 
     edit: function (id, visibility, callback, visibleTo) {
         const path = "api/posts/"+id+"/";
-        const data = visibleTo? {visibility:visibility,visibleTo:[visibleTo.id]} : {visibility:visibility};
+        const data = visibleTo? {visibility:visibility,visibleTo:visibleTo.id} : {visibility:visibility};
         axios.put(path, data,
             {headers:{'X-CSRFToken':csrfToken, 'Authorization':userToken}})
             .then((response)=>{

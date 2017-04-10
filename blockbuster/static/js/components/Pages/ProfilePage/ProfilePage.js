@@ -25,7 +25,7 @@ export default class ProfilePage extends React.Component{
                 ExtractIdFromURL.extract(this.props.object['id']) ,
                 (PostList)=>{
                     this.setState({posts:PostList.posts.map(
-                        (post)=> <PostContainer me={me.id===post.author.id} key={post['id']} object={post} refresh={this.componentWillMount} />)
+                        (post)=> <PostContainer me={false} key={post['id']} object={post} refresh={this.componentWillMount} />)
                     });
                     if (callback){
                         callback()

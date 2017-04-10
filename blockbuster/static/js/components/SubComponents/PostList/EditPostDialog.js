@@ -54,7 +54,7 @@ export default class EditPostDialog extends React.Component{
                         {this.state.button}
                     </ToolbarGroup>
                     <ToolbarGroup >
-                        <PostVisibility change={this.changeVisibility}/>
+                        <PostVisibility change={this.changeVisibility} edit={true}/>
                     </ToolbarGroup>
                     <ToolbarGroup/>
                 </Toolbar>
