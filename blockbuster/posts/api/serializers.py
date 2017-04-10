@@ -68,7 +68,7 @@ class PostSerializer(serializers.ModelSerializer):
         try:
             comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments/?size=5").read()
             result = json.loads(comments)
-            return OrderedDict(result)['size']
+            return int(OrderedDict(result)['size'])
 
             
         except:
