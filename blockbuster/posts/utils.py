@@ -3,9 +3,8 @@ from users.models import Profile
 from users.models import UserRelationship
 from users.constants import *
 from nodes.models import Node
-from django.contrib.sites.models import Site
 import uuid
-from users.utils import determine_if_foaf
+from users.utils import determine_if_foaf, verify_friends
 
 from posts.constants import PRIVATE_TO_FOAF, PRIVACY_PUBLIC
 
@@ -48,7 +47,8 @@ def foreign_post_viewable_for_author(post, profile):
 
     relationship_exists = friends1 | friends2
     if relationship_exists and post_visibility in ['FRIENDS', 'PUBLIC', 'FOAF']:
-        return True
+        if verify_friends(foreign_profile, profile):
+            return True
 
     return False
 

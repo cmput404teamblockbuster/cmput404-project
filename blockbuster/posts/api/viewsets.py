@@ -8,7 +8,6 @@ from posts.constants import PRIVACY_PUBLIC, PRIVACY_UNLISTED, PRIVACY_PRIVATE, P
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
 from users.models import Profile
-
 from nodes.models import Node
 
 

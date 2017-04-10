@@ -116,7 +116,6 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
         try:
             requested_profile = Profile.objects.get(uuid=uuid)
         except Profile.DoesNotExist:
-            # TODO maybe make a request to nodes for the profile's friendslist?
             return Response(status=status.HTTP_404_NOT_FOUND, data="No profile with the given UUID is found on this server.")
 
         friends = requested_profile.friends
@@ -172,16 +171,6 @@ class UserRelationshipFriendRequestViewSet(viewsets.ModelViewSet):
 
         otherwise it will update the UserRelationship represented by initiator/receiver pair
             to update you need to add the status param
-        """
-        """
-        TODO implement node friending as follows
-        if requester is from another site then we parse the requestors host and see if they exist in our db
-            if they do we create a profile of the requestor and set their uuid to ours
-            if they dont then we raise a authentication error
-        if requester is local and person friending is foregin:
-            confirm the foreign person is in our accepted node host
-            make an api call to their friendrequest api
-        if local we do this as normal.
         """
         data = self.request.data
         foreign_user = None
