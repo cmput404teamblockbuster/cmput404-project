@@ -57,21 +57,21 @@ class ProfileViewSet(viewsets.ModelViewSet):
             else:
                 return Response(status=status.HTTP_401_UNAUTHORIZED, data='User is from an unaccepted server.')
 
-        serializer = ProfileSerializer(profile)
+        serializer = FullProfileSerializer(profile)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     def list_local(self, *args, **kwargs):
         listofauthors = []
         local = Profile.objects.all()
         node = Node.objects.all()
-        localserializer = ProfileSerializer(local, many=True)
+        localserializer = FullProfileSerializer(local, many=True)
         listofauthors.extend(localserializer.data)
         return Response(status=status.HTTP_200_OK, data=listofauthors)
 
     def list(self, *args, **kwargs):
         listofauthors = []
         local = Profile.objects.all()
-        localserializer = ProfileSerializer(local, many=True)
+        localserializer = FullProfileSerializer(local, many=True)
         listofauthors.extend(localserializer.data)
 
         return Response(status=status.HTTP_200_OK, data=listofauthors)

@@ -91,7 +91,7 @@ class Post(models.Model):
             self.unlisted = True
         else:
             self.unlisted = False
-            
+
         return super(Post, self).save(*args, **kwargs)
 
 
