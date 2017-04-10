@@ -8,7 +8,6 @@ from users.utils import determine_if_foaf, verify_friends
 from dateutil import parser
 from posts.constants import PRIVATE_TO_FOAF, PRIVACY_PUBLIC
 
-
 def foreign_post_viewable_for_author(post, profile):
     """
     will check to see if the post is viewable to the given author
@@ -121,10 +120,17 @@ def check_if_viewable_as_FOAF(post, profile, foreign_profile=None):
         return False
 
 def sort_posts(posts):
+
     # sort the posts
-    if len(posts) > 1 and hasattr(posts, 'get'):
-        posts.sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
+    if len(posts) > 1:
+        try:
+            posts.sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
+        except:
+            print "Failed to sort posts"
     # sort the comments
     for post in posts:
         if hasattr(post, 'get') and len(post.get('comments', None)) > 1:
-            post.get('comments').sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
+            try:
+                post.get('comments').sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
+            except:
+                print "Failed to sort comments"
