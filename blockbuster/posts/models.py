@@ -62,7 +62,7 @@ class Post(models.Model):
         will check to see if the given author can see the post
         Returns: boolean
         """
-        if self.author == author: # authors can always see their own posts
+        if self.author == author and self.privacy != PRIVACY_UNLISTED: # authors can always see their own posts
             return True
 
         if self.privacy == PRIVACY_SERVER_ONLY and author.host == site_name and author in author.friends:
@@ -83,11 +83,17 @@ class Post(models.Model):
             self.created = datetime.datetime.now().isoformat()
             self.source = '%sposts/%s/' % (site_name, self.uuid)
             self.origin = '%sposts/%s/' % (site_name, self.uuid)
+        else:
+            if self.privacy != PRIVACY_PRIVATE:
+                self.private_to = []
+
         if self.privacy == PRIVACY_UNLISTED:
             self.unlisted = True
         else:
             self.unlisted = False
+            
         return super(Post, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return 'post by %s (type: %s, ID: %s) %s' % (self.author.username, self.contentType, self.id, self.content if self.contentType==text_plain else '')
