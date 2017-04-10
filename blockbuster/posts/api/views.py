@@ -193,6 +193,7 @@ class AllPublicPostsView(APIView):
             url = host + node.api_endpoint + 'posts/'
             try:
                 response = requests.get(url, auth=(node.username_for_node, node.password_for_node))
+
             except requests.ConnectionError:
                 continue
 
@@ -201,7 +202,8 @@ class AllPublicPostsView(APIView):
                 try:
                     result.extend(response.json().get('posts'))
                 except AttributeError:
-                    result.extend(response.json())
+                    # assume everyone is following example-article.json
+                    continue
             else:
                 print response.status_code,"can not get public posts from node:", host, "with url:", url,response.text
 
