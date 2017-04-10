@@ -12,6 +12,7 @@ from users.models import Profile
 from nodes.models import Node
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.utils.urls import remove_query_param, replace_query_param
+from django.db.models import Q
 
 class custom(PageNumberPagination):
     page_size_query_param = 'size'
@@ -47,7 +48,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         # pprint(vars(request))
         # print request.get('parser_context').get('kwargs').get('uuid_input')
         uuid_input = kwargs.get('uuid_input')
-        comment_queryset = Post.objects.get(uuid=uuid_input).comments
+        comment_queryset = Comment.objects.filter(Q(post__uuid=uuid_input))
         
         
         # print serializer.data
@@ -59,7 +60,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer = CommentSerializer(results,many=True)
         
         
-        return Response(OrderedDict([('query', 'posts'),
+        return Response(OrderedDict([('query', 'comment'),
                                      ('count', mypaginator.page.paginator.count),
                                      ('current', page),
                                      ('next', mypaginator.get_next_link()),
