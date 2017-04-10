@@ -30,12 +30,13 @@ class CondensedProfileSerializer(serializers.ModelSerializer):
 class FullProfileSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
     displayName = serializers.CharField(source='username', required=False)
-    friends = serializers.SerializerMethodField('generate_friends')
+    # friends = serializers.SerializerMethodField('generate_friends')
+    friends = CondensedProfileSerializer(required=False, many=True)
     id = serializers.CharField(source='api_id', required=False)
 
-    def generate_friends(self, obj):
-        data = list((friend.api_id for friend in obj.friends))
-        return data
+    # def generate_friends(self, obj):
+    #     data = list((friend.api_id for friend in obj.friends))
+    #     return data
 
     class Meta:
         model = Profile
