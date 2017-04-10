@@ -13,7 +13,7 @@ module.exports = {
 
         axios.get(url,
             {headers:{'X-CSRFToken':csrfToken},
-            auth: {username: 'team2', password: 'team2'}})
+            auth: {username: 'god', password: 'god'}})
             .then((res)=>{
                 cb(res.data);
                 console.log("get single post", res.data);
