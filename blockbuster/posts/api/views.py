@@ -118,6 +118,8 @@ class ProfilePostDetailView(APIView):
         if Node.objects.filter(user=request.user, is_allowed=True): # temp side check for if node. might need to be more secure?
             print "get to /author/id/posts by node:", request.user
             foreign_request = True
+        elif Node.objects.filter(user=request.user, is_allowed=False):
+            return Response(data="You are not allowed on our server.", status=status.HTTP_401_UNAUTHORIZED)
 
         foreign_profile = False
         try:
