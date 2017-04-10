@@ -24,6 +24,7 @@ class PostSerializer(serializers.ModelSerializer):
     size = serializers.SerializerMethodField()
     next = serializers.SerializerMethodField()
     id = serializers.CharField(source='uuid', required=False)
+    previous = serializers.SerializerMethodField()
     visibility = serializers.CharField(source='privacy')
     contentType = serializers.ChoiceField(choices=contentchoices, required=False)
     published = serializers.CharField(source='created', required=False)
@@ -88,7 +89,18 @@ class PostSerializer(serializers.ModelSerializer):
             return OrderedDict(result)['next']
         except:
             return "http://random.com"
+        
+    def get_previous(self,obj):
+        #print(str(site_name+"posts/"+str(obj.uuid)+"/comments?size=5"))
+        
+        try:
+            comments = urllib2.urlopen(site_name+"posts/"+str(obj.uuid)+"/comments/?size=5").read()
+            result = json.loads(comments)
+            return OrderedDict(result)['previous']
+        except:
+            return "http://random.com"
+
 
     class Meta:
         model = Post
-        fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'count','size','next','comments', 'published', 'id', 'visibility', 'visibleTo', 'unlisted')  # These fields will be available to the front end
+        fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'count','size','next','previous','comments', 'published', 'id', 'visibility', 'visibleTo', 'unlisted')  # These fields will be available to the front end
