@@ -13,6 +13,7 @@ export default class AcceptRejectToolbar extends React.Component{
     }
 
     sendAcceptRequest(){
+        console.log(this.props.object, "acceptRejectBar");
         ChangeRelationRequest.update(this.props.object['friend'],this.props.object['author'],
             "status_friends",this.props.refresh)
     }
