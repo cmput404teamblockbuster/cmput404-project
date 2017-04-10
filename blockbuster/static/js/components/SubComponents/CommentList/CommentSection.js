@@ -11,6 +11,12 @@ export default class CommentSection extends React.Component{
             <Comment key={comment['id']} object={comment} /> )};
 
         this.refresh = this.refresh.bind(this);
+
+        if (this.props.single === true){
+            this.addComment = false;
+        } else {
+            this.addComment = <AddComment host={this.props.host} postid={this.props.postid} refresh={this.refresh}/>;
+        }
     }
 
     refresh(){
@@ -30,7 +36,7 @@ export default class CommentSection extends React.Component{
 
             <ul className="commentList">
                 {this.state.comments}
-                <AddComment host={this.props.host} postid={this.props.postid} refresh={this.refresh}/>
+                {this.addComment}
             </ul>
         );
     }

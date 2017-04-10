@@ -18,7 +18,7 @@ export default class SinglePostPage extends React.Component{
         const uuid = ExtractIdFromURL.extract(window.location.pathname) ;
         if (uuid){
             GetSinglePostRequest.get(uuid,(res)=>{
-                    this.setState({post: res? <PostContainer object={res} refresh={this.componentWillMount}/> :<EmptyPost/>});
+                    this.setState({post: res? <PostContainer single={true} object={res} refresh={this.componentWillMount}/> :<EmptyPost/>});
                     if (callback){
                         callback();
                     }

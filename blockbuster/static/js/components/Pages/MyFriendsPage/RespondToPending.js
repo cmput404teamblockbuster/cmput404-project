@@ -24,7 +24,7 @@ export default class RespondToPending extends React.Component{
 
     handleAccept(){
         //alert("want to befreind user: " + this.props.relation['author']['username']);
-        ChangeRelationRequest.update(this.props.relation['author'], this.props.relation['friend'],
+        ChangeRelationRequest.update(this.props.relation['friend'], this.props.relation['author'],
             "status_friends", this.remount);
     }
 

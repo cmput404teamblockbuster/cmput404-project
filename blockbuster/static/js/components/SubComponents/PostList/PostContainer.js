@@ -12,8 +12,8 @@ import EditPostDialog from './EditPostDialog'
 import moment from 'moment';
 
 export default class PostContainer extends React.Component{
-    constructor(object,refresh, me){
-        super(object,refresh, me);
+    constructor(object,refresh, me, single){
+        super(object,refresh, me, single);
 
         if (this.props.object['contentType']==="text/plain"){
             this.body = <p className="postBody">{this.props.object['content']}</p>
@@ -78,7 +78,7 @@ export default class PostContainer extends React.Component{
                     </CardText>
                     <Divider/>
                     <CardMedia>
-                        <CommentSection host={this.props.object.author.host} postid={this.props.object['id']} object={this.props.object['comments']} refresh={this.props.refresh}/>
+                        <CommentSection single={this.props.single} host={this.props.object.author.host} postid={this.props.object['id']} object={this.props.object['comments']} refresh={this.props.refresh}/>
                     </CardMedia>
                     {this.state.dialog}
                 </Card>
@@ -95,5 +95,8 @@ PostContainer.propTypes = {
     refresh: React.PropTypes.func.isRequired,
 
     // a boolean if this is my post
-    me: React.PropTypes.bool
+    me: React.PropTypes.bool,
+
+    //
+    single: React.PropTypes.bool
 };
