@@ -13,7 +13,7 @@ from nodes.models import Node
 from posts.constants import PRIVACY_TYPES, PRIVATE_TO_ALL_FRIENDS, PRIVACY_PRIVATE, PRIVACY_PRIVATE, PRIVACY_PUBLIC, \
     PRIVATE_TO_FOAF, PRIVACY_UNLISTED,PRIVACY_SERVER_ONLY,contentchoices,text_markdown,text_plain,binary,png,jpeg
 from django.contrib.sites.models import Site
-from posts.utils import foreign_post_viewable_for_author, get_foreign_posts_by_author
+from posts.utils import foreign_post_viewable_for_author, get_foreign_posts_by_author, sort_posts
 from dateutil import parser
 
 site_name = Site.objects.get_current().domain
@@ -79,13 +79,9 @@ class ProfilePostsListView(APIView):
         page = self.request.GET.get('page', 1)
         page_num = self.request.GET.get('size', 1000)
 
-        #sort the posts
+        #sort the posts/comments
         if len(all_posts) > 1:
-            all_posts.sort(key=lambda k: k.get('published', None), reverse=True)
-        #sort the comments
-        for post in all_posts:
-            if len(post.get('comments', None)) > 1:
-                post.get('comments').sort(key=lambda k: k.get('published', None), reverse=True)
+            sort_posts(all_posts)
 
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
@@ -160,13 +156,8 @@ class ProfilePostDetailView(APIView):
         serializer = PostSerializer(results,
                                     many=True, context={'request': request} )
 
-        #sort the posts
-        if len(serializer.data) > 1:
-            serializer.data.sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
-        #sort the comments
-        for post in serializer.data:
-            if len(post.get('comments', None)) > 1:
-                post.get('comments').sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
+        #sort the posts/comments
+        sort_posts(serializer.data)
 
         return Response(OrderedDict([('query', 'posts'),
                                      ('count', mypaginator.page.paginator.count),
@@ -209,15 +200,10 @@ class AllPublicPostsView(APIView):
 
         # get all local public posts
         data = Post.objects.filter(privacy=PRIVACY_PUBLIC)
-        serializer = PostSerializer(data, many=True, context={'request': request} )
+        serializer = PostSerializer(data, many=True, context={'request': request})
         result.extend(serializer.data)
 
-        #sort the posts
-        if len(result) > 1:
-            result.sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
-        #sort the comments
-        for post in result:
-            if len(post.get('comments', None)) > 1:
-                post.get('comments').sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
+        #sort the posts/comments
+        sort_posts(result)
 
         return Response(status=status.HTTP_200_OK, data=result)

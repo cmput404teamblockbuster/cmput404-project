@@ -5,7 +5,7 @@ from users.constants import *
 from nodes.models import Node
 import uuid
 from users.utils import determine_if_foaf, verify_friends
-
+from dateutil import parser
 from posts.constants import PRIVATE_TO_FOAF, PRIVACY_PUBLIC
 
 
@@ -119,3 +119,12 @@ def check_if_viewable_as_FOAF(post, profile, foreign_profile=None):
         return True
     else:
         return False
+
+def sort_posts(posts):
+    # sort the posts
+    if len(posts) > 1 and hasattr(posts, 'get'):
+        posts.sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
+    # sort the comments
+    for post in posts:
+        if hasattr(post, 'get') and len(post.get('comments', None)) > 1:
+            post.get('comments').sort(key=lambda k: parser.parse(k.get('published', None)), reverse=True)
