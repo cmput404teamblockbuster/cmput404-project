@@ -22,7 +22,7 @@ change the "site_name" variable at the top of /users/models.py and posts/models.
 ```
 
 
-## After pulling from master
+## After pulling from master ##
 There may be migrations that you need to apply. To do by:
 ```
 python manage.py migrate
@@ -33,7 +33,7 @@ python manage.py migrate
 After migrating for the first time, create a superuser, run the server with and log into the admin panel. Click on "Sites" and change the site name from "example.com" to the desired host name, "http://127.0.0.1:8000/api/". Stop the server and migrate again. optionally change site_name back to what it was before in /users/models.py and posts/models.py. create a new super user named "god".  
 ```
 
-## Running
+## Running ##
 ```
 python manage.py runserver
 ```
@@ -48,7 +48,7 @@ open browser to the host name
 blockbuster.canadacentral.cloudapp.azure.com
 ```
 
-##Contributers:
+## Contributers:
 
 * https://github.com/AaronHongyangLiu
 * https://github.com/cjresler
