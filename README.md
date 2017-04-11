@@ -16,7 +16,7 @@ npm install
 ./node_modules/.bin/webpack --config webpack.config.js
 ```
 
-# jump through hoops #
+### Jump through hoops ###
 ```
 change the "site_name" variable at the top of /users/models.py and 
 posts/models.py to be euqal to the desired host name, 
@@ -30,7 +30,7 @@ There may be migrations that you need to apply. To do by:
 python manage.py migrate
 ```
 
-# More hoops #
+### More hoops ###
 ```
 After migrating for the first time, create a superuser, run the server 
 with and log into the admin panel. Click on "Sites" and change the site
