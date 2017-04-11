@@ -40,7 +40,7 @@ def verify_friends(foreign, local):
             return result.get('friends')
 
     print("friendship between:", local, "and:", foreign, "failed to verify with host:", foreign.host, "Response:",
-          vars(result))
+          vars(response))
     return False
 
 
