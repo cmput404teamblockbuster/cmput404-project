@@ -33,11 +33,10 @@ def foreign_post_viewable_for_author(post, profile):
     foreign_profile = Profile.objects.filter(host=author_host, username=author_username)
     if foreign_profile:
         foreign_profile = foreign_profile[0]
+
     if not foreign_profile:  # Then there is no relationship with that author and no chance of visibility at this point
         if post_visibility == PRIVATE_TO_FOAF: # Can still be visible to FOAF?
             return check_if_viewable_as_FOAF(post, profile)
-    elif post_visibility == PRIVATE_TO_FOAF:
-        return check_if_viewable_as_FOAF(post, profile, foreign_profile)
 
     friends1 = UserRelationship.objects.filter(initiator=foreign_profile, receiver=profile,
                                                status=RELATIONSHIP_STATUS_FRIENDS)
@@ -48,6 +47,9 @@ def foreign_post_viewable_for_author(post, profile):
     if relationship_exists and post_visibility in ['FRIENDS', 'PUBLIC', 'FOAF']:
         if verify_friends(foreign_profile, profile):
             return True
+
+    elif post_visibility == PRIVATE_TO_FOAF:
+        return check_if_viewable_as_FOAF(post, profile, foreign_profile)
 
     return False
 
