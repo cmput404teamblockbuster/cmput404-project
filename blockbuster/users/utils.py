@@ -20,12 +20,13 @@ def determine_if_request_from_foundbook(request):
 def verify_friends(foreign, local):
     """
     Verifies that the given ids are friends by sending a /author/{author_id}/friends/{author_id}/ request
+    Downgrades the relationship to local following foreign if they are no longer friends.
     """
     node = Node.objects.filter(host=foreign.host, is_allowed=True)
     if node:
         node = node[0]
 
-        api_url = '%s%sauthor/%s/friends/%s' % (foreign.host, node.api_endpoint, foreign.uuid, local.uuid)
+        api_url = '%s%sauthor/%s/friends/%s/' % (foreign.host, node.api_endpoint, foreign.uuid, local.uuid)
 
         try:
             # print("Attempting to verify friendship between:", author_B, "and", author)
@@ -35,12 +36,22 @@ def verify_friends(foreign, local):
             response = None
 
         result = response.json() if response and 199 < response.status_code < 300 else None
-        if (result and result.get('friends') != False):
-            print("friendship between:", local, "and:", foreign,"verified by host:", foreign.host)
-            return result.get('friends')
+        if (result):
+            print("result is:", result.get('friends'))
 
-    print("friendship between:", local, "and:", foreign, "failed to verify with host:", foreign.host, "Response:",
-          vars(response))
+            if result.get('friends') == True:
+                print("friendship between:", local, "and:", foreign,"verified by host:", foreign.host)
+                return True
+
+            elif result.get('friends') == False:
+                #downgrade the friendship because apparently we are no longer friends on their server
+                if local.downgrade_friendship(foreign):
+                    print("friendship successfully DOWNGRAGED between:", local, "and:", foreign)
+                return False
+
+
+    print("friendship between:", local, "and:", foreign, "failed to verify with host:", foreign.host,
+          response.status_code, "Response:", vars(response))
     return False
 
 
