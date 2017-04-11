@@ -18,7 +18,9 @@ npm install
 
 ## jump through hoops ##
 ```
-change the "site_name" variable at the top of /users/models.py and posts/models.py to be euqal to the desired host name, ex: "http://127.0.0.1:8000/api/" 
+change the "site_name" variable at the top of /users/models.py and 
+posts/models.py to be euqal to the desired host name, 
+ex: "http://127.0.0.1:8000/api/" 
 ```
 
 
@@ -30,7 +32,12 @@ python manage.py migrate
 
 ## More hoops ##
 ```
-After migrating for the first time, create a superuser, run the server with and log into the admin panel. Click on "Sites" and change the site name from "example.com" to the desired host name, "http://127.0.0.1:8000/api/". Stop the server and migrate again. optionally change site_name back to what it was before in /users/models.py and posts/models.py. create a new super user named "god".  
+After migrating for the first time, create a superuser, run the server 
+with and log into the admin panel. Click on "Sites" and change the site
+name from "example.com" to the desired host name, "http://127.0.0.1:8000/api/".
+Stop the server and migrate again. optionally change site_name back to what
+it was before in /users/models.py and posts/models.py. create a new super user
+named "god".  
 ```
 
 ## Running ##
