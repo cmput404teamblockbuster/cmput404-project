@@ -7,7 +7,8 @@ from users.api.serializers import ProfileSerializer, CondensedProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from users.constants import RELATIONSHIP_STATUS_FOLLOWING, RELATIONSHIP_STATUS_PENDING
-
+from django.contrib.sites.models import Site
+from users.utils import verify_friends
 
 class RegisterUserView(APIView):
     """
@@ -55,6 +56,11 @@ class AuthenticatedUserRelationshipView(APIView):
             other_user = Profile.objects.get(uuid=uuid)
         except Profile.DoesNotExist:
             return Response(data='No Relationship Found.', status=status.HTTP_200_OK)
+
+        site_name = Site.objects.get_current().domain
+        for friend in auth_user.friends:
+            if (friend.host != site_name):
+                verify_friends(friend, self.request.user.profile)
 
         qs1 = UserRelationship.objects.filter(initiator=auth_user, receiver=other_user)
         qs2 = UserRelationship.objects.filter(initiator=other_user, receiver=auth_user)

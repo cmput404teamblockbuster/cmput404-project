@@ -11,7 +11,7 @@ from urlparse import urlparse
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from nodes.models import Node
 from django.contrib.sites.models import Site
-from users.utils import determine_if_request_from_foundbook
+from users.utils import determine_if_request_from_foundbook, verify_friends
 
 site_name = Site.objects.get_current().domain
 
@@ -99,6 +99,12 @@ class MyFriendsProfilesViewSet(viewsets.ModelViewSet):
         """
         The current users friends list
         """
+        friends = self.request.user.profile.friends
+
+        for friend in friends:
+            if(friend.host != site_name):
+                verify_friends(friend, self.request.user.profile)
+
         return self.request.user.profile.friends
 
 
@@ -121,6 +127,13 @@ class UserRelationshipViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND, data="No profile with the given UUID is found on this server.")
 
         friends = requested_profile.friends
+
+        for friend in friends:
+            if(friend.host != site_name):
+                verify_friends(friend, self.request.user.profile)
+
+        friends = requested_profile.friends
+
         data = dict(
             query='friends',
             authors=list((friend.url for friend in friends))

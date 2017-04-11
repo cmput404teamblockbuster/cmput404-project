@@ -10,7 +10,6 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.sites.models import Site
-from users.utils import verify_friends
 
 site_name = Site.objects.get_current().domain
 
@@ -78,6 +77,7 @@ class Profile(models.Model):
                                                                                 status=RELATIONSHIP_STATUS_FRIENDS):
             friend_uuids.append(r.receiver.uuid)
 
+
         return Profile.objects.filter(uuid__in=friend_uuids)
 
     def get_local_stream_and_foreign_friend_list(self):
@@ -142,15 +142,12 @@ class Profile(models.Model):
 
     def downgrade_friendship(self, other):
         #downgrades friendship wih the given author
-
         if(other not in self.friends):
             return False
-
         friends1 = UserRelationship.objects.filter(initiator=self, receiver=other,
                                                    status=RELATIONSHIP_STATUS_FRIENDS)
         friends2 = UserRelationship.objects.filter(receiver=self, initiator=other,
                                                    status=RELATIONSHIP_STATUS_FRIENDS)
-
         if friends1: relationship = friends1[0]
         elif friends2: relationship = friends2[0]
         else: return False

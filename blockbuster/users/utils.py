@@ -37,16 +37,17 @@ def verify_friends(foreign, local):
 
         result = response.json() if response and 199 < response.status_code < 300 else None
         if (result):
-            print("result is:", result.get('friends'))
-
             if result.get('friends') == True:
                 print("friendship between:", local, "and:", foreign,"verified by host:", foreign.host)
                 return True
 
             elif result.get('friends') == False:
+                print "attempting to downgrade"
                 #downgrade the friendship because apparently we are no longer friends on their server
                 if local.downgrade_friendship(foreign):
                     print("friendship successfully DOWNGRAGED between:", local, "and:", foreign)
+                else:
+                    print("Failed to downgrade the friendship")
                 return False
 
 
