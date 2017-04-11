@@ -1,6 +1,6 @@
 # cmput404-project
 
-API docs available at ```/api/docs```
+Documentation availiable here: https://github.com/cmput404teamblockbuster/cmput404-project/wiki/Docs
 
 ## Create environment ##
 Run these commands in the root folder
