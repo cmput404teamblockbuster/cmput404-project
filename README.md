@@ -37,7 +37,7 @@ After migrating for the first time, create a superuser, run the server with and 
 ```
 python manage.py runserver
 ```
-open browser to http://127.0.0.1:8000/
+open browser to the host name
 
 
 
@@ -49,6 +49,7 @@ blockbuster.canadacentral.cloudapp.azure.com
 ```
 
 ##Contributers:
+
 * https://github.com/AaronHongyangLiu
 * https://github.com/cjresler
 * https://github.com/Joduro
