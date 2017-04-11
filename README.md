@@ -2,6 +2,13 @@
 
 Documentation availiable here: https://github.com/cmput404teamblockbuster/cmput404-project/wiki/Docs
 
+## our list of live versions
+```
+blockbuster.canadacentral.cloudapp.azure.com
+```
+
+# Running A Server Yourself...
+
 ## Create environment ##
 Run these commands in the root folder
 ```
@@ -48,15 +55,7 @@ python manage.py runserver
 open browser to the host name
 
 
-
-
-
-## our list of live versions
-```
-blockbuster.canadacentral.cloudapp.azure.com
-```
-
-## Contributers:
+# Contributers:
 
 * https://github.com/AaronHongyangLiu
 * https://github.com/cjresler
@@ -78,7 +77,7 @@ blockbuster.canadacentral.cloudapp.azure.com
 * http://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add/1737078#1737078 Muhammad Usman
 * http://factoryboy.readthedocs.io/en/latest/recipes.html?highlight=UserModelFactory
 
-## Liscense
+### Liscense
 ```
 Copyright 2017 TeamBlockbuster
 
