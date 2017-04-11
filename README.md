@@ -28,7 +28,7 @@ There may be migrations that you need to apply. To do by:
 python manage.py migrate
 ```
 
-# more hoops ##
+## More hoops ##
 ```
 After migrating for the first time, create a superuser, run the server with and log into the admin panel. Click on "Sites" and change the site name from "example.com" to the desired host name, "http://127.0.0.1:8000/api/". Stop the server and migrate again. optionally change site_name back to what it was before in /users/models.py and posts/models.py. create a new super user named "god".  
 ```
@@ -57,7 +57,7 @@ blockbuster.canadacentral.cloudapp.azure.com
 * https://github.com/TheAspiredOne
 * https://github.com/sam9116
 
-##References Accessed March-April 2017:
+## References Accessed March-April 2017:
 
 * https://medium.com/@rajaraodv/webpack-the-confusing-parts-58712f8fcad9#.4mcf8uagv
 * https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#onetoone
