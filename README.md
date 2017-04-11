@@ -18,8 +18,9 @@ npm install
 
 ### Jump through hoops ###
 ```
-change the "site_name" variable at the top of /users/models.py and 
-posts/models.py to be euqal to the desired host name, 
+if it is the first time running with no existing database...
+change the "site_name" variable at the top of /users/models.py 
+and posts/models.py to be euqal to the desired host name, 
 ex: "http://127.0.0.1:8000/api/" 
 ```
 
