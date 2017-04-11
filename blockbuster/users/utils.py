@@ -39,6 +39,8 @@ def verify_friends(foreign, local):
             print("friendship between:", local, "and:", foreign,"verified by host:", foreign.host)
             return result.get('friends')
 
+    print("friendship between:", local, "and:", foreign, "failed to verify with host:", foreign.host, "Response:",
+          vars(result))
     return False
 
 
